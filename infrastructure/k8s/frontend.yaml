@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: khalilksa33/bl-mp-frontend:latest
+        image: khalilksa33/parto-frontend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

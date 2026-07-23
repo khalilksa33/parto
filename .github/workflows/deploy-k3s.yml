@@ -26,8 +26,8 @@ jobs:
 
       - name: Build and push frontend image
         run: |
-          docker build -f frontend/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/bl-mp-frontend:latest ./frontend
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/bl-mp-frontend:latest
+          docker build -f frontend/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/parto-frontend:latest ./frontend
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/parto-frontend:latest
 
       - name: Deploy to k3s cluster
         uses: tale/kubectl-action@v1

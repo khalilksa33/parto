@@ -166,14 +166,12 @@ export default function MarketplacePage() {
   }, [selectedTenantId]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden">
+    <div className="flex-1 flex flex-col min-h-screen bg-white text-slate-900 font-sans antialiased overflow-x-hidden">
       {/* Header / Navbar */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80 transition-all duration-300">
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 transition-all duration-300 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              NEXUS
-            </span>
+            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-10 w-auto" />
             <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 rounded-full">
               Multi-Tenant
             </span>
@@ -545,13 +543,11 @@ export default function MarketplacePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-950 border-t border-slate-900 mt-20">
+      <footer className="bg-slate-50 border-t border-slate-200 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <span className="text-xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              NEXUS
-            </span>
-            <span className="text-sm text-slate-500">© 2026 Nexus Marketplace Inc. All rights reserved.</span>
+            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />
+            <span className="text-sm text-slate-500">© 2026 Parto Auto Spare Parts. All rights reserved.</span>
           </div>
           <div className="flex gap-6 text-sm text-slate-400">
             <a href="#" className="hover:text-indigo-400 transition-colors">Privacy Policy</a>

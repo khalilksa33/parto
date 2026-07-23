@@ -61,7 +61,7 @@ export default async function RootLayout({
         {/* Dynamic SEO Tagging */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="min-h-screen bg-slate-950 text-slate-50 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300">
+      <body className="min-h-screen bg-white text-slate-900 antialiased selection:bg-blue-600 selection:text-white transition-colors duration-300">
         <main className="flex min-h-screen flex-col items-stretch justify-start">
           {children}
         </main>

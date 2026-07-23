@@ -22,9 +22,9 @@ fi
 docker compose -f infrastructure/docker-compose.prod.full.yml down --remove-orphans
 
 # Pull the latest backend image
-docker pull "$DOCKERHUB_USERNAME/bl-mp:$TAG"
+docker pull "$DOCKERHUB_USERNAME/parto:$TAG"
 # Pull the latest frontend image (assumes tag "latest")
-docker pull "$DOCKERHUB_USERNAME/bl-mp-frontend:latest"
+docker pull "$DOCKERHUB_USERNAME/parto-frontend:latest"
 
 # Deploy using the full production compose file (backend + frontend + tunnel)
 docker compose -f infrastructure/docker-compose.prod.full.yml up -d

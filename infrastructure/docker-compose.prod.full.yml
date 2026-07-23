@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   frontend:
-    image: "${DOCKERHUB_USERNAME}/bl-mp-frontend:latest"
+    image: "${DOCKERHUB_USERNAME}/parto-frontend:latest"
     restart: always
     environment:
       - NODE_ENV=production

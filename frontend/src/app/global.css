@@ -7,20 +7,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Design Tokens - Premium Dark Palette */
-  --bg-primary: hsl(222, 47%, 4%);
-  --bg-secondary: hsl(222, 40%, 7%);
-  --bg-card: hsl(222, 35%, 11%);
+  /* Design Tokens - Premium Light Palette for Parto */
+  --bg-primary: hsl(0, 0%, 100%);
+  --bg-secondary: hsl(210, 20%, 98%);
+  --bg-card: hsl(0, 0%, 100%);
   
-  --border-color: hsl(217, 32%, 18%);
+  --border-color: hsl(214, 32%, 91%);
   
-  --text-primary: hsl(210, 40%, 98%);
-  --text-secondary: hsl(215, 20%, 70%);
-  --text-muted: hsl(215, 16%, 47%);
+  --text-primary: hsl(222, 47%, 11%);
+  --text-secondary: hsl(215, 16%, 47%);
+  --text-muted: hsl(215, 16%, 65%);
   
-  --primary: hsl(250, 89%, 65%);
-  --primary-hover: hsl(250, 95%, 72%);
-  --accent: hsl(325, 90%, 60%);
+  --primary: hsl(210, 100%, 40%); /* Parto Blue */
+  --primary-hover: hsl(210, 100%, 35%);
+  --accent: hsl(210, 100%, 50%);
   --success: hsl(142, 70%, 45%);
   
   --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
