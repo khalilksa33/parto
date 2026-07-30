@@ -30,9 +30,9 @@ cd $RemoteDir
 echo 'Applying namespace...'
 kubectl apply -f ./k8s/namespace.yaml
 
-echo 'Copying GHCR secret from kamysoft-erp namespace to parto namespace...'
-# Ensure GHCR secret is available in the new namespace
-kubectl get secret ghcr-secret -n kamysoft-erp -o json | jq 'del(.metadata.namespace, .metadata.resourceVersion, .metadata.uid, .metadata.creationTimestamp)' | kubectl apply -n parto -f -
+echo 'Applying database deployments...'
+kubectl apply -f ./k8s/postgres.yaml
+kubectl apply -f ./k8s/mongodb.yaml
 
 echo 'Applying deployments and services...'
 kubectl apply -f ./k8s/backend-deployment.yaml

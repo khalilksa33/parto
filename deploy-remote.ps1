@@ -1,39 +1,32 @@
 # deploy-remote.ps1
-$RemoteHost = "erp-ssh-26i"
+$RemoteHost = "cloud@ssh-cloud.26i.uk"
 $RemoteDir = "/tmp/parto-deploy"
 
 Write-Host "Creating deployment directory on remote host ($RemoteHost)..."
-ssh -o BatchMode=yes $RemoteHost "mkdir -p $RemoteDir/k8s $RemoteDir/backend $RemoteDir/frontend"
+ssh -o BatchMode=yes $RemoteHost "mkdir -p $RemoteDir/k8s"
 
-Write-Host "Copying backend..."
-scp -r backend/* "$RemoteHost:$RemoteDir/backend/"
+Write-Host "Securely copying Kubernetes manifests..."
+scp -r k8s/* "${RemoteHost}:${RemoteDir}/k8s/"
 
-Write-Host "Copying frontend..."
-scp -r frontend/* "$RemoteHost:$RemoteDir/frontend/"
-
-Write-Host "Copying Kubernetes manifests..."
-scp -r k8s/* "$RemoteHost:$RemoteDir/k8s/"
-
-Write-Host "Executing remote build and deploy..."
+Write-Host "Executing remote kubectl apply..."
 $DeployScript = @"
 cd $RemoteDir
-echo 'Building backend image...'
-docker build -t parto-backend:latest ./backend
-echo 'Building frontend image...'
-docker build -t parto-frontend:latest ./frontend
-
 echo 'Applying namespace...'
 kubectl apply -f ./k8s/namespace.yaml
+
+echo 'Applying database deployments...'
+kubectl apply -f ./k8s/postgres.yaml
+kubectl apply -f ./k8s/mongodb.yaml
 
 echo 'Applying deployments and services...'
 kubectl apply -f ./k8s/backend-deployment.yaml
 kubectl apply -f ./k8s/frontend-deployment.yaml
 kubectl apply -f ./k8s/ingress.yaml
 
-echo 'Deployment initiated!'
+echo 'Deployment initiated on ssh-cloud.26i.uk!'
 kubectl get pods -n parto
 "@
 
 ssh $RemoteHost $DeployScript
 
-Write-Host "Done!"
+Write-Host "Remote deployment script completed!"

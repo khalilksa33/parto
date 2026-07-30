@@ -29,6 +29,11 @@ spec:
         env:
         - name: NEXT_PUBLIC_API_URL
           value: "http://parto-backend.parto.svc.cluster.local:5000"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: parto-secrets
+              key: DATABASE_URL
 ---
 apiVersion: v1
 kind: Service

@@ -48,13 +48,11 @@ jobs:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
           kubectl-version: v1.28.0
 
-      - name: Apply namespace and ensure GHCR secret
+      - name: Apply namespace and deploy databases
         run: |
           kubectl apply -f k8s/namespace.yaml
-          
-          # Copy GHCR secret from kamysoft-erp if it doesn't exist in parto
-          kubectl get secret ghcr-secret -n parto || \
-          kubectl get secret ghcr-secret -n kamysoft-erp -o json | jq 'del(.metadata.namespace, .metadata.resourceVersion, .metadata.uid, .metadata.creationTimestamp)' | kubectl apply -n parto -f -
+          kubectl apply -f k8s/postgres.yaml
+          kubectl apply -f k8s/mongodb.yaml
 
       - name: Apply manifests and rollout
         run: |
