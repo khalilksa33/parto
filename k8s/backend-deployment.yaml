@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parto-backend
+  namespace: parto
+  labels:
+    app: parto-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parto-backend
+  template:
+    metadata:
+      labels:
+        app: parto-backend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: backend
+        image: ghcr.io/khalilksa33/parto-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - secretRef:
+            name: parto-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parto-backend
+  namespace: parto
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: parto-backend

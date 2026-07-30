@@ -1,0 +1,66 @@
+name: CI/CD PARTO Auto-Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-parto.yml'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        run: |
+          docker build -f backend/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-backend:latest ./backend
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-backend:latest
+
+      - name: Build and push frontend image
+        run: |
+          docker build -f frontend/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest ./frontend
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest
+
+      - name: Deploy to k3s cluster
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+          kubectl-version: v1.28.0
+
+      - name: Apply namespace and ensure GHCR secret
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          
+          # Copy GHCR secret from kamysoft-erp if it doesn't exist in parto
+          kubectl get secret ghcr-secret -n parto || \
+          kubectl get secret ghcr-secret -n kamysoft-erp -o json | jq 'del(.metadata.namespace, .metadata.resourceVersion, .metadata.uid, .metadata.creationTimestamp)' | kubectl apply -n parto -f -
+
+      - name: Apply manifests and rollout
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/ingress.yaml
+          
+          kubectl rollout restart deployment parto-backend -n parto
+          kubectl rollout restart deployment parto-frontend -n parto

@@ -201,6 +201,26 @@ export default function MarketplacePage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Consumer Links */}
+            <button
+              onClick={() => router.push(`/${locale}/tashleeh`)}
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-900/60 rounded-full transition-all"
+            >
+              {locale === 'ar' ? 'قطع غيار تشليح' : 'Tashleeh Parts'}
+            </button>
+            <button
+              onClick={() => router.push(`/${locale}/towing`)}
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-950/20 hover:bg-amber-950/40 border border-amber-900/60 rounded-full transition-all"
+            >
+              {locale === 'ar' ? 'طلب سطحة' : 'Request Tow Truck'}
+            </button>
+            <button
+              onClick={() => router.push(`/${locale}/workshop`)}
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 bg-orange-950/20 hover:bg-orange-950/40 border border-orange-900/60 rounded-full transition-all"
+            >
+              {locale === 'ar' ? 'ورشة متنقلة' : 'Mobile Mechanic'}
+            </button>
+
             {/* Vendor Links */}
             <button
               onClick={() => router.push(`/${locale}/register`)}

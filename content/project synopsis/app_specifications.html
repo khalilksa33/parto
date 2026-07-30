@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parto App - Detailed Specifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #333; background-color: #f9fafb; margin: 0; padding: 30px; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; }
+        .header h1 { font-size: 32px; color: #111827; margin: 0 0 10px; letter-spacing: -0.5px; }
+        .header p { font-size: 16px; color: #6b7280; margin: 0; }
+        .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid #f3f4f6; padding-bottom: 20px; break-inside: avoid; }
+        .grid-row:last-child { border-bottom: none; }
+        .col-en { direction: ltr; text-align: left; }
+        .col-ar { font-family: 'Cairo', sans-serif; direction: rtl; text-align: right; font-size: 15px; }
+        h3 { color: #2563eb; font-size: 18px; margin-top: 0; margin-bottom: 15px; }
+        p, ul { font-size: 14px; color: #4b5563; margin-top: 0; margin-bottom: 15px; }
+        ul { padding-left: 20px; padding-right: 0; }
+        .col-ar ul { padding-right: 20px; padding-left: 0; }
+        li { margin-bottom: 8px; }
+        strong { color: #111827; }
+        .highlight { background-color: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; }
+        .col-ar .highlight { border-left: none; border-right: 4px solid #3b82f6; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Parto Automotive Marketplace | منصة بارتو لقطع غيار السيارات</h1>
+        <p>Detailed App Specifications & Workflow | المواصفات التفصيلية وآلية العمل</p>
+    </div>
+
+    <div class="grid-row">
+        <div class="col-en">
+            <h3>1. Project Overview</h3>
+            <p>A multi-vendor marketplace platform tailored for automotive spare parts. It enables multiple auto parts vendors to register, manage their stock, and sell to end customers seamlessly via a unified portal.</p>
+        </div>
+        <div class="col-ar">
+            <h3>1. نظرة عامة على المشروع</h3>
+            <p>منصة تسوق متعددة البائعين مخصصة لقطع غيار السيارات. تتيح للعديد من بائعي القطع التسجيل، وإدارة مخزونهم، والبيع للعملاء النهائيين بسلاسة عبر بوابة موحدة.</p>
+        </div>
+    </div>
+    
+    <div class="grid-row">
+        <div class="col-en highlight">
+            <h3>2. Vendor Management (Multi-Tenant)</h3>
+            <p>Advanced backend controls for sellers:</p>
+            <ul>
+                <li><strong>Tenant Onboarding:</strong> Quick registration for auto part vendors with custom subdomains.</li>
+                <li><strong>Isolated Data:</strong> Strict Row Level Security ensuring vendors only access their specific orders and products.</li>
+                <li><strong>Inventory Sync:</strong> Bulk upload products and sync pricing.</li>
+            </ul>
+        </div>
+        <div class="col-ar highlight">
+            <h3>2. إدارة البائعين (متعدد المستأجرين)</h3>
+            <p>أدوات تحكم متقدمة للبائعين:</p>
+            <ul>
+                <li><strong>تسجيل الموردين:</strong> تسجيل سريع لبائعي قطع الغيار مع نطاقات فرعية مخصصة.</li>
+                <li><strong>فصل البيانات:</strong> نظام أمان يضمن وصول البائعين فقط لطلباتهم ومنتجاتهم الخاصة.</li>
+                <li><strong>مزامنة المخزون:</strong> رفع جماعي للمنتجات ومزامنة الأسعار.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

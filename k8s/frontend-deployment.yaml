@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parto-frontend
+  namespace: parto
+  labels:
+    app: parto-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: parto-frontend
+  template:
+    metadata:
+      labels:
+        app: parto-frontend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: frontend
+        image: ghcr.io/khalilksa33/parto-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: parto-secrets
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "http://parto-backend.parto.svc.cluster.local:5000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parto-frontend
+  namespace: parto
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: parto-frontend

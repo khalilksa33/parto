@@ -3,6 +3,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { Inter, Outfit } from 'next/font/google';
 import '../global.css';
+import AIChatWidget from '@/components/AIChatWidget';
 
 export async function generateStaticParams() {
   return [{ locale: 'en' }];
@@ -65,6 +66,7 @@ export default async function RootLayout({
         <main className="flex min-h-screen flex-col items-stretch justify-start">
           {children}
         </main>
+        <AIChatWidget />
       </body>
     </html>
   );

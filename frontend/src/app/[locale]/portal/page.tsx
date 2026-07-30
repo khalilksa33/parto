@@ -103,6 +103,10 @@ function PortalContent() {
   const [tenant, setTenant] = useState<any | null>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [dispatches, setDispatches] = useState<any[]>([]);
+  const [partRequests, setPartRequests] = useState<any[]>([]);
+  const [quoteForms, setQuoteForms] = useState<Record<string, any>>({});
+  const [quotes, setQuotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -133,6 +137,8 @@ function PortalContent() {
       setTenant(null);
       setProducts([]);
       setOrders([]);
+    setDispatches([]);
+    setPartRequests([]);
       return;
     }
 
@@ -187,12 +193,84 @@ function PortalContent() {
     }
   };
 
+  const handleUpdateDispatch = async (dispatchId: string, status: string) => {
+    try {
+      const res = await fetch(`/api/dispatch?id=${dispatchId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': activeTenantId as string },
+        body: JSON.stringify({ status, quote: quotes[dispatchId] })
+      });
+      if (res.ok) {
+        // Refresh dispatches
+        const serviceType = tenant?.business_type === "tow_company" ? "tow" : "workshop";
+        const dispatchRes = await fetch(`/api/dispatch?action=poll&tenant_id=${activeTenantId}&service_type=${serviceType}`);
+        if (dispatchRes.ok) {
+          const dispatchData = await dispatchRes.json();
+          setDispatches(dispatchData.dispatches || []);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubmitQuote = async (requestId: string) => {
+    try {
+      const q = quoteForms[requestId];
+      if (!q || !q.price || !q.condition) return;
+      const res = await fetch('/api/tashleeh/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': activeTenantId as string },
+        body: JSON.stringify({ requestId, price: q.price, condition: q.condition, notes: q.notes })
+      });
+      if (res.ok) {
+        // Refresh part requests
+        const tashleehRes = await fetch(`/api/tashleeh/request?tenant_id=${activeTenantId}`, {
+          headers: { 'X-Tenant-ID': activeTenantId as string }
+        });
+        if (tashleehRes.ok) {
+          const tashleehData = await tashleehRes.json();
+          setPartRequests(tashleehData.requests || []);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleLogout = () => {
     setActiveTenantId(null);
     setTenantIdInput('');
     setTenant(null);
     setProducts([]);
     setOrders([]);
+  };
+
+  
+  const handleEnrich = async () => {
+    if (!newProduct.name) return;
+    setIsEnriching(true);
+    try {
+      const res = await fetch('/api/ai/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productName: newProduct.name, action: 'enrich' })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNewProduct(prev => ({
+          ...prev,
+          name: data.name || prev.name,
+          category: data.category || prev.category,
+          description: data.description || '',
+          compatibility: data.compatibility || []
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsEnriching(false);
+    }
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -564,8 +642,8 @@ function PortalContent() {
               </div>
             )}
 
-            {/* TAB CONTENT: ORDERS (RLS PROOF) */}
-            {activeTab === 'orders' && (
+            {/* TAB CONTENT: ORDERS (RLS PROOF) OR DISPATCHES */}
+            {activeTab === 'orders' && tenant?.business_type !== 'tow_company' && (
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-emerald-400">🛡️</span>
@@ -621,29 +699,155 @@ function PortalContent() {
                 )}
               </div>
             )}
+
+            {activeTab === 'orders' && tenant?.business_type === 'used_auto_spare_parts' && (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-amber-400">⚙️</span>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">Active Part Requests</h3>
+                    <p className="text-[10px] text-slate-500">Live feed of consumer part requests. Submit your quotes.</p>
+                  </div>
+                </div>
+
+                {partRequests.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {partRequests.map(req => (
+                      <div key={req.id} className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                           <div>
+                             <h4 className="font-bold text-white text-sm">{req.partName}</h4>
+                             <span className="text-xs text-slate-400">{req.vehicleYear} {req.vehicleMake} {req.vehicleModel}</span>
+                           </div>
+                           <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase bg-indigo-950 text-indigo-400`}>
+                             {req.status}
+                           </span>
+                        </div>
+                        <div className="bg-slate-950 rounded-lg p-3 text-xs flex flex-col gap-2">
+                          <div className="flex gap-2"><span className="text-slate-500">Customer:</span><span className="text-slate-200">{req.customerName} ({req.customerPhone})</span></div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-2 mt-2 border-t border-slate-800 pt-3">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase">Submit Quote</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="number"
+                              placeholder="Price (SAR)"
+                              value={quoteForms[req.id]?.price || ''}
+                              onChange={(e) => setQuoteForms({...quoteForms, [req.id]: {...quoteForms[req.id], price: e.target.value}})}
+                              className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                            />
+                            <select
+                              value={quoteForms[req.id]?.condition || ''}
+                              onChange={(e) => setQuoteForms({...quoteForms, [req.id]: {...quoteForms[req.id], condition: e.target.value}})}
+                              className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                            >
+                              <option value="" disabled>Condition</option>
+                              <option value="Like New">Like New</option>
+                              <option value="Good">Good</option>
+                              <option value="Fair">Fair</option>
+                              <option value="Needs Repair">Needs Repair</option>
+                            </select>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Notes (Optional)"
+                            value={quoteForms[req.id]?.notes || ''}
+                            onChange={(e) => setQuoteForms({...quoteForms, [req.id]: {...quoteForms[req.id], notes: e.target.value}})}
+                            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
+                          />
+                          <button onClick={() => handleSubmitQuote(req.id)} className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">
+                            Submit Quote
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border border-dashed border-slate-850 rounded-2xl text-slate-400 text-xs">
+                    No active part requests right now.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'orders' && (tenant?.business_type === 'tow_company' || tenant?.business_type === 'mobile_workshop') && (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-amber-400">🛻</span>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{tenant?.business_type === 'mobile_workshop' ? 'Active Mobile Workshop Requests' : 'Active Towing Dispatches'}</h3>
+                    <p className="text-[10px] text-slate-500">Live feed of consumer {tenant?.business_type === 'mobile_workshop' ? 'workshop' : 'towing'} requests in your area.</p>
+                  </div>
+                </div>
+
+                {dispatches.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {dispatches.map(dispatch => (
+                      <div key={dispatch.id} className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                           <div>
+                             <h4 className="font-bold text-white text-sm">{dispatch.customerName}</h4>
+                             <span className="text-xs text-slate-400">{dispatch.customerPhone}</span>
+                           </div>
+                           <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${dispatch.status === 'pending' ? 'bg-indigo-950 text-indigo-400' : 'bg-emerald-950 text-emerald-400'}`}>
+                             {dispatch.status}
+                           </span>
+                        </div>
+                        <div className="bg-slate-950 rounded-lg p-3 text-xs flex flex-col gap-2">
+                          <div className="flex gap-2"><span className="text-slate-500">Pickup:</span><span className="text-slate-200">{dispatch.pickupLocation}</span></div>
+                          <div className="flex gap-2"><span className="text-slate-500">Dropoff:</span><span className="text-slate-200">{dispatch.dropoffLocation}</span></div>
+                          <div className="flex gap-2"><span className="text-slate-500">Vehicle:</span><span className="text-slate-200">{dispatch.vehicleDetails}</span></div>
+                        </div>
+                        
+                        {dispatch.status === 'pending' && (
+                          <div className="flex flex-col gap-2 mt-2">
+                            <input
+                              type="text"
+                              placeholder="Price Quote (e.g., 150 SAR)"
+                              value={quotes[dispatch.id] || ''}
+                              onChange={(e) => setQuotes({...quotes, [dispatch.id]: e.target.value})}
+                              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                            />
+                            <button onClick={() => handleUpdateDispatch(dispatch.id, 'accepted')} className="w-full bg-indigo-650 hover:bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs transition-colors">
+                              Accept Dispatch
+                            </button>
+                          </div>
+                        )}
+                        {dispatch.status === 'accepted' && dispatch.acceptedBy === tenant.id && (
+                          <button onClick={() => handleUpdateDispatch(dispatch.id, 'en_route')} className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">
+                            Mark En Route
+                          </button>
+                        )}
+                        {dispatch.status === 'en_route' && dispatch.acceptedBy === tenant.id && (
+                          <button onClick={() => handleUpdateDispatch(dispatch.id, 'arrived')} className="w-full mt-2 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">
+                            Mark Arrived
+                          </button>
+                        )}
+                        {dispatch.status === 'arrived' && dispatch.acceptedBy === tenant.id && (
+                          <button onClick={() => handleUpdateDispatch(dispatch.id, 'completed')} className="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs transition-colors">
+                            Complete Job
+                          </button>
+                        )}
+                        {dispatch.status === 'completed' && dispatch.acceptedBy === tenant.id && (
+                          <div className="w-full mt-2 text-center text-emerald-400 font-bold text-xs py-2">
+                            Job Completed
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border border-dashed border-slate-850 rounded-2xl text-slate-400 text-xs">
+                    No active dispatches right now.
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-900/80 py-6 text-center text-xs text-slate-500">
-        © 2026 Nexus Marketplace Inc. All rights reserved.
-      </footer>
-    </div>
-  );
-}
-
-export default function PortalPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
-          <span className="animate-spin text-3xl">⏳</span>
-          <span className="text-sm font-semibold">Initializing Portal Context...</span>
         </div>
-      </div>
-    }>
-      <PortalContent />
-    </Suspense>
+      </main>
+    </div>
   );
 }
