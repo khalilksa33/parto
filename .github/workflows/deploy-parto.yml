@@ -45,7 +45,13 @@ jobs:
       - name: Setup Kubeconfig with public IP
         id: kubeconfig
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+          cat << 'EOF' > kubeconfig_raw.txt
+          ${{ secrets.KUBE_CONFIG }}
+          EOF
+          # Try decoding. If it's raw YAML, base64 -d will fail or produce garbage.
+          if ! cat kubeconfig_raw.txt | base64 -d > kubeconfig.yaml 2>/dev/null || ! grep -q "apiVersion" kubeconfig.yaml; then
+            cp kubeconfig_raw.txt kubeconfig.yaml
+          fi
           sed -i 's/192.168.8.106/ssh-cloud.26i.uk/g' kubeconfig.yaml
           MODIFIED_CONFIG=$(cat kubeconfig.yaml | base64 -w 0)
           echo "modified_config=$MODIFIED_CONFIG" >> $GITHUB_OUTPUT
