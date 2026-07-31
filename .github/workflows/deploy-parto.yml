@@ -52,24 +52,30 @@ jobs:
           cat << 'EOF' > parse_kubeconfig.py
           import os
           import base64
+          import json
           import re
 
-          secret = os.environ.get("KUBE_CONFIG", "").strip()
+          content = os.environ.get("KUBE_CONFIG", "").strip()
           
-          # Remove surrounding quotes if the user accidentally included them
-          if (secret.startswith("\"") and secret.endswith("\"")) or (secret.startswith("'") and secret.endswith("'")):
-              secret = secret[1:-1].strip()
+          # Remove surrounding quotes if accidentally included
+          if (content.startswith("\"") and content.endswith("\"")) or (content.startswith("'") and content.endswith("'")):
+              content = content[1:-1].strip()
               
-          content = secret
-          
-          # Check if it looks like base64 (no spaces, standard chars)
-          if not "apiVersion" in secret and re.match(r"^[A-Za-z0-9+/=\s]+$", secret):
+          # Check if it looks like base64
+          if not "apiVersion" in content and re.match(r"^[A-Za-z0-9+/=\s]+$", content):
               try:
-                  content = base64.b64decode(secret).decode("utf-8")
+                  content = base64.b64decode(content).decode("utf-8").strip()
               except Exception:
                   pass
                   
-          # Unescape literal \n if they exist
+          # If the content (after possible decoding) is a JSON string representation, unescape it
+          if content.startswith("\"") and content.endswith("\""):
+              try:
+                  content = json.loads(content)
+              except Exception:
+                  content = content[1:-1]
+                  
+          # Unescape literal \n if they still exist
           content = content.replace("\\n", "\n")
           
           # Replace local IP with public domain
