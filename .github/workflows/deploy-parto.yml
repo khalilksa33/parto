@@ -57,6 +57,9 @@ jobs:
 
           content = os.environ.get("KUBE_CONFIG", "").strip()
           
+          # Strip UTF-8 Byte Order Mark (BOM) if present
+          content = content.replace("\ufeff", "")
+          
           def unwrap(s):
               if (s.startswith("\"") and s.endswith("\"")) or (s.startswith("'") and s.endswith("'")):
                   return s[1:-1].strip()
