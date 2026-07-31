@@ -1,6 +1,7 @@
 # frontend/Dockerfile
 # 1. Base Node image
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
 
 # 2. Build the source code
 FROM base AS builder
