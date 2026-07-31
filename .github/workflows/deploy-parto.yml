@@ -48,15 +48,37 @@ jobs:
         run: |
           mkdir -p ~/.kube
           
-          echo "$KUBE_CONFIG" > ~/.kube/config_raw
+          python3 -c '
+          import os
+          import base64
+          import re
+
+          secret = os.environ.get("KUBE_CONFIG", "").strip()
           
-          if cat ~/.kube/config_raw | base64 -d > ~/.kube/config_decoded 2>/dev/null && grep -q "apiVersion" ~/.kube/config_decoded; then
-            mv ~/.kube/config_decoded ~/.kube/config
-          else
-            cp ~/.kube/config_raw ~/.kube/config
-          fi
+          # Remove surrounding quotes if the user accidentally included them
+          if (secret.startswith("\"") and secret.endswith("\"")) or (secret.startswith("\'") and secret.endswith("\'")):
+              secret = secret[1:-1].strip()
+              
+          content = secret
           
-          sed -i 's/192.168.8.106/ssh-cloud.26i.uk/g' ~/.kube/config
+          # Check if it looks like base64 (no spaces, standard chars)
+          if not "apiVersion" in secret and re.match(r"^[A-Za-z0-9+/=\s]+$", secret):
+              try:
+                  content = base64.b64decode(secret).decode("utf-8")
+              except Exception:
+                  pass
+                  
+          # Unescape literal \n if they exist
+          content = content.replace("\\n", "\n")
+          
+          # Replace local IP with public domain
+          content = content.replace("192.168.8.106", "ssh-cloud.26i.uk")
+          
+          with open(os.path.expanduser("~/.kube/config"), "w") as f:
+              f.write(content)
+          '
+          
+          chmod 600 ~/.kube/config
           
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/postgres.yaml
