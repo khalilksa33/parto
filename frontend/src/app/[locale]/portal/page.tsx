@@ -846,7 +846,7 @@ function PortalContent() {
             )}
 
           </div>
-        </div>
+        )}
       </main>
     </div>
   );
