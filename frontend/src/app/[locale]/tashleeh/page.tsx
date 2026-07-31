@@ -156,7 +156,7 @@ function TashleehPageInner() {
 
       <header className="relative z-10 border-b border-slate-900/80 backdrop-blur-md bg-slate-950/80">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <span className="text-2xl font-black tracking-tight cursor-pointer" onClick={() => router.push(`/${locale}`)}>NEXUS</span>
+          <span className="text-2xl font-black tracking-tight cursor-pointer" onClick={() => router.push(`/${locale}`)}><img src="/logo.png" alt="Parto" className="h-8 w-auto" /></span>
           <button onClick={() => router.push(`/${locale}`)} className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white border border-slate-800 rounded-full">
             {locale === 'ar' ? 'العودة للموقع الرئيسي' : 'Back to Home'}
           </button>

@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_URL = '';
 
 const translations = {
   en: {

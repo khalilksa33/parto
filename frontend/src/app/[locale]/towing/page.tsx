@@ -71,7 +71,7 @@ export default function TowingPage() {
   return (
     <div className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white ${isRtl ? 'text-right' : 'text-left'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <header className="relative z-10 border-b border-slate-900/80 backdrop-blur-md bg-slate-950/80 p-4 flex justify-between items-center">
-        <span className="text-2xl font-black text-indigo-400 cursor-pointer" onClick={() => router.push(`/${locale}`)}>NEXUS</span>
+        <span className="text-2xl font-black text-indigo-400 cursor-pointer" onClick={() => router.push(`/${locale}`)}><img src="/logo.png" alt="Parto" className="h-8 w-auto" /></span>
         <button onClick={() => router.push(`/${locale}`)} className="text-xs font-semibold text-slate-400">Back</button>
       </header>
 

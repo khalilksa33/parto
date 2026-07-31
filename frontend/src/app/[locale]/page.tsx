@@ -2,9 +2,10 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import NotificationBell from '@/components/NotificationBell';
 
 // API configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_URL = '';
 
 interface Product {
   id: string;
@@ -240,6 +241,9 @@ export default function MarketplacePage() {
             >
               {locale === 'ar' ? 'لوحة المسؤول' : 'Super Admin'}
             </button>
+
+            {/* Notification Bell */}
+            <NotificationBell />
 
             {/* Cart Icon */}
             <div className="relative cursor-pointer p-2 rounded-full hover:bg-slate-900 transition-colors" onClick={() => setCartCount(0)}>

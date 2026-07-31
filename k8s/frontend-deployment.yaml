@@ -28,6 +28,8 @@ spec:
             name: parto-secrets
         env:
         - name: NEXT_PUBLIC_API_URL
+          value: ""
+        - name: INTERNAL_API_URL
           value: "http://parto-backend.parto.svc.cluster.local:5000"
         - name: DATABASE_URL
           valueFrom:

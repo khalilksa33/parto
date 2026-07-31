@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useTransition, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import NotificationBell from '@/components/NotificationBell';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_URL = '';
 
 const logoOptions = ['⚙️', '🔌', '🚗', '🛻', '🔋', '📐', '🔧', '🏎️', '🏪', '🛠️', '🚛'];
 
@@ -360,6 +361,7 @@ function PortalContentInner() {
             NEXUS
           </span>
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <button
               onClick={() => router.push(`/${locale}`)}
               className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 bg-slate-900/40 rounded-full transition-all"

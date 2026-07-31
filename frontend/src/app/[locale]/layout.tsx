@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { Inter, Outfit } from 'next/font/google';
 import '../global.css';
 import AIChatWidget from '@/components/AIChatWidget';
+import { NotificationProvider } from '@/components/NotificationProvider';
 
 export async function generateStaticParams() {
   return [{ locale: 'en' }];
@@ -63,10 +64,12 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="min-h-screen bg-white text-slate-900 antialiased selection:bg-blue-600 selection:text-white transition-colors duration-300">
-        <main className="flex min-h-screen flex-col items-stretch justify-start">
-          {children}
-        </main>
-        <AIChatWidget />
+        <NotificationProvider>
+          <main className="flex min-h-screen flex-col items-stretch justify-start">
+            {children}
+          </main>
+          <AIChatWidget />
+        </NotificationProvider>
       </body>
     </html>
   );
