@@ -57,12 +57,15 @@ jobs:
 
           content = os.environ.get("KUBE_CONFIG", "").strip()
           
-          # Remove surrounding quotes if accidentally included
-          if (content.startswith("\"") and content.endswith("\"")) or (content.startswith("'") and content.endswith("'")):
-              content = content[1:-1].strip()
+          def unwrap(s):
+              if (s.startswith("\"") and s.endswith("\"")) or (s.startswith("'") and s.endswith("'")):
+                  return s[1:-1].strip()
+              return s
+
+          content = unwrap(content)
               
           # Check if it looks like base64
-          if not "apiVersion" in content and re.match(r"^[A-Za-z0-9+/=\s]+$", content):
+          if "apiVersion" not in content and re.match(r"^[A-Za-z0-9+/=\s]+$", content):
               try:
                   content = base64.b64decode(content).decode("utf-8").strip()
               except Exception:
@@ -73,13 +76,17 @@ jobs:
               try:
                   content = json.loads(content)
               except Exception:
-                  content = content[1:-1]
+                  content = unwrap(content)
                   
           # Unescape literal \n if they still exist
           content = content.replace("\\n", "\n")
+          content = content.replace("\\r", "")
           
           # Replace local IP with public domain
           content = content.replace("192.168.8.106", "ssh-cloud.26i.uk")
+          
+          # Safely print first 30 chars of repr to debug the Kubeconfig format without leaking the whole secret
+          print("DEBUG KUBECONFIG FORMAT:", repr(content)[:30])
           
           with open(os.path.expanduser("~/.kube/config"), "w") as f:
               f.write(content)
