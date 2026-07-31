@@ -358,7 +358,7 @@ function PortalContentInner() {
             className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent cursor-pointer"
             onClick={() => router.push(`/${locale}`)}
           >
-            NEXUS
+            PARTO
           </span>
           <div className="flex items-center gap-4">
             <NotificationBell />
@@ -507,7 +507,7 @@ function PortalContentInner() {
                     </div>
                     <div className="flex flex-col gap-1 md:col-span-2">
                       <span className="text-xs text-slate-500 font-semibold">{t.bizSubdomain}</span>
-                      <span className="font-semibold text-indigo-400 font-mono">{tenant.subdomain}.nexus.io</span>
+                      <span className="font-semibold text-indigo-400 font-mono">{tenant.subdomain}.parto.com</span>
                     </div>
                   </div>
                 </div>

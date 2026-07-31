@@ -33,14 +33,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const isAr = resolvedParams.locale === 'ar';
   return {
     title: {
-      template: isAr ? '%s | نكسس السعودية' : '%s | Nexus KSA Auto Marketplace',
+      template: isAr ? '%s | بارتو السعودية' : '%s | Parto KSA Auto Marketplace',
       default: isAr 
-        ? 'منصة نكسس السعودية - سوق قطع غيار السيارات والخدمات المتكاملة' 
-        : 'Nexus KSA - Saudi Arabia\'s #1 Automotive Services & Parts Hub',
+        ? 'منصة بارتو السعودية - سوق قطع غيار السيارات والخدمات المتكاملة' 
+        : 'Parto KSA - Saudi Arabia\'s #1 Automotive Services & Parts Hub',
     },
     description: isAr 
-      ? 'نكسس هي المنصة السعودية الأولى لخدمات السيارات وقطع الغيار. ابحث عن تشليح، قطع غيار جديدة، سطحات، ورش متنقلة، ميزان إلكتروني، وخدمات صيانة في الرياض، جدة، الدمام وكافة أنحاء المملكة.'
-      : 'Nexus is Saudi Arabia\'s premier automotive multi-tenant platform. Find Tashleeh used parts, new auto parts, flatbed towing (Satha), mobile workshops, digital alignment, and mechanics across Riyadh, Jeddah, Dammam, and all of Saudi Arabia.',
+      ? 'بارتو هي المنصة السعودية الأولى لخدمات السيارات وقطع الغيار. ابحث عن تشليح، قطع غيار جديدة، سطحات، ورش متنقلة، ميزان إلكتروني، وخدمات صيانة في الرياض، جدة، الدمام وكافة أنحاء المملكة.'
+      : 'Parto is Saudi Arabia\'s premier automotive multi-tenant platform. Find Tashleeh used parts, new auto parts, flatbed towing (Satha), mobile workshops, digital alignment, and mechanics across Riyadh, Jeddah, Dammam, and all of Saudi Arabia.',
     other: {
       dir: dir,
     },

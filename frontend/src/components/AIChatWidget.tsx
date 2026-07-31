@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([
-    { role: 'ai', text: 'Hi! I am the Nexus AI Assistant. Describe your car trouble, and I will help you diagnose it or find the right part!' }
+    { role: 'ai', text: 'Hi! I am the Parto AI Assistant. Describe your car trouble, and I will help you diagnose it or find the right part!' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,7 +91,7 @@ export default function AIChatWidget() {
             <div className="flex items-center gap-2">
               <span className="text-xl">🤖</span>
               <div>
-                <h3 className="text-sm font-bold text-white">Nexus AI Assistant</h3>
+                <h3 className="text-sm font-bold text-white">Parto AI Assistant</h3>
                 <p className="text-[10px] text-emerald-400">Online & Ready to Help</p>
               </div>
             </div>

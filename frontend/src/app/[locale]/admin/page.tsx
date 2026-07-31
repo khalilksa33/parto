@@ -101,7 +101,7 @@ export default function AdminPage() {
             className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent cursor-pointer"
             onClick={() => router.push(`/${locale}`)}
           >
-            NEXUS
+            PARTO
           </span>
           <div className="flex items-center gap-4">
             <NotificationBell />
@@ -175,7 +175,7 @@ export default function AdminPage() {
                             </span>
                             <div>
                               <div className="font-bold text-white text-sm">{vendor.name}</div>
-                              <div className="text-[10px] text-slate-500 font-mono mt-0.5">{vendor.subdomain}.nexus.io</div>
+                              <div className="text-[10px] text-slate-500 font-mono mt-0.5">{vendor.subdomain}.parto.com</div>
                             </div>
                           </td>
                           <td className="py-4">
@@ -217,7 +217,7 @@ export default function AdminPage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-slate-900/80 py-6 text-center text-xs text-slate-500">
-        © 2026 Nexus Marketplace Inc. All rights reserved.
+        © 2026 Parto Marketplace Inc. All rights reserved.
       </footer>
     </div>
   );

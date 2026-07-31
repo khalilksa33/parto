@@ -173,18 +173,15 @@ export default function MarketplacePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-10 w-auto" />
-            <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 rounded-full">
-              Multi-Tenant
-            </span>
             <span className={`px-2 py-0.5 text-[10px] sm:text-xs font-medium border rounded-full flex items-center gap-1.5 ${
               backendHealth === 'healthy' 
-                ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-400' 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
                 : backendHealth === 'unhealthy' 
-                ? 'bg-rose-950/40 border-rose-500/50 text-rose-400' 
-                : 'bg-amber-950/40 border-amber-500/50 text-amber-400'
+                ? 'bg-rose-50 border-rose-200 text-rose-700' 
+                : 'bg-amber-50 border-amber-200 text-amber-700'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${
-                backendHealth === 'healthy' ? 'bg-emerald-400 animate-ping' : backendHealth === 'unhealthy' ? 'bg-rose-400' : 'bg-amber-400'
+                backendHealth === 'healthy' ? 'bg-emerald-500 animate-ping' : backendHealth === 'unhealthy' ? 'bg-rose-500' : 'bg-amber-500'
               }`}></span>
               API: {backendHealth === 'healthy' ? 'Connected' : backendHealth === 'unhealthy' ? 'Disconnected' : 'Checking...'}
             </span>
@@ -197,7 +194,7 @@ export default function MarketplacePage() {
               placeholder="Search products, brands, categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-full px-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+              className="w-full bg-slate-100 border border-slate-300 rounded-full px-4 py-2 text-sm text-slate-800 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
             />
           </div>
 
@@ -205,19 +202,19 @@ export default function MarketplacePage() {
             {/* Consumer Links */}
             <button
               onClick={() => router.push(`/${locale}/tashleeh`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-900/60 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-full transition-all"
             >
               {locale === 'ar' ? 'قطع غيار تشليح' : 'Tashleeh Parts'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/towing`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-950/20 hover:bg-amber-950/40 border border-amber-900/60 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-full transition-all"
             >
               {locale === 'ar' ? 'طلب سطحة' : 'Request Tow Truck'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/workshop`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 bg-orange-950/20 hover:bg-orange-950/40 border border-orange-900/60 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-full transition-all"
             >
               {locale === 'ar' ? 'ورشة متنقلة' : 'Mobile Mechanic'}
             </button>
@@ -225,19 +222,19 @@ export default function MarketplacePage() {
             {/* Vendor Links */}
             <button
               onClick={() => router.push(`/${locale}/register`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 bg-indigo-950/20 hover:bg-indigo-950/40 border border-indigo-900/60 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-full transition-all"
             >
               {locale === 'ar' ? 'سجل كبائع' : 'Become a Vendor'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/portal`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 bg-slate-900/40 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'لوحة البائع' : 'Vendor Portal'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/admin`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-violet-400 hover:text-violet-355 border border-violet-950 hover:border-violet-900 bg-violet-950/10 rounded-full transition-all"
+              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-violet-700 hover:text-violet-800 border border-violet-200 hover:border-violet-300 bg-violet-50 hover:bg-violet-100 rounded-full transition-all"
             >
               {locale === 'ar' ? 'لوحة المسؤول' : 'Super Admin'}
             </button>

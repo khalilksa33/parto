@@ -33,7 +33,7 @@ const translations = {
     portalBtn: 'Go to Vendor Dashboard',
     backBtn: 'Back to Marketplace',
     commissionInfo: 'Marketplace commission rate for this business type is',
-    consentLabel: 'I agree to the partnership terms and authorize Nexus to collect the transaction commission.',
+    consentLabel: 'I agree to the partnership terms and authorize Parto to collect the transaction commission.',
     consentError: 'You must agree to the commission rate and terms of service.',
     types: {
       new_auto_spare_parts: 'New Auto Spare Parts Seller (بائع قطع غيار جديدة)',
@@ -222,7 +222,7 @@ export default function RegisterPage() {
             className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent cursor-pointer"
             onClick={() => router.push(`/${locale}`)}
           >
-            NEXUS
+            PARTO
           </span>
           <button
             onClick={() => router.push(`/${locale}`)}
@@ -275,7 +275,7 @@ export default function RegisterPage() {
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors"
                   />
                   <span className={`absolute ${isRtl ? 'left-4' : 'right-4'} text-xs font-medium text-slate-500`}>
-                    .nexus.io
+                    .parto.com
                   </span>
                 </div>
               </div>
@@ -468,7 +468,7 @@ export default function RegisterPage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-slate-900/80 py-6 text-center text-xs text-slate-500">
-        © 2026 Nexus Marketplace Inc. All rights reserved.
+        © 2026 Parto Marketplace Inc. All rights reserved.
       </footer>
     </div>
   );
