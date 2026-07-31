@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { dispatches, tenants } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -117,3 +117,4 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
