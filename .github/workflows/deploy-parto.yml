@@ -43,68 +43,55 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest
 
 
-      - name: Setup Kubeconfig and Deploy
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      - name: Install Cloudflare Tunnel Client (cloudflared)
         run: |
-          mkdir -p ~/.kube
-          
-          cat << 'EOF' > parse_kubeconfig.py
-          import os
-          import base64
-          import json
-          import re
+          curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared.deb
 
-          content = os.environ.get("KUBE_CONFIG", "").strip()
+      - name: Set up SSH configuration for Cloudflare Tunnel
+        run: |
+          mkdir -p ~/.ssh
+          cat << 'EOF' > ~/.ssh/id_rsa
+          ${{ secrets.SSH_PRIVATE_KEY_HOST_C }}
+          EOF
+          chmod 600 ~/.ssh/id_rsa
           
-          # Strip UTF-8 Byte Order Mark (BOM) if present
-          content = content.replace("\ufeff", "")
-          
-          def unwrap(s):
-              if (s.startswith("\"") and s.endswith("\"")) or (s.startswith("'") and s.endswith("'")):
-                  return s[1:-1].strip()
-              return s
-
-          content = unwrap(content)
-              
-          # Check if it looks like base64
-          if "apiVersion" not in content and re.match(r"^[A-Za-z0-9+/=\s]+$", content):
-              try:
-                  content = base64.b64decode(content).decode("utf-8").strip()
-              except Exception:
-                  pass
-                  
-          # If the content (after possible decoding) is a JSON string representation, unescape it
-          if content.startswith("\"") and content.endswith("\""):
-              try:
-                  content = json.loads(content)
-              except Exception:
-                  content = unwrap(content)
-                  
-          # Unescape literal \n if they still exist
-          content = content.replace("\\n", "\n")
-          content = content.replace("\\r", "")
-          
-          # Replace local IP with public domain
-          content = content.replace("192.168.8.106", "ssh-cloud.26i.uk")
-          
-          # Safely print first 30 chars of repr to debug the Kubeconfig format without leaking the whole secret
-          print("DEBUG KUBECONFIG FORMAT:", repr(content)[:30])
-          
-          with open(os.path.expanduser("~/.kube/config"), "w") as f:
-              f.write(content)
+          # Base SSH configuration
+          cat <<EOF > ~/.ssh/config
+          Host ssh-cloud.26i.uk
+              HostName ssh-cloud.26i.uk
+              User cloud
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
           EOF
           
-          python3 parse_kubeconfig.py
-          chmod 600 ~/.kube/config
-          
-          kubectl apply -f k8s/namespace.yaml
-          kubectl apply -f k8s/postgres.yaml
-          kubectl apply -f k8s/mongodb.yaml
-          
-          kubectl apply -f k8s/backend-deployment.yaml
-          kubectl apply -f k8s/frontend-deployment.yaml
-          kubectl apply -f k8s/ingress.yaml
-          
-          kubectl rollout restart deployment parto-backend -n parto
-          kubectl rollout restart deployment parto-frontend -n parto
+          # Inject Cloudflare Access Service Token headers
+          echo "    ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID_HOST_C }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET_HOST_C }}" >> ~/.ssh/config
+
+      - name: Transfer Kubernetes Manifests to Host C
+        run: |
+          ssh -v cloud@ssh-cloud.26i.uk "rm -rf ~/parto/k8s && mkdir -p ~/parto/k8s"
+          scp -v -r k8s/* ssh-cloud.26i.uk:~/parto/k8s/
+
+      - name: Deploy via Host C k8s Cluster
+        run: |
+          ssh -v cloud@ssh-cloud.26i.uk 'echo "${{ secrets.HOST_C_SUDO_PASS }}" | sudo -S sh -c "
+            if [ -f /etc/kubernetes/admin.conf ]; then
+              export KUBECONFIG=/etc/kubernetes/admin.conf
+            elif [ -f /etc/rancher/k3s/k3s.yaml ]; then
+              export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+            elif [ -f /root/.kube/config ]; then
+              export KUBECONFIG=/root/.kube/config
+            fi
+            
+            kubectl apply -f /home/cloud/parto/k8s/namespace.yaml
+            kubectl apply -f /home/cloud/parto/k8s/postgres.yaml
+            kubectl apply -f /home/cloud/parto/k8s/mongodb.yaml
+            
+            kubectl apply -f /home/cloud/parto/k8s/backend-deployment.yaml
+            kubectl apply -f /home/cloud/parto/k8s/frontend-deployment.yaml
+            kubectl apply -f /home/cloud/parto/k8s/ingress.yaml
+            
+            kubectl rollout restart deployment parto-backend -n parto
+            kubectl rollout restart deployment parto-frontend -n parto
+          "'
