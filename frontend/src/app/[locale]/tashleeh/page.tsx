@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
-export default function TashleehPage() {
+import { Suspense } from 'react';
+
+function TashleehPageInner() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -214,5 +216,13 @@ export default function TashleehPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function TashleehPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>}>
+      <TashleehPageInner />
+    </Suspense>
   );
 }
