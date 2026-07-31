@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy application files
-COPY next.config.js tsconfig.json postcss.config.mjs postcss.config.js tailwind.config.js ./
+COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js ./
 COPY src ./src
 
 # Declare build-time environment variables
