@@ -88,7 +88,7 @@ const translations = {
   }
 };
 
-export default function PortalContent() {
+function PortalContentInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
@@ -850,5 +850,13 @@ export default function PortalContent() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function PortalContent() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>}>
+      <PortalContentInner />
+    </Suspense>
   );
 }
