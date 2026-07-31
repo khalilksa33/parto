@@ -121,6 +121,7 @@ export default function PortalContent() {
   });
 
   const [isPending, startTransition] = useTransition();
+  const [isEnriching, setIsEnriching] = useState(false);
 
   // Read URL query parameter if present on mount
   useEffect(() => {
