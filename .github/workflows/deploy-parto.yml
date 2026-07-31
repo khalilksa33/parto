@@ -42,34 +42,26 @@ jobs:
           docker build -f frontend/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest ./frontend
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest
 
-      - name: Setup Kubeconfig with public IP
-        id: kubeconfig
+      - name: Setup Kubeconfig and Deploy
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
-          cat << 'EOF' > kubeconfig_raw.txt
-          ${{ secrets.KUBE_CONFIG }}
-          EOF
-          # Try decoding. If it's raw YAML, base64 -d will fail or produce garbage.
-          if ! cat kubeconfig_raw.txt | base64 -d > kubeconfig.yaml 2>/dev/null || ! grep -q "apiVersion" kubeconfig.yaml; then
-            cp kubeconfig_raw.txt kubeconfig.yaml
+          mkdir -p ~/.kube
+          
+          echo "$KUBE_CONFIG" > ~/.kube/config_raw
+          
+          if cat ~/.kube/config_raw | base64 -d > ~/.kube/config_decoded 2>/dev/null && grep -q "apiVersion" ~/.kube/config_decoded; then
+            mv ~/.kube/config_decoded ~/.kube/config
+          else
+            cp ~/.kube/config_raw ~/.kube/config
           fi
-          sed -i 's/192.168.8.106/ssh-cloud.26i.uk/g' kubeconfig.yaml
-          MODIFIED_CONFIG=$(cat kubeconfig.yaml | base64 -w 0)
-          echo "modified_config=$MODIFIED_CONFIG" >> $GITHUB_OUTPUT
-
-      - name: Deploy to k3s cluster
-        uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ steps.kubeconfig.outputs.modified_config }}
-          kubectl-version: v1.28.0
-
-      - name: Apply namespace and deploy databases
-        run: |
+          
+          sed -i 's/192.168.8.106/ssh-cloud.26i.uk/g' ~/.kube/config
+          
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/postgres.yaml
           kubectl apply -f k8s/mongodb.yaml
-
-      - name: Apply manifests and rollout
-        run: |
+          
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/frontend-deployment.yaml
           kubectl apply -f k8s/ingress.yaml
