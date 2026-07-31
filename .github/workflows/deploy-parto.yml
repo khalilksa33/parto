@@ -42,13 +42,14 @@ jobs:
           docker build -f frontend/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest ./frontend
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/parto-frontend:latest
 
+
       - name: Setup Kubeconfig and Deploy
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
           mkdir -p ~/.kube
           
-          python3 -c '
+          cat << 'EOF' > parse_kubeconfig.py
           import os
           import base64
           import re
@@ -56,7 +57,7 @@ jobs:
           secret = os.environ.get("KUBE_CONFIG", "").strip()
           
           # Remove surrounding quotes if the user accidentally included them
-          if (secret.startswith("\"") and secret.endswith("\"")) or (secret.startswith("\'") and secret.endswith("\'")):
+          if (secret.startswith("\"") and secret.endswith("\"")) or (secret.startswith("'") and secret.endswith("'")):
               secret = secret[1:-1].strip()
               
           content = secret
@@ -76,8 +77,9 @@ jobs:
           
           with open(os.path.expanduser("~/.kube/config"), "w") as f:
               f.write(content)
-          '
+          EOF
           
+          python3 parse_kubeconfig.py
           chmod 600 ~/.kube/config
           
           kubectl apply -f k8s/namespace.yaml
