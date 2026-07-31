@@ -88,7 +88,7 @@ const translations = {
   }
 };
 
-function PortalContent() {
+export default function PortalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
