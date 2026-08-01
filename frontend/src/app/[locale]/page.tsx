@@ -239,6 +239,19 @@ export default function MarketplacePage() {
               {locale === 'ar' ? 'لوحة المسؤول' : 'Super Admin'}
             </button>
 
+            {/* Language Switcher */}
+            <button
+              onClick={() => {
+                const newLocale = locale === 'ar' ? 'en' : 'ar';
+                const currentPath = window.location.pathname;
+                const newPath = currentPath.replace(`/${locale}`, `/${newLocale}`);
+                router.push(newPath);
+              }}
+              className="px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors"
+            >
+              {locale === 'ar' ? 'English' : 'عربي'}
+            </button>
+
             {/* Notification Bell */}
             <NotificationBell />
 
