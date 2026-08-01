@@ -172,7 +172,7 @@ export default function MarketplacePage() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 transition-all duration-300 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-10 w-auto" />
+            <img src="/logo.jpg" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
             <span className={`px-2 py-0.5 text-[10px] sm:text-xs font-medium border rounded-full flex items-center gap-1.5 ${
               backendHealth === 'healthy' 
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 

@@ -33,7 +33,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 
 // Mount Routes
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'success', message: 'Parto Backend is running smoothly.' });
+  res.json({ status: 'healthy', message: 'Parto Backend is running smoothly.' });
 });
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/notifications', notificationRoutes);
