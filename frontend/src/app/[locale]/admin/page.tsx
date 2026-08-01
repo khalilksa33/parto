@@ -97,12 +97,17 @@ export default function AdminPage() {
       {/* Header */}
       <header className="relative z-10 border-b border-slate-900/80 backdrop-blur-md bg-slate-950/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <span 
-            className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent cursor-pointer"
-            onClick={() => router.push(`/${locale}`)}
-          >
-            PARTO
-          </span>
+          <div className="flex items-center gap-6">
+            <span 
+              className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 tracking-tight cursor-pointer"
+              onClick={() => router.push(`/${locale}`)}
+            >
+              PARTO
+            </span>
+            <nav className="hidden md:flex gap-4">
+              <a href={`/${locale}/admin/users`} className="text-sm font-medium text-slate-300 hover:text-white transition">Users</a>
+            </nav>
+          </div>
           <div className="flex items-center gap-4">
             <NotificationBell />
             <button
