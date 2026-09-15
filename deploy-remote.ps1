@@ -1,5 +1,5 @@
 # deploy-remote.ps1
-$RemoteHost = "cloud@ssh-cloud.26i.uk"
+$RemoteHost = "cloud@gcloud.26i.uk"
 $RemoteDir = "/tmp/parto-deploy"
 
 Write-Host "Creating deployment directory on remote host ($RemoteHost)..."
@@ -23,7 +23,7 @@ kubectl apply -f ./k8s/backend-deployment.yaml
 kubectl apply -f ./k8s/frontend-deployment.yaml
 kubectl apply -f ./k8s/ingress.yaml
 
-echo 'Deployment initiated on ssh-cloud.26i.uk!'
+echo 'Deployment initiated on gcloud.26i.uk!'
 kubectl get pods -n parto
 "@
 
