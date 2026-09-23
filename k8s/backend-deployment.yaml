@@ -15,8 +15,6 @@ spec:
       labels:
         app: parto-backend
     spec:
-      imagePullSecrets:
-      - name: ghcr-secret
       containers:
       - name: backend
         image: ghcr.io/khalilksa33/parto-backend:latest
