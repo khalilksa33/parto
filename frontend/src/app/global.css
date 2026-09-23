@@ -4,6 +4,13 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+@font-face {
+  font-family: 'SaudiRiyal';
+  src: url('/fonts/SaudiRiyalFont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 @import "tailwindcss";
 
 :root {

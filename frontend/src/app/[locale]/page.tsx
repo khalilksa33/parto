@@ -465,7 +465,11 @@ export default function MarketplacePage() {
 
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-xl font-extrabold text-white">
-                        {locale === 'ar' ? `${product.price} ﷼` : `SAR ${product.price}`}
+                        {locale === 'ar' ? (
+                          <>{product.price} <span className="font-riyal text-2xl font-normal leading-none tracking-tight">﷼</span></>
+                        ) : (
+                          <><span className="font-riyal text-2xl font-normal leading-none tracking-tight">﷼</span> {product.price}</>
+                        )}
                       </span>
                       <button
                         onClick={() => setCartCount(c => c + 1)}
@@ -654,6 +658,32 @@ export default function MarketplacePage() {
             </div>
           )}
         </section>
+        {/* ZATCA & VAT Compliance Section */}
+        <section className="mt-12 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-10">
+          <div className="flex-shrink-0 bg-white p-4 rounded-xl border border-slate-200">
+            {/* ZATCA placeholder logo style */}
+            <div className="font-bold text-center text-emerald-800 text-lg leading-tight">
+              <span className="block text-sm text-emerald-600">هيئة الزكاة والضريبة والجمارك</span>
+              ZATCA
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <span className="text-emerald-500">✓</span> {locale === 'ar' ? 'منصة متوافقة مع الفوترة الإلكترونية (فاتورة)' : 'ZATCA E-Invoicing (FATOORAH) Compliant'}
+            </h3>
+            <p className="text-sm text-slate-400 leading-relaxed mb-3">
+              {locale === 'ar' 
+                ? 'بارتو هي منصة سعودية معتمدة تدعم متطلبات المرحلة الثانية (الربط والتكامل) من الفوترة الإلكترونية من هيئة الزكاة والضريبة والجمارك. نقوم بإصدار الفواتير الضريبية المبسطة B2C والفواتير الضريبية B2B بشكل فوري برمز استجابة سريع (QR Code) مشفر، بالإضافة لاحتساب ضريبة القيمة المضافة (VAT) بنسبة 15% تلقائياً لجميع مبيعات قطع الغيار.'
+                : 'Parto is a fully compliant Saudi platform adhering to ZATCA Phase 2 (Integration) E-Invoicing requirements. We automatically generate and report B2C Simplified Tax Invoices and B2B Tax Invoices with encrypted QR codes. The 15% VAT is strictly automatically calculated and documented for all auto part sales.'}
+            </p>
+            <div className="flex flex-wrap gap-2 text-xs font-semibold">
+              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">15% VAT Ready</span>
+              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">Phase 2 Integration</span>
+              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">Cryptographic QR Code</span>
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* Footer */}

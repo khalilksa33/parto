@@ -10,6 +10,7 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'sans-serif'],
+        riyal: ['SaudiRiyal', 'sans-serif'],
       },
     },
   },
