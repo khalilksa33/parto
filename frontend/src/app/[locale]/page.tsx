@@ -167,6 +167,40 @@ export default function MarketplacePage() {
     fetchOrders();
   }, [selectedTenantId]);
 
+  // Hero Slider State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const heroSlides = useMemo(() => [
+    {
+      image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000&auto=format&fit=crop',
+      titleEn: 'Your Unified Saudi Auto Services Platform',
+      titleAr: 'كل ما تحتاجه لسيارتك في مكان واحد',
+      descEn: 'Discover local vetted shops for Tashleeh, new spare parts, flatbed towing (Satha), and mobile workshops across KSA.',
+      descAr: 'اكتشف محلات التشليح، قطع الغيار الجديدة، خدمات السطحات الفورية، والورش المتنقلة في كافة أنحاء المملكة.'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?q=80&w=2000&auto=format&fit=crop',
+      titleEn: 'Expert Mobile Mechanics & Workshops',
+      titleAr: 'ميكانيكا متنقلة وورش محترفة',
+      descEn: 'Get professional on-the-spot repairs, comprehensive diagnostics, and routine maintenance anytime, anywhere.',
+      descAr: 'احصل على إصلاحات احترافية وتشخيص كامل للسيارة في أي وقت ومكان يناسبك.'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503376760366-5a415ff6a9e1?q=80&w=2000&auto=format&fit=crop',
+      titleEn: 'Premium New & Used Spare Parts',
+      titleAr: 'قطع غيار جديدة ومستعملة ممتازة',
+      descEn: 'Source the exact OEM or aftermarket parts you need directly from trusted vendors and Tashleeh yards.',
+      descAr: 'ابحث عن قطع الغيار الأصلية أو التجارية مباشرة من أفضل الموردين ومراكز التشليح المعتمدة.'
+    }
+  ], []);
+
+  useEffect(() => {
+    if (selectedTenantId !== 'all') return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [selectedTenantId, heroSlides.length]);
+
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-white text-slate-900 font-sans antialiased overflow-x-hidden">
       {/* Header / Navbar */}
@@ -280,11 +314,26 @@ export default function MarketplacePage() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
         
-        {/* Dynamic Tenant Banner / Hero Section */}
-        <div className={`relative rounded-3xl overflow-hidden shadow-2xl border border-slate-800/80 bg-gradient-to-r ${activeTenantInfo ? activeTenantInfo.bannerGradient : 'from-indigo-950 via-slate-900 to-purple-950'} transition-all duration-500 p-8 sm:p-12 md:p-16 flex flex-col justify-center min-h-[320px]`}>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60"></div>
+        {/* Dynamic Tenant Banner / Hero Slider Section */}
+        <div className={`relative rounded-3xl overflow-hidden shadow-2xl border border-slate-800/80 transition-all duration-500 p-8 sm:p-12 md:p-16 flex flex-col justify-center min-h-[380px] ${activeTenantInfo ? 'bg-gradient-to-r ' + activeTenantInfo.bannerGradient : 'bg-slate-950'}`}>
+          {!activeTenantInfo && (
+            <>
+              {heroSlides.map((slide, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+                >
+                  <div className="absolute inset-0 bg-slate-950/60 z-10"></div>
+                  <img src={slide.image} alt="Hero Background" className="absolute inset-0 w-full h-full object-cover" />
+                </div>
+              ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10 opacity-80"></div>
+            </>
+          )}
           
-          <div className="relative z-10 max-w-2xl flex flex-col gap-4">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60 z-10 pointer-events-none"></div>
+          
+          <div className="relative z-20 max-w-2xl flex flex-col gap-4">
             {activeTenantInfo ? (
               <>
                 <div className="flex items-center gap-4">
@@ -305,19 +354,28 @@ export default function MarketplacePage() {
                 </div>
               </>
             ) : (
-              <>
-                <span className="inline-block self-start px-3 py-1 text-xs font-semibold tracking-wider text-indigo-300 bg-indigo-900/40 border border-indigo-500/30 rounded-full">
+              <div className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 min-h-[160px]">
+                <span className="inline-block self-start mb-3 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-200 bg-indigo-900/60 backdrop-blur-sm border border-indigo-500/50 rounded-full">
                   {locale === 'ar' ? 'سوق الخدمات وقطع غيار السيارات الأول بالمملكة' : 'SAUDI ARABIA\'S PREMIER AUTOMOTIVE HUB'}
                 </span>
-                <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-indigo-200">
-                  {locale === 'ar' ? 'كل ما تحتاجه لسيارتك في مكان واحد' : 'Your Unified Saudi Auto Services Platform'}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-md">
+                  {locale === 'ar' ? heroSlides[currentSlide].titleAr : heroSlides[currentSlide].titleEn}
                 </h1>
-                <p className="text-lg text-slate-300">
-                  {locale === 'ar'
-                    ? 'اكتشف محلات التشليح، قطع الغيار الجديدة، خدمات السطحات الفورية، والورش المتنقلة، والميكانيكا في الرياض، جدة، الدمام، وكافة أنحاء المملكة العربية السعودية بضمان منصة نكسس.'
-                    : 'Discover local vetted shops for Tashleeh, new spare parts, flatbed towing (Satha), mobile workshops, digital alignment, and mechanics in Riyadh, Jeddah, Dammam, and across Saudi Arabia.'}
+                <p className="text-lg text-slate-200 mt-4 max-w-xl drop-shadow-sm font-medium">
+                  {locale === 'ar' ? heroSlides[currentSlide].descAr : heroSlides[currentSlide].descEn}
                 </p>
-              </>
+                
+                {/* Slider Indicators */}
+                <div className="flex gap-2 mt-8">
+                  {heroSlides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentSlide(i)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-8 bg-indigo-500' : 'w-2 bg-white/40 hover:bg-white/60'}`}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
