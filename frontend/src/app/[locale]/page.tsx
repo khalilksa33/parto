@@ -233,45 +233,47 @@ export default function MarketplacePage() {
             />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 md:gap-2">
             {/* Consumer Links */}
             <button
               onClick={() => router.push(`/${locale}/tashleeh`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-full transition-all"
+              className="hidden lg:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'قطع غيار تشليح' : 'Tashleeh Parts'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/towing`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-full transition-all"
+              className="hidden lg:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
-              {locale === 'ar' ? 'طلب سطحة' : 'Request Tow Truck'}
+              {locale === 'ar' ? 'طلب سطحة' : 'Tow Truck'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/workshop`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-full transition-all"
+              className="hidden lg:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'ورشة متنقلة' : 'Mobile Mechanic'}
             </button>
 
+            <div className="hidden lg:block w-px h-6 bg-slate-200 mx-2"></div>
+
             {/* Vendor Links */}
             <button
               onClick={() => router.push(`/${locale}/register`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-full transition-all"
+              className="hidden md:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'سجل كبائع' : 'Become a Vendor'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/portal`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 rounded-full transition-all"
+              className="hidden md:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'لوحة البائع' : 'Vendor Portal'}
             </button>
             <button
               onClick={() => router.push(`/${locale}/admin`)}
-              className="hidden sm:inline-block px-3 py-1.5 text-xs font-semibold text-violet-700 hover:text-violet-800 border border-violet-200 hover:border-violet-300 bg-violet-50 hover:bg-violet-100 rounded-full transition-all"
+              className="hidden md:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
-              {locale === 'ar' ? 'لوحة المسؤول' : 'Super Admin'}
+              {locale === 'ar' ? 'لوحة المسؤول' : 'Admin'}
             </button>
 
             {/* Language Switcher */}
@@ -282,16 +284,16 @@ export default function MarketplacePage() {
                 const newPath = currentPath.replace(`/${locale}`, `/${newLocale}`);
                 router.push(newPath);
               }}
-              className="px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors"
+              className="flex items-center justify-center px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-all ml-2"
             >
-              {locale === 'ar' ? 'English' : 'عربي'}
+              {locale === 'ar' ? 'EN' : 'عربي'}
             </button>
 
             {/* Notification Bell */}
             <NotificationBell />
 
             {/* Cart Icon */}
-            <div className="relative cursor-pointer p-2 rounded-full hover:bg-slate-900 transition-colors" onClick={() => setCartCount(0)}>
+            <div className="relative cursor-pointer p-2 rounded-full hover:bg-slate-100 transition-colors" onClick={() => setCartCount(0)}>
               <span className="text-xl">🛒</span>
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
@@ -301,84 +303,81 @@ export default function MarketplacePage() {
             </div>
 
             {/* User Profile Mock */}
-            <div className="flex items-center gap-2 cursor-pointer border border-slate-800 rounded-full pl-2 pr-4 py-1 hover:bg-slate-900 transition-colors">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-xs text-white">
-                JD
-              </div>
-              <span className="text-xs font-medium text-slate-300 hidden sm:inline-block">John Doe</span>
+            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 font-bold text-sm text-white cursor-pointer ml-1 hover:opacity-90 transition-opacity shadow-sm">
+              JD
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+      {/* Dynamic Tenant Banner / Hero Slider Section (FULL WIDTH) */}
+      <section className={`relative w-full overflow-hidden transition-all duration-500 flex flex-col justify-center min-h-[50vh] md:min-h-[60vh] ${activeTenantInfo ? 'bg-gradient-to-r ' + activeTenantInfo.bannerGradient : 'bg-slate-950'}`}>
+        {!activeTenantInfo && (
+          <>
+            {heroSlides.map((slide, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <div className="absolute inset-0 bg-slate-950/60 z-10"></div>
+                <img src={slide.image} alt="Hero Background" className="absolute inset-0 w-full h-full object-cover object-center" />
+              </div>
+            ))}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent z-10 opacity-90"></div>
+          </>
+        )}
         
-        {/* Dynamic Tenant Banner / Hero Slider Section */}
-        <div className={`relative rounded-3xl overflow-hidden shadow-2xl border border-slate-800/80 transition-all duration-500 p-8 sm:p-12 md:p-16 flex flex-col justify-center min-h-[380px] ${activeTenantInfo ? 'bg-gradient-to-r ' + activeTenantInfo.bannerGradient : 'bg-slate-950'}`}>
-          {!activeTenantInfo && (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60 z-10 pointer-events-none"></div>
+        
+        <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-4">
+          {activeTenantInfo ? (
             <>
-              {heroSlides.map((slide, index) => (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
-                >
-                  <div className="absolute inset-0 bg-slate-950/60 z-10"></div>
-                  <img src={slide.image} alt="Hero Background" className="absolute inset-0 w-full h-full object-cover" />
-                </div>
-              ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10 opacity-80"></div>
-            </>
-          )}
-          
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60 z-10 pointer-events-none"></div>
-          
-          <div className="relative z-20 max-w-2xl flex flex-col gap-4">
-            {activeTenantInfo ? (
-              <>
-                <div className="flex items-center gap-4">
-                  <span className="text-5xl p-2 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner">
-                    {activeTenantInfo.logo}
-                  </span>
-                  <div>
-                    <span className="text-xs font-bold tracking-widest text-indigo-300 uppercase">Featured Tenant</span>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{activeTenantInfo.name}</h1>
-                  </div>
-                </div>
-                <p className="text-lg text-indigo-100/90 font-medium">
-                  Discover exclusive, premium curation from our premier vendor in {activeTenantInfo.category}.
-                </p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-amber-400">★</span>
-                  <span className="text-sm font-semibold text-white">{activeTenantInfo.rating} Tenant Rating</span>
-                </div>
-              </>
-            ) : (
-              <div className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 min-h-[160px]">
-                <span className="inline-block self-start mb-3 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-200 bg-indigo-900/60 backdrop-blur-sm border border-indigo-500/50 rounded-full">
-                  {locale === 'ar' ? 'سوق الخدمات وقطع غيار السيارات الأول بالمملكة' : 'SAUDI ARABIA\'S PREMIER AUTOMOTIVE HUB'}
+              <div className="flex items-center gap-4">
+                <span className="text-5xl md:text-6xl p-3 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner">
+                  {activeTenantInfo.logo}
                 </span>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-md">
-                  {locale === 'ar' ? heroSlides[currentSlide].titleAr : heroSlides[currentSlide].titleEn}
-                </h1>
-                <p className="text-lg text-slate-200 mt-4 max-w-xl drop-shadow-sm font-medium">
-                  {locale === 'ar' ? heroSlides[currentSlide].descAr : heroSlides[currentSlide].descEn}
-                </p>
-                
-                {/* Slider Indicators */}
-                <div className="flex gap-2 mt-8">
-                  {heroSlides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentSlide(i)}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-8 bg-indigo-500' : 'w-2 bg-white/40 hover:bg-white/60'}`}
-                    />
-                  ))}
+                <div>
+                  <span className="text-xs font-bold tracking-widest text-indigo-300 uppercase">Featured Tenant</span>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">{activeTenantInfo.name}</h1>
                 </div>
               </div>
-            )}
-          </div>
+              <p className="text-lg md:text-xl text-indigo-100/90 font-medium max-w-2xl mt-2">
+                Discover exclusive, premium curation from our premier vendor in {activeTenantInfo.category}.
+              </p>
+              <div className="flex items-center gap-2 mt-4">
+                <span className="text-amber-400 text-xl">★</span>
+                <span className="text-base font-semibold text-white">{activeTenantInfo.rating} Tenant Rating</span>
+              </div>
+            </>
+          ) : (
+            <div className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 min-h-[180px] md:min-h-[200px]">
+              <span className="inline-block self-start mb-4 px-4 py-1.5 text-xs font-bold tracking-wider text-indigo-200 bg-indigo-900/60 backdrop-blur-sm border border-indigo-500/50 rounded-full shadow-lg">
+                {locale === 'ar' ? 'سوق الخدمات وقطع غيار السيارات الأول بالمملكة' : 'SAUDI ARABIA\'S PREMIER AUTOMOTIVE HUB'}
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-lg leading-tight">
+                {locale === 'ar' ? heroSlides[currentSlide].titleAr : heroSlides[currentSlide].titleEn}
+              </h1>
+              <p className="text-lg md:text-xl lg:text-2xl text-slate-200 mt-6 max-w-2xl drop-shadow-md font-medium leading-relaxed">
+                {locale === 'ar' ? heroSlides[currentSlide].descAr : heroSlides[currentSlide].descEn}
+              </p>
+              
+              {/* Slider Indicators */}
+              <div className="flex gap-3 mt-10">
+                {heroSlides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentSlide(i)}
+                    className={`h-2 rounded-full transition-all duration-500 ${i === currentSlide ? 'w-10 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]' : 'w-2 bg-white/40 hover:bg-white/70'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+      </section>
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-10">
 
         {/* Shop By Tenant Selector */}
         <section className="flex flex-col gap-3">
