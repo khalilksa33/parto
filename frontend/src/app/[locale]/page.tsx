@@ -171,28 +171,28 @@ export default function MarketplacePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroSlides = useMemo(() => [
     {
-      image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000&auto=format&fit=crop',
       titleEn: 'Your Unified Saudi Auto Services Platform',
       titleAr: 'كل ما تحتاجه لسيارتك في مكان واحد',
       descEn: 'Discover local vetted shops for new spare parts, flatbed towing (Satha), and mobile workshops across KSA.',
       descAr: 'اكتشف قطع الغيار الجديدة، خدمات السطحات الفورية، والورش المتنقلة في كافة أنحاء المملكة.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2000&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1605553517947-f4955a8f27ce?q=80&w=2000&auto=format&fit=crop',
       titleEn: '24/7 Flatbed Towing (Satha)',
       titleAr: 'سطحات نقل هيدروليك وعادية 24/7',
       descEn: 'Fast, secure towing service for broken or damaged vehicles within major Saudi cities or intercity transport.',
       descAr: 'نقل آمن وسريع للسيارات المصدومة أو المتعطلة داخل مدن السعودية أو بين المدن بلمسة زر.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?q=80&w=2000&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=2000&auto=format&fit=crop',
       titleEn: 'Expert Mobile Mechanics & Workshops',
       titleAr: 'ميكانيكا متنقلة وورش محترفة',
       descEn: 'Get professional on-the-spot repairs, comprehensive diagnostics, and routine maintenance anytime, anywhere.',
       descAr: 'احصل على إصلاحات احترافية وتشخيص كامل للسيارة في أي وقت ومكان يناسبك.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1503376760366-5a415ff6a9e1?q=80&w=2000&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=2000&auto=format&fit=crop',
       titleEn: 'Premium New Spare Parts',
       titleAr: 'قطع غيار جديدة وممتازة',
       descEn: 'Source the exact OEM or aftermarket parts you need directly from trusted vendors across the kingdom.',
@@ -458,8 +458,12 @@ export default function MarketplacePage() {
                   key={product.id}
                   className="group relative bg-slate-900/50 border border-slate-800/80 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between hover:shadow-xl hover:shadow-indigo-500/5"
                 >
-                  <div className="relative bg-slate-950 aspect-square flex items-center justify-center text-6xl group-hover:scale-105 transition-transform duration-300 select-none">
-                    {product.image}
+                  <div className="relative bg-slate-950 aspect-square flex items-center justify-center text-6xl group-hover:scale-105 transition-transform duration-300 select-none overflow-hidden">
+                    {product.image && product.image.startsWith('http') ? (
+                      <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
+                      product.image
+                    )}
                     {product.featured && (
                       <span className="absolute top-3 right-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
                         Featured

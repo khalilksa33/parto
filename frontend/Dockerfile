@@ -13,6 +13,7 @@ RUN npm ci
 
 # Copy application files
 COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js ./
+COPY public ./public
 COPY src ./src
 
 # Declare build-time environment variables
@@ -37,6 +38,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
 USER nextjs
 
