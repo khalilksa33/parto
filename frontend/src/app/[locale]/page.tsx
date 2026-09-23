@@ -212,9 +212,9 @@ export default function MarketplacePage() {
     <div className="flex-1 flex flex-col min-h-screen bg-white text-slate-900 font-sans antialiased overflow-x-hidden">
       {/* Header / Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 transition-all duration-300 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
+            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
             <span className={`px-2 py-0.5 text-[10px] sm:text-xs font-medium border rounded-full flex items-center gap-1.5 ${
               backendHealth === 'healthy' 
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
@@ -338,7 +338,7 @@ export default function MarketplacePage() {
         
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60 z-10 pointer-events-none"></div>
         
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-4">
+        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col gap-4">
           {activeTenantInfo ? (
             <>
               <div className="flex items-center gap-4">
@@ -386,7 +386,7 @@ export default function MarketplacePage() {
       </section>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-10">
+      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col gap-10">
 
         {/* Shop By Tenant Selector */}
         <section className="flex flex-col gap-3">
@@ -647,7 +647,7 @@ export default function MarketplacePage() {
 
       {/* Footer */}
       <footer className="bg-slate-50 border-t border-slate-200 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />
             <span className="text-sm text-slate-500">© 2026 Parto Auto Spare Parts. All rights reserved.</span>
