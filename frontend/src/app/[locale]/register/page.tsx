@@ -291,7 +291,6 @@ export default function RegisterPage() {
                 >
                   <option value="" disabled>{t.selectBusinessType}</option>
                   <option value="new_auto_spare_parts">{t.types.new_auto_spare_parts}</option>
-                  <option value="used_auto_spare_parts">{t.types.used_auto_spare_parts}</option>
                   <option value="tow_company">{t.types.tow_company}</option>
                   <option value="mobile_workshop">{t.types.mobile_workshop}</option>
                   <option value="digital_alignment">{t.types.digital_alignment}</option>
