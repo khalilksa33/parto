@@ -1,12 +1,20 @@
 import Redis from 'ioredis';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379/0';
+const redisUrl = process.env.REDIS_URL;
 
-// Global singleton for Redis instance to prevent multiple connections in dev
 declare global {
-  var redis: Redis | undefined;
+  var redis: any;
 }
 
-export const redis = global.redis || new Redis(redisUrl, { lazyConnect: true });
+if (redisUrl) {
+  global.redis = global.redis || new Redis(redisUrl, { lazyConnect: true });
+} else {
+  // Mock Redis to prevent crashes when not deployed
+  global.redis = global.redis || {
+    get: async () => null,
+    setex: async () => {},
+    del: async () => {},
+  };
+}
 
-if (process.env.NODE_ENV !== 'production') global.redis = redis;
+export const redis = global.redis;
