@@ -174,8 +174,15 @@ export default function MarketplacePage() {
       image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000&auto=format&fit=crop',
       titleEn: 'Your Unified Saudi Auto Services Platform',
       titleAr: 'كل ما تحتاجه لسيارتك في مكان واحد',
-      descEn: 'Discover local vetted shops for Tashleeh, new spare parts, flatbed towing (Satha), and mobile workshops across KSA.',
-      descAr: 'اكتشف محلات التشليح، قطع الغيار الجديدة، خدمات السطحات الفورية، والورش المتنقلة في كافة أنحاء المملكة.'
+      descEn: 'Discover local vetted shops for new spare parts, flatbed towing (Satha), and mobile workshops across KSA.',
+      descAr: 'اكتشف قطع الغيار الجديدة، خدمات السطحات الفورية، والورش المتنقلة في كافة أنحاء المملكة.'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2000&auto=format&fit=crop',
+      titleEn: '24/7 Flatbed Towing (Satha)',
+      titleAr: 'سطحات نقل هيدروليك وعادية 24/7',
+      descEn: 'Fast, secure towing service for broken or damaged vehicles within major Saudi cities or intercity transport.',
+      descAr: 'نقل آمن وسريع للسيارات المصدومة أو المتعطلة داخل مدن السعودية أو بين المدن بلمسة زر.'
     },
     {
       image: 'https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?q=80&w=2000&auto=format&fit=crop',
@@ -186,10 +193,10 @@ export default function MarketplacePage() {
     },
     {
       image: 'https://images.unsplash.com/photo-1503376760366-5a415ff6a9e1?q=80&w=2000&auto=format&fit=crop',
-      titleEn: 'Premium New & Used Spare Parts',
-      titleAr: 'قطع غيار جديدة ومستعملة ممتازة',
-      descEn: 'Source the exact OEM or aftermarket parts you need directly from trusted vendors and Tashleeh yards.',
-      descAr: 'ابحث عن قطع الغيار الأصلية أو التجارية مباشرة من أفضل الموردين ومراكز التشليح المعتمدة.'
+      titleEn: 'Premium New Spare Parts',
+      titleAr: 'قطع غيار جديدة وممتازة',
+      descEn: 'Source the exact OEM or aftermarket parts you need directly from trusted vendors across the kingdom.',
+      descAr: 'ابحث عن قطع الغيار الأصلية أو التجارية مباشرة من أفضل الموردين المعتمدين.'
     }
   ], []);
 
@@ -235,12 +242,14 @@ export default function MarketplacePage() {
 
           <div className="flex items-center gap-1 md:gap-2">
             {/* Consumer Links */}
+            {/* 
             <button
               onClick={() => router.push(`/${locale}/tashleeh`)}
               className="hidden lg:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
             >
               {locale === 'ar' ? 'قطع غيار تشليح' : 'Tashleeh Parts'}
             </button>
+            */}
             <button
               onClick={() => router.push(`/${locale}/towing`)}
               className="hidden lg:flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
@@ -507,7 +516,8 @@ export default function MarketplacePage() {
                 : 'Connecting drivers with premium, certified service providers in Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar, and across KSA. Experience secure auto care.'}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 
             <div className="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-2">
               <span className="text-3xl">🚗</span>
               <h3 className="text-base font-bold text-white">
@@ -519,6 +529,7 @@ export default function MarketplacePage() {
                   : 'Locate genuine used auto parts directly from Riyadh (Al-Hair), Jeddah (Briman), and Dammam tashleeh yards with verified availability.'}
               </p>
             </div>
+            */}
             <div className="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-2">
               <span className="text-3xl">🛻</span>
               <h3 className="text-base font-bold text-white">
