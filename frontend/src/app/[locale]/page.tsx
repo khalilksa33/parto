@@ -58,7 +58,7 @@ export default function MarketplacePage() {
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
 
-  const categories = ['all', 'Electronics', 'Fashion', 'Lifestyle', 'Groceries'];
+  const categories = ['all', 'Engine Parts', 'Brakes & Suspension', 'Exhaust Systems', 'Exterior & Body', 'Interior Accessories'];
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
