@@ -57,7 +57,6 @@ export default function MarketplacePage() {
 
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
-  const [backendHealth, setBackendHealth] = useState<'healthy' | 'unhealthy' | 'checking'>('checking');
 
   const categories = ['all', 'Electronics', 'Fashion', 'Lifestyle', 'Groceries'];
 
@@ -75,24 +74,16 @@ export default function MarketplacePage() {
     return tenants.find(t => t.id === selectedTenantId);
   }, [tenants, selectedTenantId]);
 
-  // Fetch health check once on mount
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/health`);
-        const data = await response.json();
-        if (data && data.status === 'healthy') {
-          setBackendHealth('healthy');
-        } else {
-          setBackendHealth('unhealthy');
-        }
-      } catch (err) {
-        setBackendHealth('unhealthy');
-      }
+  // Translate seller names
+  const translateTenantName = (name: string, loc: string) => {
+    if (loc !== 'ar') return name;
+    const map: Record<string, string> = {
+      'Luxury Parts Co': 'شركة قطع الغيار الفاخرة',
+      'Performance Motors': 'أداء المحركات',
+      'Riyadh OEM Parts': 'قطع غيار الرياض الأصلية'
     };
-    checkHealth();
-  }, []);
-
+    return map[name] || name;
+  };
   // Fetch active catalog directory (tenants and products)
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -214,19 +205,7 @@ export default function MarketplacePage() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 transition-all duration-300 shadow-sm">
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
-            <span className={`px-2 py-0.5 text-[10px] sm:text-xs font-medium border rounded-full flex items-center gap-1.5 ${
-              backendHealth === 'healthy' 
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
-                : backendHealth === 'unhealthy' 
-                ? 'bg-rose-50 border-rose-200 text-rose-700' 
-                : 'bg-amber-50 border-amber-200 text-amber-700'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${
-                backendHealth === 'healthy' ? 'bg-emerald-500 animate-ping' : backendHealth === 'unhealthy' ? 'bg-rose-500' : 'bg-amber-500'
-              }`}></span>
-              API: {backendHealth === 'healthy' ? 'Connected' : backendHealth === 'unhealthy' ? 'Disconnected' : 'Checking...'}
-            </span>
+            <img src="/logo.png?v=3" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
           </div>
 
           {/* Search bar */}
@@ -416,7 +395,7 @@ export default function MarketplacePage() {
                 }`}
               >
                 <span className="text-2xl">{tenant.logo}</span>
-                <span className="font-semibold text-sm text-center truncate w-full">{tenant.name}</span>
+                <span className="font-semibold text-sm text-center truncate w-full">{translateTenantName(tenant.name, locale)}</span>
               </button>
             ))}
           </div>
@@ -476,7 +455,7 @@ export default function MarketplacePage() {
                       <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                         <span>{product.category}</span>
                         <span className="font-medium text-slate-400 flex items-center gap-0.5">
-                          {tenant?.logo} {tenant?.name}
+                          {tenant?.logo} {tenant ? translateTenantName(tenant.name, locale) : ''}
                         </span>
                       </div>
                       <h3 className="font-bold text-white text-base group-hover:text-indigo-400 transition-colors duration-200">
@@ -485,7 +464,9 @@ export default function MarketplacePage() {
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
-                      <span className="text-xl font-extrabold text-white">${product.price}</span>
+                      <span className="text-xl font-extrabold text-white">
+                        {locale === 'ar' ? `${product.price} ﷼` : `SAR ${product.price}`}
+                      </span>
                       <button
                         onClick={() => setCartCount(c => c + 1)}
                         className="bg-indigo-650 hover:bg-indigo-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
@@ -508,16 +489,42 @@ export default function MarketplacePage() {
           </div>
         )}
 
+        {/* Vendor Strategy Banner */}
+        <section className="mt-8 bg-gradient-to-r from-indigo-900 to-slate-900 rounded-3xl p-8 md:p-12 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+          <div className="relative z-10 flex-1">
+            <span className="inline-block px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full mb-4 border border-indigo-500/30">
+              {locale === 'ar' ? 'انضم كبائع' : 'SELL ON PARTO'}
+            </span>
+            <h2 className="text-3xl font-black text-white mb-3">
+              {locale === 'ar' ? 'عمولة 3% فقط على كل مبيعة' : 'Grow Your Business with Just a 3% Fee'}
+            </h2>
+            <p className="text-indigo-100/80 text-sm md:text-base max-w-2xl leading-relaxed">
+              {locale === 'ar' 
+                ? 'استراتيجيتنا واضحة: نهدف لدعم نمو التاجر المحلي عبر تقليل تكاليف التشغيل وتوفير وصول غير محدود لعملاء المملكة. انضم الآن وابدأ البيع بعمولة هي الأقل في السوق (3%).' 
+                : 'Our platform strategy is designed for your success. Reach millions of customers across KSA with the lowest commission in the automotive industry—just a flat 3% per successful sale.'}
+            </p>
+          </div>
+          <div className="relative z-10">
+            <button
+              onClick={() => router.push(`/${locale}/register`)}
+              className="bg-white text-indigo-900 px-8 py-4 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 whitespace-nowrap"
+            >
+              {locale === 'ar' ? 'سجل متجرك الآن' : 'Register Your Shop'}
+            </button>
+          </div>
+        </section>
+
         {/* Saudi Arabia Regional Auto Directory SEO Section */}
         <section className="mt-12 border-t border-slate-900 pt-12 flex flex-col gap-6">
           <div>
             <h2 className="text-2xl font-black text-white tracking-tight">
               {locale === 'ar' ? 'سوق صيانة السيارات وقطع الغيار المعتمد في السعودية' : 'Vetted Auto Maintenance & Spare Parts in Saudi Arabia'}
             </h2>
-            <p className="text-sm text-slate-405 mt-2">
+            <p className="text-sm text-slate-400 mt-2 leading-relaxed">
               {locale === 'ar'
-                ? 'نحن نربط قائدي السيارات بأفضل مقدمي الخدمات المحترفين في الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، والخبر. تصفح الخدمات بكل أمان وسهولة.'
-                : 'Connecting drivers with premium, certified service providers in Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar, and across KSA. Experience secure auto care.'}
+                ? 'نحن نربط قائدي السيارات بأفضل مقدمي الخدمات المحترفين في الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، والخبر. تصفح الخدمات بكل أمان وسهولة من قطع الغيار الأصلية إلى الميكانيكا والتشليح المتنقل.'
+                : 'Connecting drivers with premium, certified service providers in Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar, and across KSA. Find genuine OEM parts, aftermarket modifications, and top-tier mechanics.'}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -653,7 +660,7 @@ export default function MarketplacePage() {
       <footer className="bg-slate-50 border-t border-slate-200 mt-20">
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />
+            <img src="/logo.png?v=3" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />
             <span className="text-sm text-slate-500">© 2026 Parto Auto Spare Parts. All rights reserved.</span>
           </div>
           <div className="flex gap-6 text-sm text-slate-400">
