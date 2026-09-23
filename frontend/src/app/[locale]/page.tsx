@@ -75,7 +75,7 @@ export default function MarketplacePage() {
   }, [tenants, selectedTenantId]);
 
   // Translate seller names
-  const translateTenantName = (name: string, loc: string) => {
+  const translateTenantName = (name: string, loc: any) => {
     if (loc !== 'ar') return name;
     const map: Record<string, string> = {
       'Luxury Parts Co': 'شركة قطع الغيار الفاخرة',
