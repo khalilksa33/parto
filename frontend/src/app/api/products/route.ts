@@ -16,10 +16,19 @@ export async function GET(request: Request) {
 
   try {
     if (!tenantId) {
-      return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
+      // Check cache for all products
+      const cacheKey = `products:all`;
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return NextResponse.json(JSON.parse(cached));
+      }
+      
+      const allProducts = await db.select().from(products);
+      await redis.setex(cacheKey, 300, JSON.stringify(allProducts));
+      return NextResponse.json({ products: allProducts });
     }
 
-    // Check cache
+    // Check cache for specific tenant
     const cacheKey = `products:tenant:${tenantId}`;
     const cached = await redis.get(cacheKey);
     if (cached) {
@@ -31,7 +40,7 @@ export async function GET(request: Request) {
     // Cache for 5 minutes
     await redis.setex(cacheKey, 300, JSON.stringify(tenantProducts));
 
-    return NextResponse.json(tenantProducts);
+    return NextResponse.json({ products: tenantProducts });
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

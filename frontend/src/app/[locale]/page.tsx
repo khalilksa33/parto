@@ -111,14 +111,15 @@ export default function MarketplacePage() {
         const tenantsData = await tenantsRes.json();
         const productsData = await productsRes.json();
 
-        setTenants(tenantsData.tenants || []);
+        setTenants(Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || []));
 
-        const mapped = (productsData.products || []).map((p: any) => ({
+        const productsArray = Array.isArray(productsData) ? productsData : (productsData.products || []);
+        const mapped = productsArray.map((p: any) => ({
           id: p.id,
           name: p.name,
           price: Number(p.price),
           category: p.category,
-          tenantId: p.tenant_id,
+          tenantId: p.tenant_id || p.tenantId,
           image: p.image || '📦',
           rating: Number(p.rating),
           featured: Boolean(p.featured)
