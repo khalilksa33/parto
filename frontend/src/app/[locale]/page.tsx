@@ -108,7 +108,7 @@ export default function MarketplacePage() {
         if (selectedTenantId !== 'all') filterStr.push(`tenantId = '${selectedTenantId}'`);
         if (selectedCategory !== 'all') filterStr.push(`category = '${selectedCategory}'`);
 
-        const { productsIndex } = await import('../../../lib/meilisearch');
+        const { productsIndex } = await import('../../lib/meilisearch');
         const searchRes = await productsIndex.search(searchQuery || '', {
           filter: filterStr,
           limit: 100

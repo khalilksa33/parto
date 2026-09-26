@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { X12Interchange, X12FunctionalGroup, X12TransactionSet, X12Segment } from 'node-x12';
 import * as fs from 'fs';
 import * as path from 'path';

@@ -1,9 +1,9 @@
-import { MeiliSearch } from 'meilisearch';
+import { Meilisearch } from 'meilisearch';
 
 const MEILI_HOST = process.env.NEXT_PUBLIC_MEILI_HOST || 'http://127.0.0.1:7700';
 const MEILI_SEARCH_KEY = process.env.NEXT_PUBLIC_MEILI_SEARCH_KEY || 'parto-secret-master-key-change-in-prod';
 
-export const meiliClient = new MeiliSearch({
+export const meiliClient = new Meilisearch({
   host: MEILI_HOST,
   apiKey: MEILI_SEARCH_KEY,
 });

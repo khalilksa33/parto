@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../../../lib/db';
-import { products } from '../../../../../lib/schema';
+import { db } from '../../../../lib/db';
+import { products } from '../../../../lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { Shippo } from 'shippo';
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     let totalHeight = 0;
 
     for (const item of cartItems) {
-      const product = dbProducts.find(p => p.id === item.productId);
+      const product = dbProducts.find((p: any) => p.id === item.productId);
       if (product) {
         totalWeight += (Number(product.weight) || 0.5) * item.quantity;
         maxLength = Math.max(maxLength, Number(product.length) || 10);
