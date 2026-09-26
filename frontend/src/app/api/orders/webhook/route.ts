@@ -41,23 +41,6 @@ export async function POST(request: Request) {
       const supplierItems = itemsBySupplier[supplierId];
       const result = await generateEDI850(supplierId, orderData, supplierItems);
       generatedFiles.push(result.filepath);
-
-      try {
-        const mockConfig = {
-          host: process.env[`SFTP_HOST_${supplierId}`] || '',
-          port: 22,
-          username: process.env[`SFTP_USER_${supplierId}`] || '',
-          password: process.env[`SFTP_PASS_${supplierId}`] || '',
-          remoteDir: '/inbound/edi/orders'
-        };
-
-        if (mockConfig.host && mockConfig.username) {
-          const { uploadEdiToSupplier } = await import('../../../../lib/sftp_service');
-          await uploadEdiToSupplier(result.filepath, mockConfig);
-        }
-      } catch (uploadError) {
-        console.error(`SFTP Upload failed for supplier ${supplierId}`, uploadError);
-      }
     }
     
     return NextResponse.json({ 

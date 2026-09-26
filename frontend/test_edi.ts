@@ -32,33 +32,6 @@ async function runTest() {
   
   console.log('Success! EDI file saved to:');
   console.log(result.filepath);
-  
-  // --- TEST SFTP UPLOAD ---
-  console.log('\n--- Testing SFTP Upload ---');
-  // Load environment variables for the test script
-  require('dotenv').config({ path: '.env.local' });
-  
-  const mockConfig = {
-    host: process.env[`SFTP_HOST_${supplierId}`] || '',
-    port: 22,
-    username: process.env[`SFTP_USER_${supplierId}`] || '',
-    password: process.env[`SFTP_PASS_${supplierId}`] || '',
-    remoteDir: '/' // SFTPCloud root directory
-  };
-
-  if (!mockConfig.host || !mockConfig.username) {
-    console.log('⚠️ No SFTP credentials found in .env.local for', supplierId);
-    console.log('Please add SFTP_HOST_SUPP_999123, SFTP_USER_SUPP_999123, and SFTP_PASS_SUPP_999123 to your .env.local file.');
-  } else {
-    try {
-      const { uploadEdiToSupplier } = await import('./src/lib/sftp_service');
-      await uploadEdiToSupplier(result.filepath, mockConfig);
-      console.log('✅ TEST PASSED: File successfully uploaded to SFTPCloud!');
-    } catch (err: any) {
-      console.error('❌ TEST FAILED: Could not upload to SFTPCloud.');
-      console.error(err.message);
-    }
-  }
 }
 
 runTest().catch(console.error);
