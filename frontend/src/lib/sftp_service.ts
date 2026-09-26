@@ -20,10 +20,10 @@ export interface SupplierSftpConfig {
 export async function uploadEdiToSupplier(localFilePath: string, config: SupplierSftpConfig) {
   const sftp = new Client();
   const filename = path.basename(localFilePath);
-  const remoteFilePath = \\\\;
+  const remoteFilePath = `${config.remoteDir.endsWith('/') ? config.remoteDir : config.remoteDir + '/'}${filename}`;
 
   try {
-    console.log(\Connecting to SFTP server: \:\ for supplier...\);
+    console.log(`Connecting to SFTP server: ${config.host}:${config.port} for supplier...`);
     
     // Connect to the supplier's SFTP server
     await sftp.connect({
@@ -34,19 +34,19 @@ export async function uploadEdiToSupplier(localFilePath: string, config: Supplie
       privateKey: config.privateKey ? fs.readFileSync(config.privateKey) : undefined,
     });
 
-    console.log(\Connected! Uploading \ to \...\);
+    console.log(`Connected! Uploading ${filename} to ${remoteFilePath}...`);
     
     // Perform the upload
     await sftp.fastPut(localFilePath, remoteFilePath);
     
-    console.log(\Successfully uploaded \ to supplier.\);
+    console.log(`Successfully uploaded ${filename} to supplier.`);
     
     // Optional: Move the local file from 'outbox' to an 'archive' folder after successful upload
     archiveFile(localFilePath);
     
     return true;
   } catch (err: any) {
-    console.error(\Failed to upload \ via SFTP:\, err.message);
+    console.error(`Failed to upload ${filename} via SFTP:`, err.message);
     throw err;
   } finally {
     await sftp.end();
@@ -64,7 +64,7 @@ function archiveFile(localFilePath: string) {
     
     const archivePath = path.join(archiveDir, filename);
     fs.renameSync(localFilePath, archivePath);
-    console.log(\Archived \ locally.\);
+    console.log(`Archived ${filename} locally.`);
   } catch (err) {
     console.error('Failed to archive file locally', err);
   }

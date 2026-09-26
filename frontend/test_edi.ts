@@ -39,10 +39,10 @@ async function runTest() {
   require('dotenv').config({ path: '.env.local' });
   
   const mockConfig = {
-    host: process.env[\`SFTP_HOST_\${supplierId}\`] || '',
+    host: process.env[`SFTP_HOST_${supplierId}`] || '',
     port: 22,
-    username: process.env[\`SFTP_USER_\${supplierId}\`] || '',
-    password: process.env[\`SFTP_PASS_\${supplierId}\`] || '',
+    username: process.env[`SFTP_USER_${supplierId}`] || '',
+    password: process.env[`SFTP_PASS_${supplierId}`] || '',
     remoteDir: '/' // SFTPCloud root directory
   };
 

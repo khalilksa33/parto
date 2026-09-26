@@ -81,7 +81,7 @@ export async function generateEDI850(supplierId: string, orderData: OrderData, s
     fs.mkdirSync(outboxDir, { recursive: true });
   }
   
-  const filename = \PO_\_\_\.edi\;
+  const filename = `PO_${orderData.orderNumber}_${supplierId}_${Date.now()}.edi`;
   const filepath = path.join(outboxDir, filename);
   
   fs.writeFileSync(filepath, ediString);
