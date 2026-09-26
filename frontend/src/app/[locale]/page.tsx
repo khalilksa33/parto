@@ -60,15 +60,8 @@ export default function MarketplacePage() {
 
   const categories = ['all', 'Engine Parts', 'Brakes & Suspension', 'Exhaust Systems', 'Exterior & Body', 'Interior Accessories'];
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesTenant = selectedTenantId === 'all' || product.tenantId === selectedTenantId;
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            product.category.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTenant && matchesCategory && matchesSearch;
-    });
-  }, [products, selectedTenantId, selectedCategory, searchQuery]);
+  // Filtered Products now simply returns products since Meilisearch filters server-side
+  const filteredProducts = products;
 
   const activeTenantInfo = useMemo(() => {
     return tenants.find(t => t.id === selectedTenantId);
@@ -84,28 +77,44 @@ export default function MarketplacePage() {
     };
     return map[name] || name;
   };
-  // Fetch active catalog directory (tenants and products)
+
+  // 1. Fetch tenants ONLY ONCE on mount
   useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoadingInitial(true);
-      setInitialError(null);
+    const fetchTenants = async () => {
       try {
-        const [tenantsRes, productsRes] = await Promise.all([
-          fetch(`${API_URL}/api/tenants`),
-          fetch(`${API_URL}/api/products`)
-        ]);
-
-        if (!tenantsRes.ok || !productsRes.ok) {
-          throw new Error('Failed to retrieve catalog metadata');
+        const tenantsRes = await fetch(`${API_URL}/api/tenants`);
+        if (tenantsRes.ok) {
+          const tenantsData = await tenantsRes.json();
+          setTenants(Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || []));
         }
+      } catch (err) {
+        console.error('Failed to load tenants', err);
+      }
+    };
+    fetchTenants();
+  }, []);
 
-        const tenantsData = await tenantsRes.json();
-        const productsData = await productsRes.json();
+  // 2. Fetch products from Meilisearch with debounce and subtle loading state
+  const [isSearching, setIsSearching] = useState(false);
+  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsSearching(true);
+      if (products.length === 0) setLoadingInitial(true); // Only hard load on first visit
+      setInitialError(null);
+      
+      try {
+        let filterStr = [];
+        if (selectedTenantId !== 'all') filterStr.push(`tenantId = '${selectedTenantId}'`);
+        if (selectedCategory !== 'all') filterStr.push(`category = '${selectedCategory}'`);
 
-        setTenants(Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || []));
+        const { productsIndex } = await import('../../../lib/meilisearch');
+        const searchRes = await productsIndex.search(searchQuery || '', {
+          filter: filterStr,
+          limit: 100
+        });
 
-        const productsArray = Array.isArray(productsData) ? productsData : (productsData.products || []);
-        const mapped = productsArray.map((p: any) => ({
+        const mapped = searchRes.hits.map((p: any) => ({
           id: p.id,
           name: p.name,
           price: Number(p.price),
@@ -115,16 +124,23 @@ export default function MarketplacePage() {
           rating: Number(p.rating),
           featured: Boolean(p.featured)
         }));
-        setProducts(mapped);
+        
+        setProducts(mapped as Product[]);
       } catch (err: any) {
-        setInitialError(err.message || 'Failed to initialize catalog database');
+        setInitialError(err.message || 'Failed to initialize catalog search');
       } finally {
         setLoadingInitial(false);
+        setIsSearching(false);
       }
     };
 
-    fetchInitialData();
-  }, []);
+    // Debounce the search by 150ms to prevent spamming Meilisearch on every keystroke
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory, selectedTenantId]);
 
   // Fetch live orders whenever active tenant changes
   useEffect(() => {
@@ -215,8 +231,21 @@ export default function MarketplacePage() {
               placeholder="Search products, brands, categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-100 border border-slate-300 rounded-full px-4 py-2 text-sm text-slate-800 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+              className="w-full bg-slate-100 border border-slate-300 rounded-full px-4 py-2 text-sm text-slate-800 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors pr-10"
             />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            {!isSearching && searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-1 md:gap-2">

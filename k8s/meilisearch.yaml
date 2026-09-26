@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meilisearch
+  labels:
+    app: meilisearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meilisearch
+  template:
+    metadata:
+      labels:
+        app: meilisearch
+    spec:
+      containers:
+      - name: meilisearch
+        image: getmeili/meilisearch:v1.10
+        ports:
+        - containerPort: 7700
+        env:
+        - name: MEILI_ENV
+          value: "development"
+        - name: MEILI_MASTER_KEY
+          value: "parto-secret-master-key-change-in-prod"
+        volumeMounts:
+        - name: meilisearch-data
+          mountPath: /meili_data
+      volumes:
+      - name: meilisearch-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meilisearch-service
+spec:
+  selector:
+    app: meilisearch
+  ports:
+    - protocol: TCP
+      port: 7700
+      targetPort: 7700
+  type: ClusterIP

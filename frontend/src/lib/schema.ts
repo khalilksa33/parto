@@ -52,6 +52,10 @@ export const products = pgTable('products', {
   image: varchar('image', { length: 100 }),
   rating: numeric('rating', { precision: 3, scale: 2 }).default('0.00'),
   featured: boolean('featured').default(false),
+  weight: numeric('weight', { precision: 10, scale: 2 }).default('0.00'), // in kg
+  length: numeric('length', { precision: 10, scale: 2 }).default('0.00'), // in cm
+  width: numeric('width', { precision: 10, scale: 2 }).default('0.00'),  // in cm
+  height: numeric('height', { precision: 10, scale: 2 }).default('0.00'), // in cm
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
