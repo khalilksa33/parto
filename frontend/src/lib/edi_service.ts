@@ -1,7 +1,5 @@
 // @ts-nocheck
 import { X12Interchange, X12FunctionalGroup, X12TransactionSet, X12Segment } from 'node-x12';
-import * as fs from 'fs';
-import * as path from 'path';
 
 export interface OrderItem {
   id: string;
@@ -76,16 +74,7 @@ export async function generateEDI850(supplierId: string, orderData: OrderData, s
   
   const ediString = interchange.toString();
   
-  // In a real app, this would be sent via SFTP. We save it to a local 'outbox'.
-  const outboxDir = path.join(process.cwd(), 'edi', 'outbox');
-  if (!fs.existsSync(outboxDir)) {
-    fs.mkdirSync(outboxDir, { recursive: true });
-  }
-  
-  const filename = `PO_${orderData.orderNumber}_${supplierId}_${Date.now()}.edi`;
-  const filepath = path.join(outboxDir, filename);
-  
-  fs.writeFileSync(filepath, ediString);
+  const filepath = `PO_${orderData.orderNumber}_${supplierId}_${Date.now()}.edi`;
   
   return { filepath, ediString };
 }
