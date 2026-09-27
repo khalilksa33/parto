@@ -50,6 +50,40 @@ export default function MarketplacePage() {
 
   const [searchType, setSearchType] = useState<'vin' | 'part'>('vin');
   const [vinQuery, setVinQuery] = useState<string>('');
+  const [isDecodingVin, setIsDecodingVin] = useState<boolean>(false);
+  const [decodedVehicle, setDecodedVehicle] = useState<{make: string, model: string, year: string} | null>(null);
+  const [vinError, setVinError] = useState<string | null>(null);
+
+  const handleVinSearch = async () => {
+    if (!vinQuery || vinQuery.length < 5) {
+      setVinError('Please enter a valid VIN');
+      return;
+    }
+    setIsDecodingVin(true);
+    setVinError(null);
+    setDecodedVehicle(null);
+    
+    try {
+      const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vinQuery}?format=json`);
+      const data = await res.json();
+      if (data.Results) {
+        const make = data.Results.find((r: any) => r.Variable === 'Make')?.Value;
+        const model = data.Results.find((r: any) => r.Variable === 'Model')?.Value;
+        const year = data.Results.find((r: any) => r.Variable === 'Model Year')?.Value;
+        
+        if (make && model && make !== 'null') {
+          setDecodedVehicle({ make, model, year: year !== 'null' ? year : '' });
+          setSearchQuery(`${make} ${model}`);
+        } else {
+          setVinError('Could not decode vehicle details from this VIN.');
+        }
+      }
+    } catch (err) {
+      setVinError('Error connecting to VIN decoding service.');
+    } finally {
+      setIsDecodingVin(false);
+    }
+  };
 
   // Dynamic database-driven states
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -421,11 +455,31 @@ export default function MarketplacePage() {
                         placeholder="e.g. JT164SDA42..." 
                         value={vinQuery}
                         onChange={(e) => setVinQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleVinSearch()}
                         className="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase"
                       />
-                      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-indigo-500/30">
-                        SEARCH CATALOG
+                      <button 
+                        onClick={handleVinSearch}
+                        disabled={isDecodingVin}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-indigo-500/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {isDecodingVin ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : null}
+                        {isDecodingVin ? 'DECODING VIN...' : 'SEARCH CATALOG'}
                       </button>
+                      
+                      {vinError && (
+                        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-200 mt-2">
+                          {vinError}
+                        </div>
+                      )}
+                      
+                      {decodedVehicle && (
+                        <div className="bg-emerald-50 text-emerald-800 p-4 rounded-lg border border-emerald-200 mt-2 animate-in fade-in slide-in-from-top-2">
+                          <p className="text-xs font-bold text-emerald-600 uppercase mb-1">Vehicle Identified</p>
+                          <p className="font-semibold text-lg">{decodedVehicle.year} {decodedVehicle.make} {decodedVehicle.model}</p>
+                          <p className="text-xs mt-2 text-emerald-700/80">Catalog automatically filtered for this vehicle.</p>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <>
