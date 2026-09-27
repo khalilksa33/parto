@@ -72,6 +72,18 @@ export async function GET(request: Request) {
     // 3. Save to cache
     await db.insert(vin_cache).values(recordToInsert).onConflictDoNothing();
 
+    // 4. Trigger the background automated webhook to sync TecDoc parts!
+    // We intentionally do not await this, so it runs in the background
+    // without blocking the frontend response.
+    if (tecdocCarId) {
+      const baseUrl = request.url ? new URL(request.url).origin : 'http://localhost:3000';
+      fetch(`${baseUrl}/api/catalog/sync-auto`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ carId: tecdocCarId })
+      }).catch(err => console.error('Background sync trigger failed:', err));
+    }
+
     return NextResponse.json({
       source: 'api',
       data: recordToInsert
