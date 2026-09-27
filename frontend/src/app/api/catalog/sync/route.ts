@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../../../lib/db';
-import { products, tenants } from '../../../../../lib/schema';
-import { getPartsForCarId } from '../../../../../lib/tecdoc_service';
-import { meilisearchClient } from '../../../../../lib/meilisearch';
+import { db } from '@/lib/db';
+import { products, tenants } from '@/lib/schema';
+import { getPartsForCarId } from '@/lib/tecdoc_service';
+import { meiliClient } from '@/lib/meilisearch';
 
 export async function POST(request: Request) {
   try {
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
     // Sync to MeiliSearch
     if (documentsToIndex.length > 0) {
-      const index = meilisearchClient.index('products');
+      const index = meiliClient.index('products');
       await index.addDocuments(documentsToIndex);
     }
 

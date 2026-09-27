@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../../../lib/db';
-import { vin_cache } from '../../../../../lib/schema';
+import { db } from '@/lib/db';
+import { vin_cache } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { getCarIdByVin } from '../../../../../lib/tecdoc_service';
+import { getCarIdByVin } from '@/lib/tecdoc_service';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
