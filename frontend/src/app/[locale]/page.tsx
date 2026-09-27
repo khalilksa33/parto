@@ -51,7 +51,7 @@ export default function MarketplacePage() {
   const [searchType, setSearchType] = useState<'vin' | 'part'>('vin');
   const [vinQuery, setVinQuery] = useState<string>('');
   const [isDecodingVin, setIsDecodingVin] = useState<boolean>(false);
-  const [decodedVehicle, setDecodedVehicle] = useState<{make: string, model: string, year: string} | null>(null);
+  const [decodedVehicle, setDecodedVehicle] = useState<{make: string, model: string, year: string, engineDetails?: any} | null>(null);
   const [vinError, setVinError] = useState<string | null>(null);
 
   const handleVinSearch = async () => {
@@ -64,22 +64,34 @@ export default function MarketplacePage() {
     setDecodedVehicle(null);
     
     try {
-      const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/${vinQuery}?format=json`);
-      const data = await res.json();
-      if (data.Results) {
-        const make = data.Results.find((r: any) => r.Variable === 'Make')?.Value;
-        const model = data.Results.find((r: any) => r.Variable === 'Model')?.Value;
-        const year = data.Results.find((r: any) => r.Variable === 'Model Year')?.Value;
-        
-        if (make && model && make !== 'null') {
-          setDecodedVehicle({ make, model, year: year !== 'null' ? year : '' });
-          setSearchQuery(`${make} ${model}`);
-        } else {
-          setVinError('Could not decode vehicle details from this VIN.');
-        }
+      const res = await fetch(`/api/vin/decode?vin=${vinQuery}`);
+      const responseBody = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(responseBody.error || 'Failed to decode VIN');
       }
-    } catch (err) {
-      setVinError('Error connecting to VIN decoding service.');
+
+      const vData = responseBody.data;
+      if (vData && vData.make && vData.model) {
+        setDecodedVehicle({ 
+          make: vData.make, 
+          model: vData.model, 
+          year: vData.year || '',
+          engineDetails: vData.engineDetails 
+        });
+        
+        // Auto-select a specific auto-parts category based on engine if desired
+        if (vData.engineDetails?.cylinders) {
+          // If we detect engine data, we can default the catalog view to 'Engine Parts' 
+          setSelectedCategory('engine');
+        }
+        
+        setSearchQuery(`${vData.make} ${vData.model}`);
+      } else {
+        setVinError('Could not decode vehicle details from this VIN.');
+      }
+    } catch (err: any) {
+      setVinError(err.message || 'Error connecting to VIN decoding service.');
     } finally {
       setIsDecodingVin(false);
     }
@@ -477,7 +489,22 @@ export default function MarketplacePage() {
                         <div className="bg-emerald-50 text-emerald-800 p-4 rounded-lg border border-emerald-200 mt-2 animate-in fade-in slide-in-from-top-2">
                           <p className="text-xs font-bold text-emerald-600 uppercase mb-1">Vehicle Identified</p>
                           <p className="font-semibold text-lg">{decodedVehicle.year} {decodedVehicle.make} {decodedVehicle.model}</p>
-                          <p className="text-xs mt-2 text-emerald-700/80">Catalog automatically filtered for this vehicle.</p>
+                          {decodedVehicle.engineDetails && (decodedVehicle.engineDetails.cylinders || decodedVehicle.engineDetails.displacement) && (
+                            <div className="mt-2 pt-2 border-t border-emerald-200/50 grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-emerald-600/70 block">Engine</span>
+                                <span className="font-medium">{decodedVehicle.engineDetails.cylinders} Cyl / {decodedVehicle.engineDetails.displacement}L</span>
+                              </div>
+                              <div>
+                                <span className="text-emerald-600/70 block">Power/Fuel</span>
+                                <span className="font-medium">{decodedVehicle.engineDetails.horsepower ? `${decodedVehicle.engineDetails.horsepower} HP` : 'N/A'} {decodedVehicle.engineDetails.fuelType ? `/ ${decodedVehicle.engineDetails.fuelType}` : ''}</span>
+                              </div>
+                            </div>
+                          )}
+                          <p className="text-xs mt-3 text-emerald-700/80 flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Catalog automatically filtered for this vehicle.
+                          </p>
                         </div>
                       )}
                     </>

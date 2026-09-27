@@ -15,6 +15,13 @@
       "when": 1785567455726,
       "tag": "0001_sudden_whizzer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790506503726,
+      "tag": "0002_concerned_morph",
+      "breakpoints": true
     }
   ]
 }

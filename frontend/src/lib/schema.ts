@@ -100,3 +100,13 @@ export const part_quotes = pgTable('part_quotes', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const vin_cache = pgTable('vin_cache', {
+  vin: varchar('vin', { length: 20 }).primaryKey(),
+  make: varchar('make', { length: 100 }),
+  model: varchar('model', { length: 100 }),
+  year: varchar('year', { length: 10 }),
+  engineDetails: jsonb('engine_details'),
+  rawData: jsonb('raw_data'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
