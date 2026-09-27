@@ -1,7 +1,7 @@
 # frontend/Dockerfile
 # 1. Base Node image
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
+FROM node:20-bookworm-slim AS base
+# bookworm-slim already uses glibc, so no need for libc6-compat
 
 # 2. Build the source code
 FROM base AS builder
@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Copy ALL dependency files (lock file ensures reproducible installs)
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 # Copy application files
 COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js ./
