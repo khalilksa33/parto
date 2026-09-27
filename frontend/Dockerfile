@@ -7,9 +7,10 @@ FROM node:20-bookworm-slim AS base
 FROM base AS builder
 WORKDIR /app
 
-# Copy ALL dependency files (lock file ensures reproducible installs)
+# Copy ALL dependency files
 COPY package.json package-lock.json ./
-RUN npm install
+# Remove the Windows-generated lockfile to force NPM to fetch Linux optional dependencies (like lightningcss and swc)
+RUN rm package-lock.json && npm install
 
 # Copy application files
 COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js ./
