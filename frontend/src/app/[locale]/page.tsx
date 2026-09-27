@@ -48,6 +48,9 @@ export default function MarketplacePage() {
   const [cartCount, setCartCount] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+  const [searchType, setSearchType] = useState<'vin' | 'part'>('vin');
+  const [vinQuery, setVinQuery] = useState<string>('');
+
   // Dynamic database-driven states
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -367,27 +370,84 @@ export default function MarketplacePage() {
               </div>
             </>
           ) : (
-            <div className="transition-all duration-700 ease-out transform translate-y-0 opacity-100 min-h-[180px] md:min-h-[200px]">
-              <span className="inline-block self-start mb-4 px-4 py-1.5 text-xs font-bold tracking-wider text-indigo-200 bg-indigo-900/60 backdrop-blur-sm border border-indigo-500/50 rounded-full shadow-lg">
-                {locale === 'ar' ? 'سوق الخدمات وقطع غيار السيارات الأول بالمملكة' : 'SAUDI ARABIA\'S PREMIER AUTOMOTIVE HUB'}
-              </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white drop-shadow-lg leading-tight">
-                {locale === 'ar' ? heroSlides[currentSlide].titleAr : heroSlides[currentSlide].titleEn}
-              </h1>
-              <p className="text-lg md:text-xl lg:text-2xl text-slate-200 mt-6 max-w-2xl drop-shadow-md font-medium leading-relaxed">
-                {locale === 'ar' ? heroSlides[currentSlide].descAr : heroSlides[currentSlide].descEn}
-              </p>
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-10 transition-all duration-700 ease-out transform translate-y-0 opacity-100 min-h-[180px] md:min-h-[200px]">
               
-              {/* Slider Indicators */}
-              <div className="flex gap-3 mt-10">
-                {heroSlides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentSlide(i)}
-                    className={`h-2 rounded-full transition-all duration-500 ${i === currentSlide ? 'w-10 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]' : 'w-2 bg-white/40 hover:bg-white/70'}`}
-                  />
-                ))}
+              {/* Left side: Text */}
+              <div className="flex-1">
+                <span className="inline-block self-start mb-4 px-4 py-1.5 text-xs font-bold tracking-wider text-indigo-200 bg-indigo-900/60 backdrop-blur-sm border border-indigo-500/50 rounded-full shadow-lg">
+                  {locale === 'ar' ? 'سوق الخدمات وقطع غيار السيارات الأول بالمملكة' : 'SAUDI ARABIA\'S PREMIER AUTOMOTIVE HUB'}
+                </span>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg leading-tight">
+                  {locale === 'ar' ? heroSlides[currentSlide].titleAr : heroSlides[currentSlide].titleEn}
+                </h1>
+                <p className="text-lg md:text-xl text-slate-200 mt-6 max-w-2xl drop-shadow-md font-medium leading-relaxed">
+                  {locale === 'ar' ? heroSlides[currentSlide].descAr : heroSlides[currentSlide].descEn}
+                </p>
+                
+                {/* Slider Indicators */}
+                <div className="flex gap-3 mt-10">
+                  {heroSlides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentSlide(i)}
+                      className={`h-2 rounded-full transition-all duration-500 ${i === currentSlide ? 'w-10 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]' : 'w-2 bg-white/40 hover:bg-white/70'}`}
+                    />
+                  ))}
+                </div>
               </div>
+
+              {/* Right side: Partsouq style Search Box */}
+              <div className="w-full lg:w-[450px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col z-30">
+                <div className="flex w-full border-b border-slate-200">
+                  <button 
+                    onClick={() => setSearchType('vin')}
+                    className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${searchType === 'vin' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    VIN / FRAME
+                  </button>
+                  <button 
+                    onClick={() => setSearchType('part')}
+                    className={`flex-1 py-4 text-center font-bold text-sm transition-colors ${searchType === 'part' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    PART NUMBER
+                  </button>
+                </div>
+                <div className="p-6 flex flex-col gap-4">
+                  {searchType === 'vin' ? (
+                    <>
+                      <label className="text-sm font-semibold text-slate-700">Enter your VIN or Frame number</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. JT164SDA42..." 
+                        value={vinQuery}
+                        onChange={(e) => setVinQuery(e.target.value)}
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase"
+                      />
+                      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-indigo-500/30">
+                        SEARCH CATALOG
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <label className="text-sm font-semibold text-slate-700">Enter the exact Part Number</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 15400-PLM-A02" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase"
+                      />
+                      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-indigo-500/30">
+                        FIND PART
+                      </button>
+                    </>
+                  )}
+                  <p className="text-xs text-slate-500 text-center mt-2">
+                    {searchType === 'vin' ? 'VIN is a 17-character alphanumeric code.' : 'Search across all supplier catalogs instantly.'}
+                  </p>
+                </div>
+              </div>
+
             </div>
           )}
         </div>
