@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '../../../../../lib/db';
 import { vin_cache } from '../../../../../lib/schema';
 import { eq } from 'drizzle-orm';
+import { getCarIdByVin } from '../../../../../lib/tecdoc_service';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
     const cached = await db.select().from(vin_cache).where(eq(vin_cache.vin, normalizedVin)).limit(1);
     
     if (cached && cached.length > 0) {
+      // If we didn't fetch tecdocCarId previously, we can backfill it here, but for now just return cache.
       return NextResponse.json({
         source: 'cache',
         data: cached[0]
@@ -54,13 +56,17 @@ export async function GET(request: Request) {
       fuelType: getVal('Fuel Type - Primary'),
     };
 
+    // Attempt to resolve TecDoc Car ID in the background
+    const tecdocCarId = await getCarIdByVin(normalizedVin);
+
     const recordToInsert = {
       vin: normalizedVin,
       make: make && make !== 'null' ? make : null,
       model: model && model !== 'null' ? model : null,
       year: year && year !== 'null' ? year : null,
       engineDetails,
-      rawData: data.Results
+      rawData: data.Results,
+      tecdocCarId: tecdocCarId
     };
 
     // 3. Save to cache

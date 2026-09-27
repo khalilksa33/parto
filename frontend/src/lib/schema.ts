@@ -56,6 +56,8 @@ export const products = pgTable('products', {
   length: numeric('length', { precision: 10, scale: 2 }).default('0.00'), // in cm
   width: numeric('width', { precision: 10, scale: 2 }).default('0.00'),  // in cm
   height: numeric('height', { precision: 10, scale: 2 }).default('0.00'), // in cm
+  brandName: varchar('brand_name', { length: 100 }),
+  tecdocArticleId: varchar('tecdoc_article_id', { length: 100 }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -108,5 +110,6 @@ export const vin_cache = pgTable('vin_cache', {
   year: varchar('year', { length: 10 }),
   engineDetails: jsonb('engine_details'),
   rawData: jsonb('raw_data'),
+  tecdocCarId: varchar('tecdoc_car_id', { length: 50 }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
