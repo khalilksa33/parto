@@ -13,9 +13,10 @@ COPY package.json package-lock.json ./
 RUN rm package-lock.json && npm install
 
 # Copy application files
-COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js ./
+COPY next.config.js tsconfig.json postcss.config.mjs tailwind.config.js drizzle.config.ts ./
 COPY public ./public
 COPY src ./src
+COPY drizzle ./drizzle
 
 # Declare build-time environment variables
 ARG NEXT_PUBLIC_API_URL
