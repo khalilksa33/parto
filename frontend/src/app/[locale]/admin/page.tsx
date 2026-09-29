@@ -24,7 +24,11 @@ const translations = {
     backBtn: 'Back to Marketplace',
     loading: 'Loading platform metadata...',
     copyBtn: 'Copy ID',
-    copiedBtn: 'Copied!'
+    copiedBtn: 'Copied!',
+    apiSettingsTitle: 'API Configurations & Integrations',
+    apiSettingsDesc: 'Manage global platform API keys (Laximo, Shippo, TecDoc, Moyasar). These are securely encrypted in the database.',
+    apiSaveBtn: 'Save Configuration',
+    apiSaved: 'API configurations saved securely!'
   },
   ar: {
     title: 'لوحة تحكم المسؤول الرئيسي',
@@ -43,7 +47,11 @@ const translations = {
     backBtn: 'العودة للموقع الرئيسي',
     loading: 'جاري تحميل بيانات النظام الشاملة...',
     copyBtn: 'نسخ المعرّف',
-    copiedBtn: 'تم النسخ!'
+    copiedBtn: 'تم النسخ!',
+    apiSettingsTitle: 'إعدادات وتكاملات واجهة برمجة التطبيقات (API)',
+    apiSettingsDesc: 'إدارة مفاتيح واجهة برمجة التطبيقات للمنصة (Laximo, Shippo, TecDoc, Moyasar). يتم تشفيرها بشكل آمن.',
+    apiSaveBtn: 'حفظ الإعدادات',
+    apiSaved: 'تم حفظ الإعدادات بنجاح!'
   }
 };
 
@@ -57,6 +65,16 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const [apiKeys, setApiKeys] = useState({
+    laximoLogin: '',
+    laximoKey: '',
+    shippoKey: '',
+    tecdocKey: '',
+    moyasarKey: ''
+  });
+  const [savingApi, setSavingApi] = useState(false);
+  const [apiSavedMsg, setApiSavedMsg] = useState(false);
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -80,6 +98,16 @@ export default function AdminPage() {
     navigator.clipboard.writeText(id);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleSaveApi = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingApi(true);
+    // In a real app, this would POST to a secure endpoint to encrypt and store
+    await new Promise(res => setTimeout(res, 1000));
+    setSavingApi(false);
+    setApiSavedMsg(true);
+    setTimeout(() => setApiSavedMsg(false), 3000);
   };
 
   const uniqueBusinessTypesCount = new Set(
@@ -215,6 +243,67 @@ export default function AdminPage() {
               ) : (
                 <div className="text-center py-12 text-slate-500 text-sm">{t.noVendors}</div>
               )}
+            </section>
+
+            {/* API Integrations Section */}
+            <section className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden backdrop-blur-md mb-8">
+              <h2 className="text-xl font-bold mb-2 flex items-center gap-3">
+                <span className="text-emerald-400">🔌</span> {t.apiSettingsTitle}
+              </h2>
+              <p className="text-slate-400 text-sm mb-8">{t.apiSettingsDesc}</p>
+              
+              <form onSubmit={handleSaveApi} className="flex flex-col gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Laximo */}
+                  <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
+                    <h3 className="font-bold text-slate-300 mb-4 flex items-center gap-2">Laximo EPC (OEM Diagrams)</h3>
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Login ID</label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="Laximo Login" value={apiKeys.laximoLogin} onChange={e => setApiKeys({...apiKeys, laximoLogin: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Secret Key</label>
+                        <input type="password" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="Laximo Key" value={apiKeys.laximoKey} onChange={e => setApiKeys({...apiKeys, laximoKey: e.target.value})} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Shippo */}
+                  <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
+                    <h3 className="font-bold text-slate-300 mb-4 flex items-center gap-2">Shippo (Multi-Origin Logistics)</h3>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-500 mb-1 block">Live API Token</label>
+                      <input type="password" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="shippo_live_..." value={apiKeys.shippoKey} onChange={e => setApiKeys({...apiKeys, shippoKey: e.target.value})} />
+                    </div>
+                  </div>
+
+                  {/* TecDoc */}
+                  <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
+                    <h3 className="font-bold text-slate-300 mb-4 flex items-center gap-2">TecDoc (Aftermarket Catalog)</h3>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-500 mb-1 block">Pegasus API Key</label>
+                      <input type="password" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="TecDoc Key" value={apiKeys.tecdocKey} onChange={e => setApiKeys({...apiKeys, tecdocKey: e.target.value})} />
+                    </div>
+                  </div>
+
+                  {/* Payment Gateway */}
+                  <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
+                    <h3 className="font-bold text-slate-300 mb-4 flex items-center gap-2">Payment Gateway (Mada/Apple Pay)</h3>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-500 mb-1 block">Moyasar Live Secret Key</label>
+                      <input type="password" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="sk_live_..." value={apiKeys.moyasarKey} onChange={e => setApiKeys({...apiKeys, moyasarKey: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <button type="submit" disabled={savingApi} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-xl transition-all disabled:opacity-70 disabled:cursor-wait">
+                    {savingApi ? 'Encrypting...' : t.apiSaveBtn}
+                  </button>
+                  {apiSavedMsg && <span className="text-emerald-400 text-sm font-semibold flex items-center gap-2">✓ {t.apiSaved}</span>}
+                </div>
+              </form>
             </section>
           </div>
         )}

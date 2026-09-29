@@ -9,18 +9,18 @@ import { useCart } from '@/components/CartProvider';
 const API_URL = '';
 
 const popularBrands = [
-  { name: 'Toyota', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Toyota_emblem_%281989%29.svg' },
-  { name: 'Nissan', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Nissan_logo.png' },
-  { name: 'Honda', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg' },
-  { name: 'Hyundai', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg' },
-  { name: 'Ford', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg' },
-  { name: 'Chevrolet', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Chevrolet_logo.png' },
-  { name: 'Lexus', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a3/Lexus_logo.svg' },
-  { name: 'Mazda', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Mazda_Logo.png' },
-  { name: 'Kia', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/47/KIA_logo2.svg' },
-  { name: 'Mercedes', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
-  { name: 'BMW', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg' },
-  { name: 'Audi', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg' }
+  { name: 'Toyota', logo: 'https://cdn.worldvectorlogo.com/logos/toyota-3.svg' },
+  { name: 'Nissan', logo: 'https://cdn.worldvectorlogo.com/logos/nissan-6.svg' },
+  { name: 'Honda', logo: 'https://cdn.worldvectorlogo.com/logos/honda-4.svg' },
+  { name: 'Hyundai', logo: 'https://cdn.worldvectorlogo.com/logos/hyundai-1.svg' },
+  { name: 'Ford', logo: 'https://cdn.worldvectorlogo.com/logos/ford-8.svg' },
+  { name: 'Chevrolet', logo: 'https://cdn.worldvectorlogo.com/logos/chevrolet.svg' },
+  { name: 'Lexus', logo: 'https://cdn.worldvectorlogo.com/logos/lexus-logo.svg' },
+  { name: 'Mazda', logo: 'https://cdn.worldvectorlogo.com/logos/mazda.svg' },
+  { name: 'Kia', logo: 'https://cdn.worldvectorlogo.com/logos/kia-logo-2021.svg' },
+  { name: 'Mercedes', logo: 'https://cdn.worldvectorlogo.com/logos/mercedes-benz-9.svg' },
+  { name: 'BMW', logo: 'https://cdn.worldvectorlogo.com/logos/bmw-logo-2020.svg' },
+  { name: 'Audi', logo: 'https://cdn.worldvectorlogo.com/logos/audi-13.svg' }
 ];
 
 interface Product {
@@ -871,32 +871,6 @@ export default function MarketplacePage() {
             </div>
           )}
         </section>
-        {/* ZATCA & VAT Compliance Section */}
-        <section className="mt-12 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-10">
-          <div className="flex-shrink-0 bg-white p-4 rounded-xl border border-slate-200">
-            {/* ZATCA placeholder logo style */}
-            <div className="font-bold text-center text-emerald-800 text-lg leading-tight">
-              <span className="block text-sm text-emerald-600">هيئة الزكاة والضريبة والجمارك</span>
-              ZATCA
-            </div>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-              <span className="text-emerald-500">✓</span> {locale === 'ar' ? 'منصة متوافقة مع الفوترة الإلكترونية (فاتورة)' : 'ZATCA E-Invoicing (FATOORAH) Compliant'}
-            </h3>
-            <p className="text-sm text-slate-400 leading-relaxed mb-3">
-              {locale === 'ar' 
-                ? 'بارتو هي منصة سعودية معتمدة تدعم متطلبات المرحلة الثانية (الربط والتكامل) من الفوترة الإلكترونية من هيئة الزكاة والضريبة والجمارك. نقوم بإصدار الفواتير الضريبية المبسطة B2C والفواتير الضريبية B2B بشكل فوري برمز استجابة سريع (QR Code) مشفر، بالإضافة لاحتساب ضريبة القيمة المضافة (VAT) بنسبة 15% تلقائياً لجميع مبيعات قطع الغيار.'
-                : 'Parto is a fully compliant Saudi platform adhering to ZATCA Phase 2 (Integration) E-Invoicing requirements. We automatically generate and report B2C Simplified Tax Invoices and B2B Tax Invoices with encrypted QR codes. The 15% VAT is strictly automatically calculated and documented for all auto part sales.'}
-            </p>
-            <div className="flex flex-wrap gap-2 text-xs font-semibold">
-              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">15% VAT Ready</span>
-              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">Phase 2 Integration</span>
-              <span className="px-3 py-1 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 rounded-full">Cryptographic QR Code</span>
-            </div>
-          </div>
-        </section>
-
       </main>
 
       {/* Footer */}
