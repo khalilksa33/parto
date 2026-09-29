@@ -8,6 +8,21 @@ import { useCart } from '@/components/CartProvider';
 // API configuration
 const API_URL = '';
 
+const popularBrands = [
+  { name: 'Toyota', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Toyota_emblem_%281989%29.svg' },
+  { name: 'Nissan', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Nissan_logo.png' },
+  { name: 'Honda', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg' },
+  { name: 'Hyundai', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg' },
+  { name: 'Ford', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg' },
+  { name: 'Chevrolet', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Chevrolet_logo.png' },
+  { name: 'Lexus', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a3/Lexus_logo.svg' },
+  { name: 'Mazda', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Mazda_Logo.png' },
+  { name: 'Kia', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/47/KIA_logo2.svg' },
+  { name: 'Mercedes', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
+  { name: 'BMW', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/BMW_logo_%28gray%29.svg' },
+  { name: 'Audi', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg' }
+];
+
 interface Product {
   id: string;
   name: string;
@@ -543,6 +558,27 @@ export default function MarketplacePage() {
 
       {/* Main Container */}
       <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col gap-10">
+
+        {/* Shop By Brand Selector */}
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <span>🚘</span> Search By Car Brand
+          </h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
+            {popularBrands.map((brand) => (
+              <button
+                key={brand.name}
+                onClick={() => setSearchQuery(brand.name)}
+                className="bg-white/95 hover:bg-white p-3 rounded-xl shadow-sm border border-slate-200/50 hover:border-indigo-400 hover:shadow-md transition-all flex flex-col items-center justify-center gap-2 aspect-square group"
+              >
+                <div className="w-10 h-10 relative flex items-center justify-center">
+                  <img src={brand.logo} alt={brand.name} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-700 uppercase tracking-wider">{brand.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {/* Shop By Tenant Selector */}
         <section className="flex flex-col gap-3">
