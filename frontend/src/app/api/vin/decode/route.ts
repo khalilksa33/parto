@@ -43,9 +43,13 @@ export async function GET(request: Request) {
     // Extract basic details
     const getVal = (variableName: string) => data.Results.find((r: any) => r.Variable === variableName)?.Value;
     
-    const make = getVal('Make');
-    const model = getVal('Model');
-    const year = getVal('Model Year');
+    const makeRaw = getVal('Make') || getVal('Manufacturer Name');
+    const modelRaw = getVal('Model');
+    const yearRaw = getVal('Model Year');
+
+    const make = makeRaw && String(makeRaw).trim() !== 'null' && String(makeRaw).trim() !== '' ? String(makeRaw).trim() : 'Unknown Make';
+    const model = modelRaw && String(modelRaw).trim() !== 'null' && String(modelRaw).trim() !== '' ? String(modelRaw).trim() : 'Unknown Model';
+    const year = yearRaw && String(yearRaw).trim() !== 'null' && String(yearRaw).trim() !== '' ? String(yearRaw).trim() : 'Unknown Year';
 
     // Extract Engine details
     const engineDetails = {
@@ -61,9 +65,9 @@ export async function GET(request: Request) {
 
     const recordToInsert = {
       vin: normalizedVin,
-      make: make && make !== 'null' ? make : null,
-      model: model && model !== 'null' ? model : null,
-      year: year && year !== 'null' ? year : null,
+      make: make,
+      model: model,
+      year: year,
       engineDetails,
       rawData: data.Results,
       tecdocCarId: tecdocCarId

@@ -73,10 +73,10 @@ export default function MarketplacePage() {
       }
 
       const vData = responseBody.data;
-      if (vData && vData.make && vData.model) {
+      if (vData && (vData.make || vData.vin)) {
         setDecodedVehicle({ 
-          make: vData.make, 
-          model: vData.model, 
+          make: vData.make || 'Unknown Make', 
+          model: vData.model || 'Unknown Model', 
           year: vData.year || '',
           engineDetails: vData.engineDetails 
         });
@@ -87,7 +87,7 @@ export default function MarketplacePage() {
           setSelectedCategory('engine');
         }
         
-        setSearchQuery(`${vData.make} ${vData.model}`);
+        setSearchQuery(`${vData.make || ''} ${vData.model || ''}`.trim() || 'Parts');
       } else {
         setVinError('Could not decode vehicle details from this VIN.');
       }
