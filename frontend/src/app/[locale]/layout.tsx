@@ -5,6 +5,8 @@ import { Inter, Outfit } from 'next/font/google';
 import '../global.css';
 import AIChatWidget from '@/components/AIChatWidget';
 import { NotificationProvider } from '@/components/NotificationProvider';
+import { CartProvider } from '@/components/CartProvider';
+import CartDrawer from '@/components/CartDrawer';
 
 export async function generateStaticParams() {
   return [{ locale: 'en' }];
@@ -65,10 +67,13 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen bg-white text-slate-900 antialiased selection:bg-blue-600 selection:text-white transition-colors duration-300">
         <NotificationProvider>
-          <main className="flex min-h-screen flex-col items-stretch justify-start">
-            {children}
-          </main>
-          <AIChatWidget />
+          <CartProvider>
+            <main className="flex min-h-screen flex-col items-stretch justify-start">
+              {children}
+            </main>
+            <CartDrawer locale={resolvedParams.locale} />
+            <AIChatWidget />
+          </CartProvider>
         </NotificationProvider>
       </body>
     </html>

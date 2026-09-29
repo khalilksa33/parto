@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import NotificationBell from '@/components/NotificationBell';
+import { useCart } from '@/components/CartProvider';
 
 // API configuration
 const API_URL = '';
@@ -45,7 +46,7 @@ export default function MarketplacePage() {
 
   const [selectedTenantId, setSelectedTenantId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [cartCount, setCartCount] = useState<number>(0);
+  const { totalItems: cartCount, setIsCartOpen, addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const [searchType, setSearchType] = useState<'vin' | 'part'>('vin');
@@ -359,7 +360,7 @@ export default function MarketplacePage() {
             <NotificationBell />
 
             {/* Cart Icon */}
-            <div className="relative cursor-pointer p-2 rounded-full hover:bg-slate-100 transition-colors" onClick={() => setCartCount(0)}>
+            <div className="relative cursor-pointer p-2 rounded-full hover:bg-slate-100 transition-colors" onClick={() => setIsCartOpen(true)}>
               <span className="text-xl">🛒</span>
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
@@ -648,7 +649,7 @@ export default function MarketplacePage() {
                         )}
                       </span>
                       <button
-                        onClick={() => setCartCount(c => c + 1)}
+                        onClick={() => addToCart(product)}
                         className="bg-indigo-650 hover:bg-indigo-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                       >
                         Add to Cart
