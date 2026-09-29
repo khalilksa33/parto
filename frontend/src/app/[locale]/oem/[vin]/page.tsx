@@ -120,7 +120,7 @@ export default function OemCatalogPage() {
                           ? 'bg-indigo-600 border-white text-white scale-125 z-20' 
                           : 'bg-white border-indigo-600 text-indigo-700 hover:scale-110 hover:bg-indigo-50'
                       }`}
-                      style={{ top: \`\${top}%\`, left: \`\${left}%\` }}
+                      style={{ top: `${top}%`, left: `${left}%` }}
                     >
                       {part.hotspotId}
                     </button>
