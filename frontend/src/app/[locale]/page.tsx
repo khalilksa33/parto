@@ -505,6 +505,12 @@ export default function MarketplacePage() {
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Catalog automatically filtered for this vehicle.
                           </p>
+                          <button 
+                            onClick={() => router.push(`/${locale}/oem/${vinQuery}`)}
+                            className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors text-sm shadow-md flex items-center justify-center gap-2"
+                          >
+                            <span className="text-lg">🛠️</span> VIEW OEM PARTS DIAGRAM (EPC)
+                          </button>
                         </div>
                       )}
                     </>
