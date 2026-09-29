@@ -26,8 +26,10 @@ export async function GET(request: Request) {
       );
     `);
 
-    // 2. Add columns to products safely (Postgres 9.6+ supports IF NOT EXISTS for columns)
+    // 2. Add columns to products and tenants safely (Postgres 9.6+ supports IF NOT EXISTS for columns)
     await db.execute(sql`
+      ALTER TABLE "tenants" ADD COLUMN IF NOT EXISTS "warehouse_address" jsonb;
+      
       ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "weight" numeric(10, 2) DEFAULT '0.00';
       ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "length" numeric(10, 2) DEFAULT '0.00';
       ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "width" numeric(10, 2) DEFAULT '0.00';

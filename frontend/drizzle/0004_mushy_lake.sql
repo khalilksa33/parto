@@ -1,0 +1,1 @@
+ALTER TABLE "tenants" ADD COLUMN "warehouse_address" jsonb;

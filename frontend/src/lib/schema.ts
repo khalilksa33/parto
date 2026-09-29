@@ -9,6 +9,7 @@ export const tenants = pgTable('tenants', {
   ownerName: varchar('owner_name', { length: 255 }),
   email: varchar('email', { length: 255 }),
   phone: varchar('phone', { length: 50 }),
+  warehouseAddress: jsonb('warehouse_address'),
   settings: jsonb('settings').notNull().default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
