@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -43,5 +43,13 @@ export default function CheckoutSuccessPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-indigo-600 font-bold">Confirming order...</div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }
