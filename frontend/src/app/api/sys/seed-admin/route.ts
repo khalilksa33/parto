@@ -12,14 +12,13 @@ export async function GET(request: Request) {
     const adminEmail = 'admin@parto.com';
     const adminPassword = 'SuperAdmin123!';
 
-    // Check if exists
     const existing = await db.select().from(users).where(eq(users.email, adminEmail)).limit(1);
-    
-    if (existing.length > 0) {
-      return NextResponse.json({ message: 'Admin already exists', email: adminEmail, password: adminPassword });
-    }
-
     const passwordHash = await bcrypt.hash(adminPassword, 10);
+
+    if (existing.length > 0) {
+      await db.update(users).set({ passwordHash: passwordHash, status: 'active', role: 'superadmin' }).where(eq(users.email, adminEmail));
+      return NextResponse.json({ message: 'Admin password reset successfully', email: adminEmail, password: adminPassword });
+    }
 
     await db.insert(users).values({
       email: adminEmail,
