@@ -139,7 +139,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: \`Successfully added \${inserted.length} major KSA dealers.\`,
+      message: `Successfully added ${inserted.length} major KSA dealers.`,
       addedDealers: inserted
     });
   } catch (error: any) {
