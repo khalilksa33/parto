@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import NotificationBell from '@/components/NotificationBell';
 import { useCart } from '@/components/CartProvider';
+import Footer from '@/components/Footer';
 
 // API configuration
 const API_URL = '';
@@ -873,20 +874,7 @@ export default function MarketplacePage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-50 border-t border-slate-200 mt-20">
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png?v=3" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />
-            <span className="text-sm text-slate-500">© 2026 Parto Auto Spare Parts. All rights reserved.</span>
-          </div>
-          <div className="flex gap-6 text-sm text-slate-400">
-            <a href="#" className="hover:text-indigo-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-indigo-400 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-indigo-400 transition-colors">Support</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

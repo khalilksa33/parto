@@ -98,3 +98,30 @@ body {
 .button-primary:active {
   transform: scale(0.98);
 }
+
+/* Native App Look for Mobile */
+@media (max-width: 640px) {
+  body {
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Add padding at bottom to prevent content hiding behind bottom nav */
+    padding-bottom: 70px !important;
+  }
+  
+  /* Re-enable selection for inputs */
+  input, textarea, [contenteditable] {
+    -webkit-user-select: auto;
+    user-select: auto;
+  }
+  
+  /* Hide scrollbar */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
