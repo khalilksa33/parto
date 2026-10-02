@@ -11,7 +11,7 @@ const translations = {
     subtitle: 'Register your automotive business and launch your tenant space instantly',
     businessName: 'Business Name',
     businessNamePlaceholder: 'e.g., Apex Spare Parts',
-    subdomain: 'Unique Subdomain / Handle',
+    subdomain: 'Store Username / Handle',
     subdomainPlaceholder: 'e.g., apex-parts (only letters, numbers, dashes)',
     ownerName: 'Owner / Contact Name',
     ownerNamePlaceholder: 'e.g., John Doe',
@@ -31,7 +31,7 @@ const translations = {
     copyBtn: 'Copy Tenant ID',
     copiedBtn: 'Copied!',
     portalBtn: 'Go to Vendor Dashboard',
-    backBtn: 'Back to Marketplace',
+    backBtn: 'Back to Home',
     commissionInfo: 'Marketplace commission rate for this business type is',
     consentLabel: 'I agree to the partnership terms and authorize Parto to collect the transaction commission.',
     consentError: 'You must agree to the commission rate and terms of service.',
@@ -49,7 +49,7 @@ const translations = {
     subtitle: 'سجّل منشأتك لقطع الغيار أو الخدمات وانطلق بمتجرك المستقل فوراً',
     businessName: 'اسم المنشأة / التجاري',
     businessNamePlaceholder: 'مثال: شركة القمة لقطع الغيار',
-    subdomain: 'رابط المتجر الفرعي / المعرّف الفريد',
+    subdomain: 'معرف المتجر / اسم المستخدم',
     subdomainPlaceholder: 'مثال: apex-parts (أحرف، أرقام، شرطة فقط)',
     ownerName: 'اسم المالك / الشخص المسؤول',
     ownerNamePlaceholder: 'مثال: أحمد محمد',
@@ -69,7 +69,7 @@ const translations = {
     copyBtn: 'نسخ معرّف المتجر',
     copiedBtn: 'تم النسخ!',
     portalBtn: 'الانتقال إلى لوحة تحكم البائع',
-    backBtn: 'العودة للموقع الرئيسي',
+    backBtn: 'العودة للرئيسية',
     commissionInfo: 'نسبة عمولة المنصة المعتمدة لهذا النشاط هي',
     consentLabel: 'أوافق على شروط الشراكة وأفوض المنصة بتحصيل عمولة المبيعات المذكورة.',
     consentError: 'يجب الموافقة على نسبة العمولة وشروط الخدمة للاستمرار.',
@@ -274,9 +274,6 @@ export default function RegisterPage() {
                     onChange={handleSubdomainChange}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors"
                   />
-                  <span className={`absolute ${isRtl ? 'left-4' : 'right-4'} text-xs font-medium text-slate-500`}>
-                    .parto.com
-                  </span>
                 </div>
               </div>
 
