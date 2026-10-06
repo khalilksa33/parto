@@ -24,6 +24,9 @@ spec:
         envFrom:
         - secretRef:
             name: parto-secrets
+        env:
+        - name: MONGO_URI
+          value: "mongodb://mongodb.parto.svc.cluster.local:27017/parto"
 ---
 apiVersion: v1
 kind: Service

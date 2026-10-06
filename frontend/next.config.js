@@ -8,6 +8,10 @@ const nextConfig = {
         // Route API requests to the internal cluster service or fallback to localhost
         destination: `${process.env.INTERNAL_API_URL || 'http://localhost:8080'}/api/:path*`,
       },
+      {
+        source: '/meili/:path*',
+        destination: `${process.env.INTERNAL_MEILI_URL || 'http://localhost:7700'}/:path*`,
+      },
     ];
   },
   // Conditionally configure static export for Hostinger shared webhosting
