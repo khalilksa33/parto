@@ -20,11 +20,12 @@ export async function GET(request: Request) {
       const cacheKey = `products:all`;
       const cached = await redis.get(cacheKey);
       if (cached) {
-        return NextResponse.json(JSON.parse(cached));
+        const parsed = JSON.parse(cached);
+        return NextResponse.json(Array.isArray(parsed) ? { products: parsed } : parsed);
       }
       
       const allProducts = await db.select().from(products);
-      await redis.setex(cacheKey, 300, JSON.stringify(allProducts));
+      await redis.setex(cacheKey, 300, JSON.stringify({ products: allProducts }));
       return NextResponse.json({ products: allProducts });
     }
 
@@ -32,13 +33,14 @@ export async function GET(request: Request) {
     const cacheKey = `products:tenant:${tenantId}`;
     const cached = await redis.get(cacheKey);
     if (cached) {
-      return NextResponse.json(JSON.parse(cached));
+      const parsed = JSON.parse(cached);
+      return NextResponse.json(Array.isArray(parsed) ? { products: parsed } : parsed);
     }
 
     const tenantProducts = await db.select().from(products).where(eq(products.tenantId, tenantId as string));
     
     // Cache for 5 minutes
-    await redis.setex(cacheKey, 300, JSON.stringify(tenantProducts));
+    await redis.setex(cacheKey, 300, JSON.stringify({ products: tenantProducts }));
 
     return NextResponse.json({ products: tenantProducts });
   } catch (error) {
@@ -114,6 +116,7 @@ export async function POST(request: Request) {
     
     // Invalidate cache
     await redis.del(`products:tenant:${tenantId}`);
+    await redis.del(`products:all`);
 
     return NextResponse.json({ product: newProduct[0] }, { status: 201 });
   } catch (error) {

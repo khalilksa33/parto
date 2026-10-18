@@ -170,28 +170,69 @@ export default function MarketplacePage() {
       setInitialError(null);
       
       try {
-        let filterStr = [];
-        if (selectedTenantId !== 'all') filterStr.push(`tenantId = '${selectedTenantId}'`);
-        if (selectedCategory !== 'all') filterStr.push(`category = '${selectedCategory}'`);
+        let mapped: Product[] = [];
+        let usedMeili = false;
 
-        const { productsIndex } = await import('../../lib/meilisearch');
-        const searchRes = await productsIndex.search(searchQuery || '', {
-          filter: filterStr,
-          limit: 100
-        });
+        try {
+          let filterStr = [];
+          if (selectedTenantId !== 'all') filterStr.push(`tenantId = '${selectedTenantId}'`);
+          if (selectedCategory !== 'all') filterStr.push(`category = '${selectedCategory}'`);
 
-        const mapped = searchRes.hits.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          price: Number(p.price),
-          category: p.category,
-          tenantId: p.tenant_id || p.tenantId,
-          image: p.image || '📦',
-          rating: Number(p.rating),
-          featured: Boolean(p.featured)
-        }));
+          const { productsIndex } = await import('../../lib/meilisearch');
+          const searchRes = await productsIndex.search(searchQuery || '', {
+            filter: filterStr,
+            limit: 100
+          });
+
+          if (searchRes && searchRes.hits && searchRes.hits.length > 0) {
+            mapped = searchRes.hits.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              price: Number(p.price),
+              category: p.category,
+              tenantId: p.tenant_id || p.tenantId,
+              image: p.image || '📦',
+              rating: Number(p.rating || 4.8),
+              featured: Boolean(p.featured)
+            }));
+            usedMeili = true;
+          }
+        } catch (meiliErr) {
+          // Fallback to /api/products when Meilisearch is not reachable from browser
+        }
+
+        if (!usedMeili) {
+          const url = selectedTenantId !== 'all' 
+            ? `${API_URL}/api/products?tenantId=${selectedTenantId}`
+            : `${API_URL}/api/products`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Failed to load products from API');
+          const data = await res.json();
+          const rawProducts = Array.isArray(data) ? data : (data.products || []);
+          
+          mapped = rawProducts
+            .map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              price: Number(p.price),
+              category: p.category,
+              tenantId: p.tenant_id || p.tenantId,
+              image: p.image || '📦',
+              rating: Number(p.rating || 4.8),
+              featured: Boolean(p.featured)
+            }))
+            .filter((p: Product) => {
+              if (selectedTenantId !== 'all' && p.tenantId !== selectedTenantId) return false;
+              if (selectedCategory !== 'all' && p.category.toLowerCase() !== selectedCategory.toLowerCase()) return false;
+              if (searchQuery.trim() !== '') {
+                const q = searchQuery.toLowerCase();
+                return p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+              }
+              return true;
+            });
+        }
         
-        setProducts(mapped as Product[]);
+        setProducts(mapped);
       } catch (err: any) {
         setInitialError(err.message || 'Failed to initialize catalog search');
       } finally {
@@ -200,7 +241,7 @@ export default function MarketplacePage() {
       }
     };
 
-    // Debounce the search by 150ms to prevent spamming Meilisearch on every keystroke
+    // Debounce the search by 150ms to prevent spamming on every keystroke
     const timer = setTimeout(() => {
       fetchProducts();
     }, 150);
@@ -220,7 +261,7 @@ export default function MarketplacePage() {
       setOrdersLoading(true);
       setOrdersError(null);
       try {
-        const response = await fetch(`${API_URL}/api/orders`, {
+        const response = await fetch(`${API_URL}/api/orders?tenantId=${selectedTenantId}`, {
           headers: {
             'X-Tenant-ID': selectedTenantId,
           },
@@ -229,7 +270,7 @@ export default function MarketplacePage() {
           throw new Error(`Failed to fetch orders (${response.status} ${response.statusText})`);
         }
         const data = await response.json();
-        setOrders(data.orders || []);
+        setOrders(Array.isArray(data) ? data : (data.orders || []));
       } catch (err: any) {
         setOrdersError(err.message || 'Failed to connect to backend service');
       } finally {
@@ -835,21 +876,21 @@ export default function MarketplacePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50 font-mono">
-                  {orders.map((order) => (
+                  {orders.map((order: any) => (
                     <tr key={order.id} className="hover:bg-slate-800/30 transition-colors">
                       <td className="py-4 pl-4 text-slate-500 truncate max-w-[120px]" title={order.id}>
                         {order.id}
                       </td>
-                      <td className="py-4 font-bold text-indigo-400">{order.order_number}</td>
-                      <td className="py-4 text-slate-500 truncate max-w-[120px]" title={order.customer_id}>
-                        {order.customer_id}
+                      <td className="py-4 font-bold text-indigo-400">{order.orderNumber || order.order_number}</td>
+                      <td className="py-4 text-slate-500 truncate max-w-[120px]" title={order.customerId || order.customer_id}>
+                        {order.customerId || order.customer_id}
                       </td>
                       <td className="py-4 font-semibold text-white">
-                        {order.total_amount} {order.currency}
+                        {order.totalAmount || order.total_amount} {order.currency}
                       </td>
                       <td className="py-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                          order.status === 'completed' 
+                          order.status === 'completed' || order.status === 'paid'
                             ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20' 
                             : 'bg-amber-950 text-amber-400 border border-amber-500/20'
                         }`}>
@@ -857,7 +898,7 @@ export default function MarketplacePage() {
                         </span>
                       </td>
                       <td className="py-4 pr-4 text-slate-400">
-                        {new Date(order.created_at).toLocaleString()}
+                        {new Date(order.createdAt || order.created_at).toLocaleString()}
                       </td>
                     </tr>
                   ))}

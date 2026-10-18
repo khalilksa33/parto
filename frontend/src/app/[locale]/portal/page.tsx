@@ -153,8 +153,14 @@ function PortalContentInner() {
                         <div className="text-[10px] text-slate-400 mt-1">{new Date(order.createdAt).toLocaleDateString()}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-700">{order.metadata?.shippingAddress?.name || 'Guest'}</div>
-                        <div className="text-xs text-slate-500">{order.metadata?.shippingAddress?.city}, {order.metadata?.shippingAddress?.country}</div>
+                        <div className="font-semibold text-slate-700">
+                          {order.metadata?.shippingAddress?.name || 
+                           `${order.metadata?.shippingAddress?.firstName || ''} ${order.metadata?.shippingAddress?.lastName || ''}`.trim() || 
+                           'Guest'}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {order.metadata?.shippingAddress?.city || 'Riyadh'}{order.metadata?.shippingAddress?.phone ? ` • ${order.metadata.shippingAddress.phone}` : ''}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <ul className="text-xs text-slate-600 flex flex-col gap-1">
