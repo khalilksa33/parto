@@ -237,6 +237,17 @@ const BRAND_SEED_CATALOG = [
   }
 ];
 
+async function invalidateProductCaches(tenantId?: string | null) {
+  try {
+    if (tenantId) {
+      await redis.del(`products:tenant:${tenantId}`);
+      await redis.del(`products:v2:tenant:${tenantId}`);
+    }
+    await redis.del(`products:all`);
+    await redis.del(`products:v2:all`);
+  } catch (e) {}
+}
+
 async function ensureBrandCatalogSeeded(existingProducts: any[]) {
   try {
     const existingText = existingProducts
@@ -311,7 +322,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ products: allProducts });
     }
 
-    // Ensure full catalog is seeded before filtering by tenant
     const allCurrent = await db.select().from(products);
     if (allCurrent.length < 15) {
       await ensureBrandCatalogSeeded(allCurrent);
@@ -348,7 +358,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tenant ID is required' }, { status: 400 });
     }
 
-    let productStatus = 'active';
+    let productStatus = body.status || 'active';
     let modReason = null;
 
     // AI COMPLIANCE GUARD
@@ -394,28 +404,95 @@ export async function POST(request: Request) {
     const newProduct = await db.insert(products).values({
       tenantId: tenantId,
       name: body.name,
-      price: body.price,
-      category: body.category,
-      image: body.image,
-      description: body.description,
-      compatibility: body.compatibility,
-      brandName: body.brandName,
+      price: String(body.price || '0.00'),
+      category: body.category || 'Engine Parts',
+      image: body.image || '⚙️',
+      description: body.description || null,
+      compatibility: body.compatibility || null,
+      brandName: body.brandName || null,
+      tecdocArticleId: body.tecdocArticleId || body.oemPartNumber || null,
+      weight: String(body.weight || '1.50'),
+      length: String(body.length || '20.00'),
+      width: String(body.width || '15.00'),
+      height: String(body.height || '10.00'),
       status: productStatus,
       moderationReason: modReason,
-      featured: body.featured
+      featured: Boolean(body.featured)
     }).returning();
     
-    // Invalidate cache
-    try {
-      await redis.del(`products:tenant:${tenantId}`);
-      await redis.del(`products:all`);
-      await redis.del(`products:v2:tenant:${tenantId}`);
-      await redis.del(`products:v2:all`);
-    } catch (e) {}
+    await invalidateProductCaches(tenantId);
 
     return NextResponse.json({ product: newProduct[0] }, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const body = await request.json();
+    const productId = id || body.id;
+
+    if (!productId) {
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+    }
+
+    const updateValues: any = { updatedAt: new Date() };
+    if (body.name !== undefined) updateValues.name = body.name;
+    if (body.price !== undefined) updateValues.price = String(body.price);
+    if (body.category !== undefined) updateValues.category = body.category;
+    if (body.brandName !== undefined) updateValues.brandName = body.brandName;
+    if (body.description !== undefined) updateValues.description = body.description;
+    if (body.status !== undefined) updateValues.status = body.status;
+    if (body.featured !== undefined) updateValues.featured = Boolean(body.featured);
+    if (body.weight !== undefined) updateValues.weight = String(body.weight);
+    if (body.image !== undefined) updateValues.image = body.image;
+
+    const updated = await db
+      .update(products)
+      .set(updateValues)
+      .where(eq(products.id, productId))
+      .returning();
+
+    if (updated.length === 0) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    await invalidateProductCaches(updated[0].tenantId);
+
+    return NextResponse.json({ product: updated[0] });
+  } catch (error: any) {
+    console.error('Error updating product:', error);
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+    }
+
+    const deleted = await db
+      .delete(products)
+      .where(eq(products.id, id))
+      .returning();
+
+    if (deleted.length > 0) {
+      await invalidateProductCaches(deleted[0].tenantId);
+    } else {
+      await invalidateProductCaches();
+    }
+
+    return NextResponse.json({ success: true, deletedId: id });
+  } catch (error: any) {
+    console.error('Error deleting product:', error);
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
