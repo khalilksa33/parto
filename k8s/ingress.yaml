@@ -15,7 +15,14 @@ spec:
   - host: parto.26i.uk
     http:
       paths:
-      - path: /api
+      - path: /api/notifications
+        pathType: Prefix
+        backend:
+          service:
+            name: parto-backend
+            port:
+              number: 5000
+      - path: /api/health
         pathType: Prefix
         backend:
           service:

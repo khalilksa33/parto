@@ -1,8 +1,42 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useCart } from './CartProvider';
+import { useCart, CartItem } from './CartProvider';
 import { useRouter } from 'next/navigation';
+
+function buildFallbackShippingRates(items: CartItem[], city: string = 'Riyadh') {
+  const grouped: Record<string, CartItem[]> = {};
+  for (const item of items) {
+    const tId = item.product.tenantId || 'default-seller';
+    if (!grouped[tId]) grouped[tId] = [];
+    grouped[tId].push(item);
+  }
+
+  const isSameCity = city.toLowerCase() === 'riyadh';
+  const shipments = Object.entries(grouped).map(([tId, tenantItems]) => {
+    const totalWeight = tenantItems.reduce(
+      (sum, item) => sum + (Number(item.product.weight) || 1.5) * item.quantity,
+      0
+    );
+    const extraKg = Math.max(0, totalWeight - 1);
+    const smsaAmount = ((isSameCity ? 18 : 25) + extraKg * (isSameCity ? 1.5 : 2.5)).toFixed(2);
+    const aramexAmount = ((isSameCity ? 21 : 28) + extraKg * (isSameCity ? 1.75 : 2.75)).toFixed(2);
+
+    return {
+      tenantId: tId,
+      sellerName: `Seller #${tId.substring(0, 6)}`,
+      originCity: 'Riyadh',
+      destinationCity: city,
+      totalWeight: Number(totalWeight.toFixed(2)),
+      rates: [
+        { id: 'smsa-standard', provider: 'SMSA Express', servicelevel: { name: 'Standard KSA' }, amount: smsaAmount, currency: 'SAR' },
+        { id: 'aramex-domestic', provider: 'Aramex', servicelevel: { name: 'Domestic Parcel' }, amount: aramexAmount, currency: 'SAR' }
+      ]
+    };
+  });
+
+  return { multiOrigin: true, shipments };
+}
 
 export default function CartDrawer({ locale }: { locale: string }) {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, subtotal, totalItems } = useCart();
@@ -29,22 +63,34 @@ export default function CartDrawer({ locale }: { locale: string }) {
               zip: '12211',
               country: 'SA'
             },
-            cartItems: items.map(i => ({ productId: i.product.id, quantity: i.quantity }))
+            cartItems: items.map(i => ({
+              productId: i.product.id,
+              quantity: i.quantity,
+              tenantId: i.product.tenantId,
+              product: i.product
+            }))
           })
         });
         
         if (res.ok) {
           const data = await res.json();
-          setShippingRates(data);
+          if (data?.multiOrigin && Array.isArray(data.shipments) && data.shipments.length > 0) {
+            setShippingRates(data);
+          } else {
+            setShippingRates(buildFallbackShippingRates(items, 'Riyadh'));
+          }
+        } else {
+          setShippingRates(buildFallbackShippingRates(items, 'Riyadh'));
         }
       } catch (err) {
-        console.error('Failed to calculate shipping', err);
+        console.error('Failed to calculate shipping, using local calculation', err);
+        setShippingRates(buildFallbackShippingRates(items, 'Riyadh'));
       } finally {
         setIsCalculating(false);
       }
     };
 
-    const timer = setTimeout(fetchRates, 1000);
+    const timer = setTimeout(fetchRates, 300);
     return () => clearTimeout(timer);
   }, [items, isCartOpen]);
 
@@ -69,7 +115,7 @@ export default function CartDrawer({ locale }: { locale: string }) {
       {/* Drawer */}
       <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[101] flex flex-col animate-in slide-in-from-right duration-300">
         <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-          <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-800 flex items-center justify-between gap-2">
             <span>🛒</span> Shopping Cart
             <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">{totalItems}</span>
           </h2>
@@ -136,22 +182,25 @@ export default function CartDrawer({ locale }: { locale: string }) {
               </div>
               
               <div className="flex justify-between items-start">
-                <span>Shipping (Multi-Origin)</span>
+                <span>Estimated Shipping</span>
                 {isCalculating ? (
                   <span className="animate-pulse text-indigo-500 text-xs">Calculating routes...</span>
-                ) : shippingRates?.multiOrigin ? (
+                ) : shippingRates?.multiOrigin && Array.isArray(shippingRates.shipments) ? (
                   <div className="text-right">
                     {shippingRates.shipments.map((ship: any, idx: number) => {
-                      const cheapest = ship.rates.sort((a:any, b:any) => parseFloat(a.amount) - parseFloat(b.amount))[0];
+                      const sortedRates = Array.isArray(ship.rates)
+                        ? [...ship.rates].sort((a: any, b: any) => parseFloat(a.amount) - parseFloat(b.amount))
+                        : [];
+                      const cheapest = sortedRates[0];
                       return (
                         <div key={idx} className="text-xs mb-1">
-                          From {ship.sellerName}: <span className="font-bold text-slate-800">SAR {cheapest ? cheapest.amount : '15.00'}</span>
+                          {ship.sellerName}: <span className="font-bold text-slate-800">SAR {cheapest ? cheapest.amount : '18.00'}</span>
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <span className="font-bold text-slate-800">Pending</span>
+                  <span className="font-bold text-slate-800">Calculated at checkout</span>
                 )}
               </div>
             </div>

@@ -9,6 +9,12 @@ export interface CartItem {
     price: number;
     tenantId: string;
     image: string;
+    category?: string;
+    brandName?: string;
+    weight?: number;
+    length?: number;
+    width?: number;
+    height?: number;
   };
   quantity: number;
 }
@@ -23,6 +29,7 @@ interface CartContextType {
   subtotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
+  isHydrated: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -96,6 +103,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         subtotal,
         isCartOpen,
         setIsCartOpen,
+        isHydrated,
       }}
     >
       {children}
