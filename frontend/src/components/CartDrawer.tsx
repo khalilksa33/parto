@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart, CartItem } from './CartProvider';
 import { useRouter } from 'next/navigation';
+import { resolvePartImage, getFallbackPartSvg } from '@/lib/part-images';
 
 function buildFallbackShippingRates(items: CartItem[], city: string = 'Riyadh') {
   const grouped: Record<string, CartItem[]> = {};
@@ -149,13 +150,33 @@ export default function CartDrawer({ locale }: { locale: string }) {
                   <div className="p-4 flex flex-col gap-4">
                     {tenantItems.map((item) => (
                       <div key={item.product.id} className="flex gap-4 items-center">
-                        <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-2xl border border-slate-200">
-                          {item.product.image?.startsWith('http') ? (
-                            <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover rounded-lg" />
-                          ) : item.product.image}
+                        <div
+                          onClick={() => {
+                            setIsCartOpen(false);
+                            router.push(`/${locale}/products/${encodeURIComponent(item.product.id)}`);
+                          }}
+                          className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-2xl border border-slate-200 overflow-hidden cursor-pointer shrink-0 hover:border-indigo-400 transition-colors"
+                        >
+                          <img
+                            src={resolvePartImage(item.product.image, item.product.category, item.product.name)}
+                            alt={item.product.name}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = getFallbackPartSvg(item.product.category, item.product.name);
+                            }}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
                         </div>
-                        <div className="flex-1">
-                          <h4 className="font-bold text-slate-800 text-sm line-clamp-1">{item.product.name}</h4>
+                        <div className="flex-1 min-w-0">
+                          <h4
+                            onClick={() => {
+                              setIsCartOpen(false);
+                              router.push(`/${locale}/products/${encodeURIComponent(item.product.id)}`);
+                            }}
+                            className="font-bold text-slate-800 hover:text-indigo-600 text-sm line-clamp-1 cursor-pointer transition-colors"
+                          >
+                            {item.product.name}
+                          </h4>
                           <div className="text-indigo-600 font-bold text-sm mt-1">SAR {item.product.price}</div>
                         </div>
                         <div className="flex items-center gap-2">

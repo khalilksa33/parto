@@ -44,7 +44,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 8,
     compatibility: ['Toyota Camry 2018-2024', 'Toyota Avalon 2019-2022', 'Lexus ES350'],
     description: 'Speero Verified Genuine Toyota OEM front ceramic brake pad set with shims.',
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-TOY-27060',
@@ -63,7 +63,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 20,
     compatibility: ['Toyota Land Cruiser', 'Toyota Prado', 'Lexus GX460'],
     description: 'Speero Distributor Stock — Original Denso 150A high-output alternator.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-LEX-48010',
@@ -158,7 +158,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 18,
     compatibility: ['BMW 5 Series G30', 'BMW M3 G80', 'BMW 3 Series G20', 'BMW X5'],
     description: 'Speero Certified BMW M-Performance 4-piston caliper and ventilated rotor kit.',
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-BMW-11657',
@@ -177,7 +177,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 30,
     compatibility: ['BMW M340i', 'BMW 540i', 'BMW X5 xDrive40i', 'BMW 740Li'],
     description: 'Speero Distributor Stock — Genuine BorgWarner/BMW TwinScroll turbocharger assembly.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-AUD-4K094',
@@ -215,7 +215,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 22,
     compatibility: ['Audi S4', 'Audi S5', 'Audi RS5', 'Audi Q8'],
     description: 'Speero Performance Network — Hitachi OEM-spec HPFP and cooling assembly.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-NIS-21460',
@@ -253,7 +253,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 8,
     compatibility: ['Honda Accord 2018-2024', 'Honda CR-V', 'Honda Civic'],
     description: 'Speero Verified Genuine Keihin/Honda GDI fuel injectors with seals.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-HYU-97701',
@@ -291,7 +291,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 22,
     compatibility: ['Ford F-150', 'Ford Expedition', 'Ford Taurus', 'Ford Mustang'],
     description: 'Speero Distributor Stock — Genuine Ford Motorcraft heavy-duty alternator.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-CHV-84977',
@@ -329,7 +329,7 @@ const SPEERO_KSA_CATALOG: SpeeroStockItem[] = [
     height: 8,
     compatibility: ['Mazda CX-9', 'Mazda6', 'Mazda CX-5', 'Mazda3'],
     description: 'Speero Genuine Mazda OEM ignition coils (4x) and NGK Laser Iridium plugs.',
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop'
   },
   {
     speeroSku: 'SPR-MER-22232',
@@ -482,6 +482,8 @@ export async function POST(request: Request) {
       await redis.del(`products:all`);
       await redis.del(`products:v2:tenant:${tenantId}`);
       await redis.del(`products:v2:all`);
+      await redis.del(`products:v3:tenant:${tenantId}`);
+      await redis.del(`products:v3:all`);
     } catch (e) {}
 
     return NextResponse.json({

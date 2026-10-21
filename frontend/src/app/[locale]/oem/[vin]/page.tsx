@@ -164,8 +164,15 @@ export default function OemCatalogPage() {
                       
                       {isActive && (
                         <div className="mt-3 pt-3 border-t border-indigo-100 flex gap-2">
-                          <button className="flex-1 bg-indigo-600 text-white py-1.5 rounded text-xs font-semibold hover:bg-indigo-700">
-                            Check Availability
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/${locale}/products/${encodeURIComponent(part.oemPartNumber || part.id || part.name)}`);
+                            }}
+                            className="flex-1 bg-indigo-600 text-white py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer"
+                          >
+                            Check Availability & View Part →
                           </button>
                         </div>
                       )}

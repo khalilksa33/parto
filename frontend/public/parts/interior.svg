@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <!-- Sport Steering Wheel -->
+  <circle cx="200" cy="190" r="102" fill="none" stroke="#cbd5e1" stroke-width="18"/>
+  <path d="M130 264 L270 264" stroke="#0f172a" stroke-width="24"/>
+  <path d="M135 260 L265 260" stroke="#cbd5e1" stroke-width="16" stroke-linecap="round"/>
+  <!-- Red 12 O'Clock Stripe -->
+  <rect x="194" y="79" width="12" height="20" rx="2" fill="#ef4444"/>
+  <!-- Spokes & Center Hub -->
+  <path d="M105 185 L165 185 M235 185 L295 185 M200 220 L200 260" stroke="#94a3b8" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="200" cy="190" r="36" fill="#334155" stroke="#94a3b8" stroke-width="4"/>
+  <circle cx="200" cy="190" r="14" fill="#6366f1"/>
+  <text x="200" y="355" text-anchor="middle" fill="#e2e8f0" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2">INTERIOR &amp; CABIN</text>
+</svg>

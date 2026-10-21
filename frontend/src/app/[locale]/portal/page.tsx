@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { resolvePartImage, getFallbackPartSvg } from '@/lib/part-images';
 
 const VEHICLE_BRANDS = [
   'Toyota',
@@ -1140,15 +1141,15 @@ function PortalContentInner() {
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
                                   <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 text-xl">
-                                    {prod.image?.startsWith('http') ? (
-                                      <img
-                                        src={prod.image}
-                                        alt={prod.name}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      prod.image || '⚙️'
-                                    )}
+                                    <img
+                                      src={resolvePartImage(prod.image, prod.category, prod.name)}
+                                      alt={prod.name}
+                                      onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = getFallbackPartSvg(prod.category, prod.name);
+                                      }}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                   <div>
                                     <div className="font-bold text-slate-800 line-clamp-1 max-w-md">
@@ -1434,8 +1435,12 @@ function PortalContentInner() {
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
                                     <img
-                                      src={item.image}
+                                      src={resolvePartImage(item.image, item.category, item.name)}
                                       alt={item.name}
+                                      onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = getFallbackPartSvg(item.category, item.name);
+                                      }}
                                       className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
                                     />
                                     <div>

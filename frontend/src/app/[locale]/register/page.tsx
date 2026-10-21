@@ -397,7 +397,7 @@ export default function RegisterPage() {
                   required
                   checked={consentChecked}
                   onChange={(e) => setConsentChecked(e.target.checked)}
-                  className="mt-1 w-4 h-4 accent-indigo-650 cursor-pointer shrink-0"
+                  className="mt-1 w-4 h-4 accent-indigo-600 cursor-pointer shrink-0"
                 />
                 <label htmlFor="consent" className="text-xs text-slate-400 font-medium cursor-pointer leading-relaxed">
                   {t.consentLabel}
@@ -413,7 +413,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full mt-4 bg-indigo-650 hover:bg-indigo-600 disabled:bg-indigo-900/50 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-98 flex items-center justify-center gap-2"
+                className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-900/50 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-98 flex items-center justify-center gap-2"
               >
                 {isPending ? (
                   <>
@@ -453,7 +453,7 @@ export default function RegisterPage() {
             <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
               <button
                 onClick={() => router.push(`/${locale}/portal?tenant_id=${registeredTenant.id}`)}
-                className="flex-1 bg-indigo-650 hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-xl transition-all"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all"
               >
                 {t.portalBtn}
               </button>

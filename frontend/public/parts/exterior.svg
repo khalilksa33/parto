@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#172554"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <!-- LED Matrix Headlight Housing -->
+  <path d="M65 205 L125 140 L325 130 L340 225 L110 245 Z" fill="#1e293b" stroke="#60a5fa" stroke-width="5" stroke-linejoin="round"/>
+  <!-- DRL Signature Strip -->
+  <path d="M85 202 L132 155 L310 147" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+  <!-- Triple LED Projectors -->
+  <rect x="140" y="172" width="42" height="36" rx="8" fill="#0ea5e9" stroke="#e0f2fe" stroke-width="3"/>
+  <rect x="198" y="168" width="42" height="36" rx="8" fill="#0ea5e9" stroke="#e0f2fe" stroke-width="3"/>
+  <rect x="256" y="164" width="42" height="36" rx="8" fill="#0ea5e9" stroke="#e0f2fe" stroke-width="3"/>
+  <text x="200" y="355" text-anchor="middle" fill="#e2e8f0" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2">EXTERIOR &amp; LIGHTING</text>
+</svg>

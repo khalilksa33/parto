@@ -48,7 +48,7 @@ body {
   display: flex;
   flex-direction: column;
   padding-block: 2rem;
-  padding-inline: 1.5rem; /* Automatically translates to padding-left/right based on DOM dir */
+  padding-inline: 1.5rem;
   margin-block-end: 3rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -65,12 +65,12 @@ body {
 .menu-item {
   display: flex;
   align-items: center;
-  margin-inline-end: 2rem; /* Handles right margin in LTR and left margin in RTL */
+  margin-inline-end: 2rem;
   padding-inline-start: 0.5rem;
 }
 
 .header-logo {
-  margin-inline-end: auto; /* Pushes navigation to the opposite side dynamically */
+  margin-inline-end: auto;
 }
 
 /* Interactive elements featuring micro-animations */
@@ -82,7 +82,7 @@ body {
   padding-inline: 1.5rem;
   border-radius: 8px;
   background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: var(--text-primary);
+  color: #ffffff;
   font-family: var(--font-display);
   font-weight: 600;
   border: none;

@@ -47,12 +47,14 @@ export async function GET() {
         try {
           await redis.del(`products:tenant:${t.id}`);
           await redis.del(`products:v2:tenant:${t.id}`);
+          await redis.del(`products:v3:tenant:${t.id}`);
         } catch (e) {}
       }
     }
     try {
       await redis.del(`products:all`);
       await redis.del(`products:v2:all`);
+      await redis.del(`products:v3:all`);
     } catch (e) {}
 
     // 4. Create fresh unique products across all 12 vehicle brands
@@ -68,7 +70,7 @@ export async function GET() {
           category: 'Brakes & Suspension',
           description: 'Genuine Toyota front ceramic brake pad set for Camry 2018-2024.',
           compatibility: ['Toyota', 'Camry', 'Avalon'],
-          image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
           rating: '4.9',
           featured: true,
           weight: '2.20',
@@ -116,7 +118,7 @@ export async function GET() {
           category: 'Engine Parts',
           description: 'Long-life twin-tip iridium spark plugs for V6 3.5L Toyota and Lexus engines.',
           compatibility: ['Lexus', 'Toyota', 'ES350', 'RX350', 'Camry'],
-          image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
           rating: '4.9',
           featured: true,
           weight: '0.35',
@@ -164,7 +166,7 @@ export async function GET() {
           category: 'Brakes & Suspension',
           description: 'Genuine Mobis low-dust ceramic brake pad set for Kia Telluride and Sorento.',
           compatibility: ['Kia', 'Telluride', 'Sorento'],
-          image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
           rating: '4.8',
           featured: false,
           weight: '1.90',
@@ -196,7 +198,7 @@ export async function GET() {
           category: 'Engine Parts',
           description: 'Original Honda direct injection fuel injector set of 4 for Accord and CR-V.',
           compatibility: ['Honda', 'Accord', 'CR-V', 'Civic'],
-          image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
           rating: '4.8',
           featured: false,
           weight: '0.95',
@@ -228,7 +230,7 @@ export async function GET() {
           category: 'Engine Parts',
           description: 'Genuine Mazda OEM SkyActiv ignition coil pack and iridium spark plug service kit.',
           compatibility: ['Mazda', 'CX-9', 'Mazda6', 'CX-5'],
-          image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
           rating: '4.8',
           featured: false,
           weight: '1.40',
@@ -249,7 +251,7 @@ export async function GET() {
           category: 'Brakes & Suspension',
           description: 'Genuine Lexus ventilated front brake disc rotor for ES350 and RX350 models.',
           compatibility: ['Lexus', 'ES350', 'RX350', 'LX570'],
-          image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
           rating: '4.9',
           featured: true,
           weight: '7.40',
@@ -313,7 +315,7 @@ export async function GET() {
           category: 'Interior Accessories',
           description: 'Hand-stitched Nappa leather interior seat cover set tailored for Mercedes-Benz, BMW, and Lexus sedans.',
           compatibility: ['Mercedes', 'BMW', 'Lexus', 'Audi'],
-          image: 'https://images.unsplash.com/photo-1596706798031-bb035c935d2d?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=800&auto=format&fit=crop',
           rating: '4.8',
           featured: false,
           weight: '5.50',
@@ -334,7 +336,7 @@ export async function GET() {
           category: 'Brakes & Suspension',
           description: 'Genuine BMW M-Performance 4-piston front brake kit for BMW 3 Series, 5 Series, and M models.',
           compatibility: ['BMW', '3 Series', '5 Series', 'M3', 'X5'],
-          image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
           rating: '5.0',
           featured: true,
           weight: '9.50',
@@ -350,7 +352,7 @@ export async function GET() {
           category: 'Exhaust Systems',
           description: 'Valvetronic titanium cat-back exhaust system for Audi RS5/RS6 and BMW M series.',
           compatibility: ['Audi', 'BMW', 'RS5', 'RS6', 'M3'],
-          image: 'https://images.unsplash.com/photo-1616428789525-41e975f8f53a?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop',
           rating: '4.7',
           featured: true,
           weight: '11.50',
@@ -366,7 +368,7 @@ export async function GET() {
           category: 'Engine Parts',
           description: 'Forged 5.0L V8 short block engine assembly rated for 1000+ HP for Ford Mustang GT and F-150.',
           compatibility: ['Ford', 'Mustang', 'F-150', 'Expedition'],
-          image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
           rating: '5.0',
           featured: true,
           weight: '85.00',

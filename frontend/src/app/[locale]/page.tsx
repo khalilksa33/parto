@@ -5,6 +5,11 @@ import { useRouter, useParams } from 'next/navigation';
 import NotificationBell from '@/components/NotificationBell';
 import { useCart } from '@/components/CartProvider';
 import Footer from '@/components/Footer';
+import {
+  FALLBACK_BRAND_PARTS,
+  resolvePartImage,
+  getFallbackPartSvg,
+} from '@/lib/part-images';
 
 // API configuration
 const API_URL = '';
@@ -22,191 +27,6 @@ const popularBrands = [
   { name: 'Mercedes', logo: 'https://cdn.worldvectorlogo.com/logos/mercedes-benz-9.svg' },
   { name: 'BMW', logo: '/brands/bmw.svg' },
   { name: 'Audi', logo: '/brands/audi.svg' }
-];
-
-const FALLBACK_BRAND_PARTS: Omit<Product, 'tenantId'>[] = [
-  {
-    id: 'brand-lexus-brake-rotor',
-    brandName: 'Lexus',
-    name: 'Lexus ES350 / RX350 Genuine Front Brake Rotor Disc (43512-33140)',
-    price: 640,
-    category: 'Brakes & Suspension',
-    description: 'Genuine Lexus ventilated front brake disc rotor for ES350 and RX350 models.',
-    compatibility: ['Lexus', 'ES350', 'RX350', 'LX570'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 7.4
-  },
-  {
-    id: 'brand-kia-timing-kit',
-    brandName: 'Kia',
-    name: 'Kia K5 / Sportage Genuine Timing Chain & Tensioner Kit (24321-2G111)',
-    price: 780,
-    category: 'Engine Parts',
-    description: 'OEM Hyundai/Kia Mobis timing chain kit with hydraulic tensioner for Kia K5, Optima, and Sportage.',
-    compatibility: ['Kia', 'K5', 'Sportage', 'Sorento'],
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 2.1
-  },
-  {
-    id: 'brand-kia-brake-pads',
-    brandName: 'Kia',
-    name: 'Kia Telluride / Sorento Ceramic Front Brake Pads Set (58101-S9A00)',
-    price: 340,
-    category: 'Brakes & Suspension',
-    description: 'Genuine Mobis low-dust ceramic brake pad set for Kia Telluride and Sorento.',
-    compatibility: ['Kia', 'Telluride', 'Sorento'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
-    rating: 4.8,
-    featured: false,
-    weight: 1.9
-  },
-  {
-    id: 'brand-bmw-brembo-kit',
-    brandName: 'BMW',
-    name: 'BMW M3 / 5 Series (G30) M-Performance Brembo Brake Caliper & Pad Kit',
-    price: 3850,
-    category: 'Brakes & Suspension',
-    description: 'Genuine BMW M-Performance 4-piston front brake kit for BMW 3 Series, 5 Series, and M models.',
-    compatibility: ['BMW', '3 Series', '5 Series', 'M3', 'X5'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
-    rating: 5.0,
-    featured: true,
-    weight: 9.5
-  },
-  {
-    id: 'brand-bmw-b58-chargepipe',
-    brandName: 'BMW',
-    name: 'BMW B58 TwinPower Turbo Charge Pipe & Intercooler Assembly',
-    price: 2150,
-    category: 'Engine Parts',
-    description: 'High-flow aluminum charge pipe and intercooler upgrade for BMW B58 3.0L turbocharged engines.',
-    compatibility: ['BMW', 'M340i', '540i', 'X5'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 5.8
-  },
-  {
-    id: 'brand-audi-matrix-led',
-    brandName: 'Audi',
-    name: 'Audi A6 / Q7 Matrix LED Headlamp Assembly Left (4K0-941-035)',
-    price: 4200,
-    category: 'Exterior & Body',
-    description: 'Genuine Audi OEM HD Matrix LED headlight assembly with dynamic turn signal for Audi A6 and Q7.',
-    compatibility: ['Audi', 'A6', 'Q7', 'Q8', 'A8'],
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
-    rating: 5.0,
-    featured: true,
-    weight: 5.2
-  },
-  {
-    id: 'brand-audi-rs-exhaust',
-    brandName: 'Audi',
-    name: 'Audi RS / S-Line Sport Exhaust Downpipe & Resonator Kit (TFSI)',
-    price: 3600,
-    category: 'Exhaust Systems',
-    description: 'Stainless steel performance exhaust system for Audi A4, A6, S5, and RS models.',
-    compatibility: ['Audi', 'A4', 'A6', 'S5', 'RS5'],
-    image: 'https://images.unsplash.com/photo-1616428789525-41e975f8f53a?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: false,
-    weight: 8.4
-  },
-  {
-    id: 'brand-nissan-patrol-radiator',
-    brandName: 'Nissan',
-    name: 'Nissan Patrol Y62 V8 OEM Radiator & Cooling Fan Assembly (21460-1LA0A)',
-    price: 1650,
-    category: 'Engine Parts',
-    description: 'Heavy-duty genuine Nissan radiator engineered for desert climate cooling on Patrol Y62.',
-    compatibility: ['Nissan', 'Patrol', 'Altima', 'Maxima'],
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 7.8
-  },
-  {
-    id: 'brand-honda-vtec-injector',
-    brandName: 'Honda',
-    name: 'Honda Accord 1.5T / 2.0T Genuine VTEC Fuel Injector Set (16010-6A0-A01)',
-    price: 1120,
-    category: 'Engine Parts',
-    description: 'Original Honda direct injection fuel injector set of 4 for Accord and CR-V.',
-    compatibility: ['Honda', 'Accord', 'CR-V', 'Civic'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
-    rating: 4.8,
-    featured: false,
-    weight: 0.95
-  },
-  {
-    id: 'brand-hyundai-ac-compressor',
-    brandName: 'Hyundai',
-    name: 'Hyundai Sonata / Elantra Genuine AC Compressor Unit (97701-L1000)',
-    price: 1480,
-    category: 'Engine Parts',
-    description: 'Genuine Hanon/Mobis high-output air conditioning compressor for Hyundai Sonata and Tucson.',
-    compatibility: ['Hyundai', 'Sonata', 'Elantra', 'Tucson'],
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 6.2
-  },
-  {
-    id: 'brand-ford-motorcraft-alt',
-    brandName: 'Ford',
-    name: 'Ford F-150 / Taurus Motorcraft Heavy-Duty Alternator (GL-8728-RM)',
-    price: 1290,
-    category: 'Engine Parts',
-    description: 'Original Ford Motorcraft 220A alternator for F-150, Expedition, and Taurus.',
-    compatibility: ['Ford', 'F-150', 'Expedition', 'Taurus', 'Mustang'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
-    rating: 4.8,
-    featured: false,
-    weight: 6.8
-  },
-  {
-    id: 'brand-chevrolet-magneride',
-    brandName: 'Chevrolet',
-    name: 'Chevrolet Tahoe / Silverado ACDelco Magnetic Ride Shock Absorber (84977478)',
-    price: 1890,
-    category: 'Brakes & Suspension',
-    description: 'Genuine GM ACDelco MagneRide front suspension strut for Chevrolet Tahoe and Suburban.',
-    compatibility: ['Chevrolet', 'Tahoe', 'Suburban', 'Silverado'],
-    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
-    rating: 4.9,
-    featured: true,
-    weight: 8.1
-  },
-  {
-    id: 'brand-mazda-skyactiv-coil',
-    brandName: 'Mazda',
-    name: 'Mazda CX-9 / Mazda6 SkyActiv-G Ignition Coil & Spark Plug Kit (PE20-18-100A)',
-    price: 690,
-    category: 'Engine Parts',
-    description: 'Genuine Mazda OEM SkyActiv ignition coil pack and iridium spark plug service kit.',
-    compatibility: ['Mazda', 'CX-9', 'Mazda6', 'CX-5'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
-    rating: 4.8,
-    featured: false,
-    weight: 1.4
-  },
-  {
-    id: 'brand-mercedes-airmatic-strut',
-    brandName: 'Mercedes',
-    name: 'Mercedes-Benz S-Class / E-Class (W223/W213) Airmatic Air Suspension Strut',
-    price: 4650,
-    category: 'Brakes & Suspension',
-    description: 'Original Mercedes-Benz Bilstein Airmatic front air suspension damper assembly.',
-    compatibility: ['Mercedes', 'S-Class', 'E-Class', 'GLE', 'G-Class'],
-    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
-    rating: 5.0,
-    featured: true,
-    weight: 9.2
-  }
 ];
 
 interface Product {
@@ -386,12 +206,12 @@ export default function MarketplacePage() {
         const rawProducts = Array.isArray(data) ? data : (data.products || []);
         
         let allMapped: Product[] = rawProducts.map((p: any) => ({
-          id: p.id,
+          id: String(p.id),
           name: p.name,
           price: Number(p.price),
           category: p.category,
           tenantId: p.tenant_id || p.tenantId,
-          image: p.image || '📦',
+          image: resolvePartImage(p.image, p.category, p.name),
           rating: Number(p.rating || 4.8),
           featured: Boolean(p.featured),
           brandName: p.brand_name || p.brandName,
@@ -871,44 +691,44 @@ export default function MarketplacePage() {
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             <button
               onClick={() => setSelectedTenantId('all')}
-              className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 ${
+              className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
                 selectedTenantId === 'all'
-                  ? 'bg-indigo-950/40 border-indigo-500 text-indigo-300 shadow-lg shadow-indigo-500/10'
-                  : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200'
+                  ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                  : 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/60 text-slate-700 hover:text-indigo-700 shadow-sm'
               }`}
             >
               <span className="text-2xl">🌍</span>
-              <span className="font-semibold text-sm">All Shops</span>
+              <span className="font-bold text-sm">All Shops</span>
             </button>
             {tenants.map((tenant) => (
               <button
                 key={tenant.id}
                 onClick={() => setSelectedTenantId(tenant.id)}
-                className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 ${
+                className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
                   selectedTenantId === tenant.id
-                    ? 'bg-indigo-950/40 border-indigo-500 text-indigo-300 shadow-lg shadow-indigo-500/10'
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200'
+                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                    : 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/60 text-slate-700 hover:text-indigo-700 shadow-sm'
                 }`}
               >
                 <span className="text-2xl">{tenant.logo}</span>
-                <span className="font-semibold text-sm text-center truncate w-full">{translateTenantName(tenant.name, locale)}</span>
+                <span className="font-bold text-sm text-center truncate w-full">{translateTenantName(tenant.name, locale)}</span>
               </button>
             ))}
           </div>
         </section>
 
         {/* Filters and Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
           {/* Categories Tab */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold capitalize whitespace-nowrap transition-colors duration-200 ${
+                className={`px-4 py-2 rounded-full text-xs font-bold capitalize whitespace-nowrap transition-colors duration-200 cursor-pointer ${
                   selectedCategory === category
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300'
                 }`}
               >
                 {category === 'all' ? 'All Categories' : category}
@@ -930,8 +750,8 @@ export default function MarketplacePage() {
                 </button>
               </span>
             )}
-            <span className="text-sm text-slate-500">
-              Showing <span className="font-semibold text-slate-900">{filteredProducts.length}</span> products
+            <span className="text-sm text-slate-600">
+              Showing <span className="font-bold text-slate-900">{filteredProducts.length}</span> products
             </span>
           </div>
         </div>
@@ -941,44 +761,56 @@ export default function MarketplacePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => {
               const tenant = tenants.find(t => t.id === product.tenantId);
+              const imgSrc = resolvePartImage(product.image, product.category, product.name);
               return (
                 <div
                   key={product.id}
-                  className="group relative bg-slate-900/50 border border-slate-800/80 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between hover:shadow-xl hover:shadow-indigo-500/5"
+                  onClick={() => router.push(`/${locale}/products/${encodeURIComponent(product.id)}`)}
+                  className="group relative bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-500 transition-all duration-300 flex flex-col justify-between shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 cursor-pointer"
                 >
-                  <div className="relative bg-slate-950 aspect-square flex items-center justify-center text-6xl group-hover:scale-105 transition-transform duration-300 select-none overflow-hidden">
-                    {product.image && product.image.startsWith('http') ? (
-                      <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
-                    ) : (
-                      product.image
-                    )}
+                  <div className="relative bg-slate-900 aspect-square flex items-center justify-center text-6xl select-none overflow-hidden">
+                    <img
+                      src={imgSrc}
+                      alt={product.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = getFallbackPartSvg(product.category, product.name);
+                      }}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                     {product.brandName && (
-                      <span className="absolute top-3 left-3 bg-slate-900/90 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
+                      <span className="absolute top-3 left-3 bg-slate-900/90 text-white border border-white/15 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow">
                         {product.brandName}
                       </span>
                     )}
                     {product.featured && (
-                      <span className="absolute top-3 right-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
+                      <span className="absolute top-3 right-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow">
                         Featured
                       </span>
                     )}
                   </div>
 
-                  <div className="p-4 flex flex-col gap-2 flex-1 justify-between">
+                  <div className="p-4 flex flex-col gap-2 flex-1 justify-between bg-white">
                     <div>
-                      <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                        <span>{product.category}</span>
-                        <span className="font-medium text-slate-400 flex items-center gap-0.5">
-                          {tenant?.logo} {tenant ? translateTenantName(tenant.name, locale) : ''}
+                      <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
+                        <span className="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                          {product.category}
+                        </span>
+                        <span className="font-semibold text-slate-600 flex items-center gap-1 truncate max-w-[130px]">
+                          <span>{tenant?.logo}</span>
+                          <span className="truncate">{tenant ? translateTenantName(tenant.name, locale) : ''}</span>
                         </span>
                       </div>
-                      <h3 className="font-bold text-white text-base group-hover:text-indigo-400 transition-colors duration-200">
+                      <h3 className="font-bold text-slate-900 text-base group-hover:text-indigo-600 transition-colors duration-200 line-clamp-2">
                         {product.name}
                       </h3>
+                      <span className="inline-block mt-1.5 text-[11px] font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
+                        {locale === 'ar' ? 'عرض تفاصيل القطعة ←' : 'View Part Details →'}
+                      </span>
                     </div>
 
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-xl font-extrabold text-white">
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                      <span className="text-xl font-black text-slate-900">
                         {locale === 'ar' ? (
                           <>{product.price} <span className="font-riyal text-2xl font-normal leading-none tracking-tight">﷼</span></>
                         ) : (
@@ -986,10 +818,14 @@ export default function MarketplacePage() {
                         )}
                       </span>
                       <button
-                        onClick={() => addToCart(product)}
-                        className="bg-indigo-650 hover:bg-indigo-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
                       >
-                        Add to Cart
+                        {locale === 'ar' ? 'أضف للسلة' : 'Add to Cart'}
                       </button>
                     </div>
                   </div>
@@ -1047,35 +883,35 @@ export default function MarketplacePage() {
         </section>
 
         {/* Saudi Arabia Regional Auto Directory SEO Section */}
-        <section className="mt-12 border-t border-slate-900 pt-12 flex flex-col gap-6">
+        <section className="mt-12 border-t border-slate-200 pt-12 flex flex-col gap-6">
           <div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               {locale === 'ar' ? 'سوق صيانة السيارات وقطع الغيار المعتمد في السعودية' : 'Vetted Auto Maintenance & Spare Parts in Saudi Arabia'}
             </h2>
-            <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
               {locale === 'ar'
                 ? 'نحن نربط قائدي السيارات بأفضل مقدمي الخدمات المحترفين في الرياض، جدة، مكة المكرمة، المدينة المنورة، الدمام، والخبر. تصفح الخدمات بكل أمان وسهولة من قطع الغيار الأصلية إلى الميكانيكا والتشليح المتنقل.'
                 : 'Connecting drivers with premium, certified service providers in Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar, and across KSA. Find genuine OEM parts, aftermarket modifications, and top-tier mechanics.'}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-2">
+            <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col gap-2 shadow-sm">
               <span className="text-3xl">🛻</span>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-slate-900">
                 {locale === 'ar' ? 'سطحات نقل هيدروليك وعادية' : 'Saudi Flatbed Towing (Satha)'}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-600 leading-relaxed">
                 {locale === 'ar'
                   ? 'نقل آمن للسيارات المصدومة أو المتعطلة داخل مدن السعودية أو بين المدن بلمسة زر واحدة وعلى مدار الساعة.'
                   : 'Fast, secure towing service for broken or damaged vehicles within major Saudi cities or long-distance intercity transport 24/7.'}
               </p>
             </div>
-            <div className="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl flex flex-col gap-2">
+            <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col gap-2 shadow-sm">
               <span className="text-3xl">🔋</span>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-slate-900">
                 {locale === 'ar' ? 'الورشة المتنقلة وصيانة الطرق' : 'KSA Mobile Auto Workshops'}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-600 leading-relaxed">
                 {locale === 'ar'
                   ? 'خدمات الميكانيكا والكهرباء المتنقلة عند المنزل، تغيير زيت السيارة، شحن وتغيير بطاريات السيارات، وبنشر متنقل سريع.'
                   : 'Doorstep battery jumpstart, replacement, tire patching, oil changes, and comprehensive diagnostics by mobile mechanics near you.'}
@@ -1085,13 +921,13 @@ export default function MarketplacePage() {
         </section>
 
         {/* Database Verification / Isolation Log Section */}
-        <section className="mt-12 bg-slate-900/30 border border-slate-800 rounded-3xl p-6 sm:p-8">
+        <section className="mt-12 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-lg">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <span>🔒</span> Database Isolation Logs (PostgreSQL RLS)
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-300 mt-1">
                 Verifies database tenant boundaries. Setting <code>app.current_tenant_id</code> restricts query scope automatically.
               </p>
             </div>
@@ -1103,21 +939,21 @@ export default function MarketplacePage() {
           </div>
 
           {selectedTenantId === 'all' ? (
-            <div className="flex flex-col items-center justify-center py-10 text-center gap-2 text-slate-400 bg-slate-950/40 rounded-2xl border border-slate-900 border-dashed">
+            <div className="flex flex-col items-center justify-center py-10 text-center gap-2 text-slate-300 bg-slate-950/60 rounded-2xl border border-slate-800 border-dashed">
               <span className="text-3xl">👥</span>
-              <p className="text-sm font-medium">Select a specific tenant above to query live orders from the database.</p>
-              <p className="text-xs text-slate-500">Only Apex Tech Labs and Luxe Attire contain database records in the seeded state.</p>
+              <p className="text-sm font-medium text-white">Select a specific tenant above to query live orders from the database.</p>
+              <p className="text-xs text-slate-400">Each tenant store displays only its own isolated PostgreSQL records.</p>
             </div>
           ) : ordersLoading ? (
-            <div className="flex items-center justify-center py-12 gap-3 text-slate-400">
+            <div className="flex items-center justify-center py-12 gap-3 text-slate-300">
               <span className="animate-spin text-2xl">⏳</span>
               <span className="text-sm">Querying isolated records...</span>
             </div>
           ) : ordersError ? (
-            <div className="bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-2xl p-6 flex flex-col gap-2">
+            <div className="bg-rose-950/60 border border-rose-500/30 text-rose-200 rounded-2xl p-6 flex flex-col gap-2">
               <span className="font-bold text-sm">Connection/Authorization Failure</span>
               <p className="text-xs">{ordersError}</p>
-              <p className="text-[10px] text-slate-500 mt-2">
+              <p className="text-[10px] text-slate-400 mt-2">
                 Note: Verify that the backend stack is running locally (port 8080) or on Cloud Run and that CORS allows requests from this origin.
               </p>
             </div>
@@ -1125,7 +961,7 @@ export default function MarketplacePage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                  <tr className="border-b border-slate-800 text-slate-300 font-semibold uppercase tracking-wider">
                     <th className="pb-3 pl-4">Order ID</th>
                     <th className="pb-3">Order Number</th>
                     <th className="pb-3">Customer ID</th>
@@ -1134,14 +970,14 @@ export default function MarketplacePage() {
                     <th className="pb-3 pr-4">Created At</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50 font-mono">
+                <tbody className="divide-y divide-slate-800 font-mono">
                   {orders.map((order: any) => (
-                    <tr key={order.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="py-4 pl-4 text-slate-500 truncate max-w-[120px]" title={order.id}>
+                    <tr key={order.id} className="hover:bg-slate-800/60 transition-colors">
+                      <td className="py-4 pl-4 text-slate-300 truncate max-w-[120px]" title={order.id}>
                         {order.id}
                       </td>
-                      <td className="py-4 font-bold text-indigo-400">{order.orderNumber || order.order_number}</td>
-                      <td className="py-4 text-slate-500 truncate max-w-[120px]" title={order.customerId || order.customer_id}>
+                      <td className="py-4 font-bold text-indigo-300">{order.orderNumber || order.order_number}</td>
+                      <td className="py-4 text-slate-300 truncate max-w-[120px]" title={order.customerId || order.customer_id}>
                         {order.customerId || order.customer_id}
                       </td>
                       <td className="py-4 font-semibold text-white">
@@ -1150,13 +986,13 @@ export default function MarketplacePage() {
                       <td className="py-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                           order.status === 'completed' || order.status === 'paid'
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/20' 
-                            : 'bg-amber-950 text-amber-400 border border-amber-500/20'
+                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' 
+                            : 'bg-amber-950 text-amber-300 border border-amber-500/30'
                         }`}>
                           {order.status}
                         </span>
                       </td>
-                      <td className="py-4 pr-4 text-slate-400">
+                      <td className="py-4 pr-4 text-slate-300">
                         {new Date(order.createdAt || order.created_at).toLocaleString()}
                       </td>
                     </tr>
@@ -1165,10 +1001,10 @@ export default function MarketplacePage() {
               </table>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-10 text-center gap-2 text-slate-400 bg-slate-950/40 rounded-2xl border border-slate-900 border-dashed">
+            <div className="flex flex-col items-center justify-center py-10 text-center gap-2 text-slate-300 bg-slate-950/60 rounded-2xl border border-slate-800 border-dashed">
               <span className="text-3xl">📭</span>
-              <p className="text-sm font-medium">No live orders found in the database context for this tenant.</p>
-              <p className="text-xs text-slate-500">Row-Level Security queries returned 0 results cleanly.</p>
+              <p className="text-sm font-medium text-white">No live orders found in the database context for this tenant.</p>
+              <p className="text-xs text-slate-400">Row-Level Security queries returned 0 results cleanly.</p>
             </div>
           )}
         </section>

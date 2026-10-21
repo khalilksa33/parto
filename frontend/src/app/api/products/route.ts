@@ -4,6 +4,7 @@ import { products, tenants } from '@/lib/schema';
 import { redis } from '@/lib/redis';
 import { eq } from 'drizzle-orm';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { resolvePartImage } from '@/lib/part-images';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Brakes & Suspension',
     description: 'Genuine Lexus ventilated front brake disc rotor for ES350 and RX350 models.',
     compatibility: ['Lexus', 'ES350', 'RX350', 'LX570'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
     rating: '4.9',
     featured: true,
     weight: '7.40',
@@ -51,7 +52,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Brakes & Suspension',
     description: 'Genuine Mobis low-dust ceramic brake pad set for Kia Telluride and Sorento.',
     compatibility: ['Kia', 'Telluride', 'Sorento'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
     rating: '4.8',
     featured: false,
     weight: '1.90',
@@ -67,7 +68,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Brakes & Suspension',
     description: 'Genuine BMW M-Performance 4-piston front brake kit for BMW 3 Series, 5 Series, and M models.',
     compatibility: ['BMW', '3 Series', '5 Series', 'M3', 'X5'],
-    image: 'https://images.unsplash.com/photo-1600705593881-229202517565?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1590362891991-f700445d3153?q=80&w=800&auto=format&fit=crop',
     rating: '5.0',
     featured: true,
     weight: '9.50',
@@ -83,7 +84,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Engine Parts',
     description: 'High-flow aluminum charge pipe and intercooler upgrade for BMW B58 3.0L turbocharged engines.',
     compatibility: ['BMW', 'M340i', '540i', 'X5 xDrive40i'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
     rating: '4.9',
     featured: true,
     weight: '5.80',
@@ -115,7 +116,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Exhaust Systems',
     description: 'Stainless steel performance exhaust system for Audi A4, A6, S5, and RS models.',
     compatibility: ['Audi', 'A4', 'A6', 'S5', 'RS5'],
-    image: 'https://images.unsplash.com/photo-1616428789525-41e975f8f53a?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop',
     rating: '4.9',
     featured: false,
     weight: '8.40',
@@ -147,7 +148,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Engine Parts',
     description: 'Original Honda direct injection fuel injector set of 4 for Accord and CR-V.',
     compatibility: ['Honda', 'Accord', 'CR-V', 'Civic'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
     rating: '4.8',
     featured: false,
     weight: '0.95',
@@ -179,7 +180,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Engine Parts',
     description: 'Original Ford Motorcraft 220A alternator for F-150, Expedition, and Taurus.',
     compatibility: ['Ford', 'F-150', 'Expedition', 'Taurus', 'Mustang'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
     rating: '4.8',
     featured: false,
     weight: '6.80',
@@ -211,7 +212,7 @@ const BRAND_SEED_CATALOG = [
     category: 'Engine Parts',
     description: 'Genuine Mazda OEM SkyActiv ignition coil pack and iridium spark plug service kit.',
     compatibility: ['Mazda', 'CX-9', 'Mazda6', 'CX-5'],
-    image: 'https://images.unsplash.com/photo-1586266153920-563b7df089e1?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=800&auto=format&fit=crop',
     rating: '4.8',
     featured: false,
     weight: '1.40',
@@ -237,14 +238,23 @@ const BRAND_SEED_CATALOG = [
   }
 ];
 
+function sanitizeProductsList(list: any[]) {
+  return list.map(p => ({
+    ...p,
+    image: resolvePartImage(p.image, p.category, p.name)
+  }));
+}
+
 async function invalidateProductCaches(tenantId?: string | null) {
   try {
     if (tenantId) {
       await redis.del(`products:tenant:${tenantId}`);
       await redis.del(`products:v2:tenant:${tenantId}`);
+      await redis.del(`products:v3:tenant:${tenantId}`);
     }
     await redis.del(`products:all`);
     await redis.del(`products:v2:all`);
+    await redis.del(`products:v3:all`);
   } catch (e) {}
 }
 
@@ -297,29 +307,40 @@ async function ensureBrandCatalogSeeded(existingProducts: any[]) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const tenantId = searchParams.get('tenantId');
+  const productId = searchParams.get('id');
 
   try {
+    if (productId) {
+      const found = await db.select().from(products).where(eq(products.id, productId)).limit(1);
+      if (found.length > 0) {
+        const sanitized = sanitizeProductsList(found)[0];
+        return NextResponse.json({ product: sanitized });
+      }
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
     if (!tenantId) {
-      const cacheKey = `products:v2:all`;
+      const cacheKey = `products:v3:all`;
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
           const parsed = JSON.parse(cached);
           const list = Array.isArray(parsed) ? parsed : (parsed.products || []);
           if (list.length >= 15) {
-            return NextResponse.json({ products: list });
+            return NextResponse.json({ products: sanitizeProductsList(list) });
           }
         }
       } catch (e) {}
 
       let allProducts = await db.select().from(products);
       allProducts = await ensureBrandCatalogSeeded(allProducts);
+      const sanitizedAll = sanitizeProductsList(allProducts);
 
       try {
-        await redis.setex(cacheKey, 300, JSON.stringify({ products: allProducts }));
+        await redis.setex(cacheKey, 300, JSON.stringify({ products: sanitizedAll }));
       } catch (e) {}
 
-      return NextResponse.json({ products: allProducts });
+      return NextResponse.json({ products: sanitizedAll });
     }
 
     const allCurrent = await db.select().from(products);
@@ -327,22 +348,24 @@ export async function GET(request: Request) {
       await ensureBrandCatalogSeeded(allCurrent);
     }
 
-    const cacheKey = `products:v2:tenant:${tenantId}`;
+    const cacheKey = `products:v3:tenant:${tenantId}`;
     try {
       const cached = await redis.get(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        return NextResponse.json(Array.isArray(parsed) ? { products: parsed } : parsed);
+        const list = Array.isArray(parsed) ? parsed : (parsed.products || []);
+        return NextResponse.json({ products: sanitizeProductsList(list) });
       }
     } catch (e) {}
 
     const tenantProducts = await db.select().from(products).where(eq(products.tenantId, tenantId as string));
+    const sanitizedTenant = sanitizeProductsList(tenantProducts);
 
     try {
-      await redis.setex(cacheKey, 300, JSON.stringify({ products: tenantProducts }));
+      await redis.setex(cacheKey, 300, JSON.stringify({ products: sanitizedTenant }));
     } catch (e) {}
 
-    return NextResponse.json({ products: tenantProducts });
+    return NextResponse.json({ products: sanitizedTenant });
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -406,7 +429,7 @@ export async function POST(request: Request) {
       name: body.name,
       price: String(body.price || '0.00'),
       category: body.category || 'Engine Parts',
-      image: body.image || '⚙️',
+      image: resolvePartImage(body.image, body.category, body.name),
       description: body.description || null,
       compatibility: body.compatibility || null,
       brandName: body.brandName || null,
