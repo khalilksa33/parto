@@ -59,6 +59,12 @@ export default function SingleProductPage() {
   const [selectedCity, setSelectedCity] = useState<string>('Riyadh');
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [addedFeedback, setAddedFeedback] = useState<boolean>(false);
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const [isHoverZooming, setIsHoverZooming] = useState<boolean>(false);
+  const [zoomOrigin, setZoomOrigin] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+  const [lightboxScale, setLightboxScale] = useState<number>(2);
+  const [lightboxOrigin, setLightboxOrigin] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
 
   useEffect(() => {
     let isMounted = true;
@@ -410,9 +416,31 @@ export default function SingleProductPage() {
 
             {/* Primary Product Detail Card */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-              {/* Left Column: Image Gallery */}
+              {/* Left Column: Image Gallery with Interactive Zoom */}
               <div className="lg:col-span-5 flex flex-col gap-4">
-                <div className="relative aspect-square w-full rounded-2xl bg-slate-900 border border-slate-200 overflow-hidden flex items-center justify-center shadow-inner">
+                <div
+                  onMouseEnter={() => {
+                    setIsHoverZooming(true);
+                    if (zoomScale === 1) setZoomScale(2.2);
+                  }}
+                  onMouseLeave={() => {
+                    setIsHoverZooming(false);
+                    setZoomScale(1);
+                    setZoomOrigin({ x: 50, y: 50 });
+                  }}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+                    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+                    setZoomOrigin({ x, y });
+                  }}
+                  onClick={() => {
+                    setLightboxScale(2);
+                    setLightboxOrigin({ x: 50, y: 50 });
+                    setIsLightboxOpen(true);
+                  }}
+                  className="group relative aspect-square w-full rounded-2xl bg-slate-900 border border-slate-200 overflow-hidden flex items-center justify-center shadow-inner cursor-zoom-in select-none"
+                >
                   <img
                     src={galleryImages[activeImageIndex] || galleryImages[0]}
                     alt={product.name}
@@ -420,50 +448,136 @@ export default function SingleProductPage() {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = getFallbackPartSvg(product.category, product.name);
                     }}
-                    className="w-full h-full object-cover"
+                    style={{
+                      transform: `scale(${zoomScale})`,
+                      transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
+                    }}
+                    className="w-full h-full object-cover transition-transform duration-150 ease-out"
                   />
                   {product.brandName && (
-                    <span className="absolute top-4 left-4 bg-slate-900/90 text-white border border-white/15 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow">
+                    <span className="absolute top-4 left-4 bg-slate-900/90 text-white border border-white/15 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow pointer-events-none z-10">
                       🚘 {product.brandName}
                     </span>
                   )}
                   {product.featured && (
-                    <span className="absolute top-4 right-4 bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow">
+                    <span className="absolute top-4 right-4 bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow pointer-events-none z-10">
                       ★ Featured OEM
                     </span>
                   )}
+
+                  {/* Interactive Zoom Controls Overlay */}
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute bottom-3 inset-x-3 flex items-center justify-between gap-2 z-10"
+                  >
+                    <span className="bg-slate-900/85 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-white/15 flex items-center gap-1.5 shadow">
+                      <span>🔍</span>
+                      <span>
+                        {isHoverZooming || zoomScale > 1
+                          ? isAr
+                            ? `تكبير ${Math.round(zoomScale * 100)}% (حرك المؤشر)`
+                            : `Zoom ${Math.round(zoomScale * 100)}% — Move to pan`
+                          : isAr
+                          ? 'مرر للتكبير أو اضغط لملء الشاشة'
+                          : 'Hover to zoom · Click for fullscreen'}
+                      </span>
+                    </span>
+
+                    <div className="flex items-center gap-1 bg-slate-900/90 backdrop-blur-sm border border-white/15 rounded-lg p-1 shadow">
+                      <button
+                        type="button"
+                        onClick={() => setZoomScale((z) => Math.max(1, Number((z - 0.6).toFixed(1))))}
+                        className="w-7 h-7 rounded text-white hover:bg-white/20 font-bold text-sm flex items-center justify-center transition-colors cursor-pointer"
+                        title={isAr ? 'تصغير' : 'Zoom Out'}
+                      >
+                        −
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setZoomScale(1);
+                          setZoomOrigin({ x: 50, y: 50 });
+                        }}
+                        className="px-1.5 h-7 rounded text-[10px] font-mono font-bold text-indigo-300 hover:bg-white/15 transition-colors cursor-pointer"
+                        title={isAr ? 'إعادة ضبط' : 'Reset Zoom'}
+                      >
+                        {Math.round(zoomScale * 100)}%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomScale((z) => Math.min(4, Number((z + 0.6).toFixed(1))))}
+                        className="w-7 h-7 rounded text-white hover:bg-white/20 font-bold text-sm flex items-center justify-center transition-colors cursor-pointer"
+                        title={isAr ? 'تكبير' : 'Zoom In'}
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLightboxScale(2.2);
+                          setLightboxOrigin({ x: 50, y: 50 });
+                          setIsLightboxOpen(true);
+                        }}
+                        className="w-7 h-7 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs flex items-center justify-center transition-colors cursor-pointer ml-0.5"
+                        title={isAr ? 'عرض بملء الشاشة' : 'Fullscreen Zoom'}
+                      >
+                        ⛶
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Gallery Switcher (Photo vs Technical Diagram) */}
-                {galleryImages.length > 1 && (
-                  <div className="flex items-center gap-3">
-                    {galleryImages.map((imgSrc, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setActiveImageIndex(idx)}
-                        className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                          activeImageIndex === idx
-                            ? 'border-indigo-600 ring-2 ring-indigo-500/30 scale-105'
-                            : 'border-slate-200 opacity-75 hover:opacity-100 hover:border-slate-400'
-                        }`}
-                      >
-                        <img
-                          src={imgSrc}
-                          alt={`${product.name} view ${idx + 1}`}
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = getFallbackPartSvg(product.category, product.name);
+                <div className="flex items-center justify-between gap-3">
+                  {galleryImages.length > 1 ? (
+                    <div className="flex items-center gap-3">
+                      {galleryImages.map((imgSrc, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setActiveImageIndex(idx);
+                            setZoomScale(1);
+                            setZoomOrigin({ x: 50, y: 50 });
                           }}
-                          className="w-full h-full object-cover"
-                        />
-                        <span className="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[9px] font-bold text-center py-0.5">
-                          {idx === 0 ? 'Photo' : 'Spec SVG'}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
+                          className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                            activeImageIndex === idx
+                              ? 'border-indigo-600 ring-2 ring-indigo-500/30 scale-105'
+                              : 'border-slate-200 opacity-75 hover:opacity-100 hover:border-slate-400'
+                          }`}
+                        >
+                          <img
+                            src={imgSrc}
+                            alt={`${product.name} view ${idx + 1}`}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = getFallbackPartSvg(product.category, product.name);
+                            }}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[9px] font-bold text-center py-0.5">
+                            {idx === 0 ? 'Photo' : 'Spec SVG'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLightboxScale(2.2);
+                      setLightboxOrigin({ x: 50, y: 50 });
+                      setIsLightboxOpen(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <span>🔍</span>
+                    <span>{isAr ? 'تكبير الصورة بملء الشاشة' : 'Inspect High-Res Zoom'}</span>
+                  </button>
+                </div>
 
                 {/* Guarantee Badges */}
                 <div className="grid grid-cols-3 gap-2.5 pt-2">
@@ -800,6 +914,143 @@ export default function SingleProductPage() {
           </>
         )}
       </main>
+
+      {/* Fullscreen Interactive Zoom Lightbox Modal */}
+      {isLightboxOpen && product && (
+        <div
+          onClick={() => setIsLightboxOpen(false)}
+          className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 select-none"
+        >
+          {/* Top Bar */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-white/15 rounded-2xl px-4 py-3 text-white z-20"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="px-2.5 py-1 rounded-lg bg-indigo-600 text-xs font-bold shrink-0">
+                {product.brandName || product.category}
+              </span>
+              <h3 className="font-bold text-sm sm:text-base truncate">{product.name}</h3>
+              <span className="hidden md:inline-block font-mono text-xs text-slate-400 shrink-0">
+                OEM #: {oemNumber}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {[1, 1.8, 2.5, 3.5].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setLightboxScale(preset)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer ${
+                    Math.abs(lightboxScale - preset) < 0.2
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  {preset}x
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setLightboxScale((s) => Math.max(1, Number((s - 0.5).toFixed(1))))}
+                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center cursor-pointer"
+                title="Zoom Out"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={() => setLightboxScale((s) => Math.min(4.5, Number((s + 0.5).toFixed(1))))}
+                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center cursor-pointer"
+                title="Zoom In"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsLightboxOpen(false)}
+                className="ml-2 px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-colors cursor-pointer"
+              >
+                ✕ {isAr ? 'إغلاق' : 'Close'}
+              </button>
+            </div>
+          </div>
+
+          {/* Center Zoomable Canvas */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => {
+              e.preventDefault();
+              const delta = e.deltaY < 0 ? 0.35 : -0.35;
+              setLightboxScale((s) => Math.max(1, Math.min(4.5, Number((s + delta).toFixed(2)))));
+            }}
+            onMouseMove={(e) => {
+              if (lightboxScale <= 1) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+              const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+              setLightboxOrigin({ x, y });
+            }}
+            onDoubleClick={() => {
+              setLightboxScale((s) => (s > 1.5 ? 1 : 2.5));
+              setLightboxOrigin({ x: 50, y: 50 });
+            }}
+            className="relative flex-1 my-4 w-full max-w-5xl mx-auto rounded-3xl bg-slate-900 border border-white/15 overflow-hidden flex items-center justify-center cursor-crosshair"
+          >
+            <img
+              src={galleryImages[activeImageIndex] || galleryImages[0]}
+              alt={product.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = getFallbackPartSvg(product.category, product.name);
+              }}
+              style={{
+                transform: `scale(${lightboxScale})`,
+                transformOrigin: `${lightboxOrigin.x}% ${lightboxOrigin.y}%`,
+              }}
+              className="max-w-full max-h-[72vh] object-contain transition-transform duration-100 ease-out"
+            />
+          </div>
+
+          {/* Bottom Gallery & Hint Bar */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-white/15 rounded-2xl px-4 py-3 text-white z-20"
+          >
+            <div className="flex items-center gap-3">
+              {galleryImages.map((imgSrc, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setActiveImageIndex(idx);
+                    setLightboxOrigin({ x: 50, y: 50 });
+                  }}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                    activeImageIndex === idx
+                      ? 'border-indigo-500 bg-indigo-600/30 text-white'
+                      : 'border-white/15 bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  <img
+                    src={imgSrc}
+                    alt={`thumb-${idx}`}
+                    className="w-7 h-7 rounded object-cover"
+                  />
+                  <span>{idx === 0 ? (isAr ? 'صورة القطعة' : 'Part Photo') : (isAr ? 'المخطط الفني SVG' : 'Technical SVG')}</span>
+                </button>
+              ))}
+            </div>
+
+            <span className="text-xs text-slate-400">
+              {isAr
+                ? 'حرك الماوس للتنقل داخل الصورة المكبرة · عجلة الماوس للتكبير/التصغير · نقر مزدوج لإعادة الضبط'
+                : 'Move cursor to pan · Scroll wheel to zoom · Double-click to toggle zoom'}
+            </span>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
