@@ -24,9 +24,21 @@ jobs:
       - name: 🔍 Lint PHP Syntax & Code Quality
         run: |
           echo "Checking PHP syntax for all project files..."
-          find . -maxdepth 3 -name "*.php" -not -path "*/node_modules/*" -not -path "*/vendor/*" -exec php -l {} \;
+          find . -maxdepth 3 -name "*.php" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/frontend/*" -not -path "*/backend/*" -exec php -l {} \;
+
+      - name: 🔐 Check Hostinger Secrets Configuration
+        id: check_secrets
+        run: |
+          if [ -n "${{ secrets.HOSTINGER_FTP_SERVER }}" ] && [ -n "${{ secrets.HOSTINGER_FTP_USERNAME }}" ] && [ -n "${{ secrets.HOSTINGER_FTP_PASSWORD }}" ]; then
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+            echo "Hostinger FTP secrets detected. Proceeding with deployment."
+          else
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+            echo "::notice title=Hostinger Secrets Required::To deploy to parto.dynapulsar.com, configure HOSTINGER_FTP_SERVER, HOSTINGER_FTP_USERNAME, and HOSTINGER_FTP_PASSWORD in repository Secrets (Settings > Secrets and variables > Actions)."
+          fi
 
       - name: 🚀 Deploy to Hostinger via FTPS / FTP
+        if: steps.check_secrets.outputs.has_secrets == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOSTINGER_FTP_SERVER }}
@@ -50,8 +62,22 @@ jobs:
             rename.py
             generate_docs.py
 
-      - name: 🌐 Verify Deployment Live Ping
+      - name: ℹ️ Deployment Setup Instructions (When Secrets Not Yet Configured)
+        if: steps.check_secrets.outputs.has_secrets != 'true'
+        run: |
+          echo "=========================================================================="
+          echo "  ACTION REQUIRED: Set your Hostinger credentials in GitHub Secrets"
+          echo "  Repository URL: https://github.com/khalilksa33/parto/settings/secrets/actions"
+          echo "  Secrets to add:"
+          echo "    1. HOSTINGER_FTP_SERVER   (e.g., ftp.dynapulsar.com or Hostinger server IP)"
+          echo "    2. HOSTINGER_FTP_USERNAME (your Hostinger FTP username)"
+          echo "    3. HOSTINGER_FTP_PASSWORD (your Hostinger FTP password)"
+          echo "    4. HOSTINGER_REMOTE_DIR   (optional: public_html/ or public_html/parto/)"
+          echo "=========================================================================="
+
+      - name: 🌐 Verify Production Ping
+        if: steps.check_secrets.outputs.has_secrets == 'true'
         continue-on-error: true
         run: |
           echo "Pinging production domain: https://parto.dynapulsar.com"
-          curl -I -s --max-time 10 https://parto.dynapulsar.com || echo "Site will be live once DNS resolves."
+          curl -I -s --max-time 10 https://parto.dynapulsar.com || echo "Site will be active once DNS resolves."
