@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="50%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <!-- Outer Gear / Pulley -->
+  <circle cx="200" cy="190" r="105" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="14 8" opacity="0.5"/>
+  <!-- Piston & Connecting Rod Illustration -->
+  <rect x="145" y="95" width="110" height="75" rx="10" fill="url(#metal)" stroke="#64748b" stroke-width="4"/>
+  <line x1="145" y1="115" x2="255" y2="115" stroke="#1e293b" stroke-width="4"/>
+  <line x1="145" y1="127" x2="255" y2="127" stroke="#1e293b" stroke-width="4"/>
+  <circle cx="200" cy="145" r="16" fill="#1e293b" stroke="#94a3b8" stroke-width="4"/>
+  <!-- Connecting Rod -->
+  <path d="M186 160 L176 235 L224 235 L214 160 Z" fill="url(#metal)" stroke="#64748b" stroke-width="3"/>
+  <circle cx="200" cy="258" r="34" fill="none" stroke="url(#metal)" stroke-width="14"/>
+  <circle cx="200" cy="258" r="18" fill="#0f172a"/>
+  <text x="200" y="355" text-anchor="middle" fill="#e2e8f0" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2">ENGINE &amp; POWERTRAIN</text>
+</svg>

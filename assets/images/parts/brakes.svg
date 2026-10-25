@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <radialGradient id="disc" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="70%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <!-- Ventilated Brake Disc Rotor -->
+  <circle cx="200" cy="195" r="115" fill="url(#disc)" stroke="#475569" stroke-width="6"/>
+  <circle cx="200" cy="195" r="78" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 6"/>
+  <!-- Cross-drilled slots -->
+  <g fill="#334155">
+    <circle cx="200" cy="100" r="4"/><circle cx="212" cy="112" r="4"/>
+    <circle cx="267" cy="128" r="4"/><circle cx="262" cy="144" r="4"/>
+    <circle cx="295" cy="195" r="4"/><circle cx="283" cy="207" r="4"/>
+    <circle cx="267" cy="262" r="4"/><circle cx="251" cy="257" r="4"/>
+    <circle cx="200" cy="290" r="4"/><circle cx="188" cy="278" r="4"/>
+    <circle cx="133" cy="262" r="4"/><circle cx="138" cy="246" r="4"/>
+    <circle cx="105" cy="195" r="4"/><circle cx="117" cy="183" r="4"/>
+    <circle cx="133" cy="128" r="4"/><circle cx="149" cy="133" r="4"/>
+  </g>
+  <!-- Center Hub -->
+  <circle cx="200" cy="195" r="48" fill="#1e293b" stroke="#64748b" stroke-width="5"/>
+  <circle cx="200" cy="195" r="22" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+  <!-- 5 Lug Holes -->
+  <g fill="#cbd5e1">
+    <circle cx="200" cy="160" r="5"/>
+    <circle cx="233" cy="184" r="5"/>
+    <circle cx="220" cy="223" r="5"/>
+    <circle cx="180" cy="223" r="5"/>
+    <circle cx="167" cy="184" r="5"/>
+  </g>
+  <!-- Red Performance Brake Caliper -->
+  <path d="M245 105 C295 120 322 165 318 220 C315 242 292 252 275 240 L262 212 C270 185 265 155 238 135 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/>
+  <rect x="275" y="158" width="26" height="44" rx="5" fill="#dc2626" opacity="0.8"/>
+  <text x="200" y="355" text-anchor="middle" fill="#e2e8f0" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2">BRAKES &amp; ROTORS</text>
+</svg>
