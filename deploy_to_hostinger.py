@@ -77,43 +77,49 @@ def resolve_target_dir(ftp, requested_dir: str) -> str:
         root_items = []
     print(f"[DIRECTORY] Root items: {root_items[:20]}")
 
-    # Check if we are already inside the web root (e.g., contains default.php or index.php)
-    if 'default.php' in root_items or 'index.php' in root_items:
-        print(f"[DIRECTORY] 🎯 Current directory already contains web root files ({start_dir}). Using it directly.")
-        return start_dir
-
     candidates = []
+
+    # If requested_dir is provided (e.g. 'public_html/parto' or 'parto')
     if requested_dir and requested_dir.strip('/'):
         clean_req = requested_dir.strip('/')
+        # If we are already in /public_html, 'public_html/parto' becomes 'parto'
+        if start_dir.rstrip('/').endswith('public_html') and clean_req.startswith('public_html/'):
+            sub_cand = clean_req[len('public_html/'):]
+            candidates.append(sub_cand)
         candidates.append(clean_req)
         candidates.append(f"/{clean_req}")
 
+    # Subdomain specific candidates for parto.dynapulsar.com
+    if 'parto' in root_items:
+        candidates.insert(0, "parto")
     candidates.extend([
+        "parto",
         "public_html/parto",
         "domains/dynapulsar.com/public_html/parto",
-        "public_html",
-        "domains/dynapulsar.com/public_html",
         "."
     ])
 
-    for cand in candidates:
+    # Deduplicate while preserving order
+    seen = set()
+    unique_candidates = [c for c in candidates if not (c in seen or seen.add(c))]
+
+    for cand in unique_candidates:
         try:
             ftp.cwd(cand)
             target = ftp.pwd()
             sub_items = [i.lower() for i in ftp.nlst()]
-            print(f"[DIRECTORY] Tested '{cand}' -> cwd: {target} (items: {len(sub_items)})")
-            # If contains default.php or requested path, accept it
-            if 'default.php' in sub_items or cand == requested_dir.strip('/'):
-                print(f"[DIRECTORY] ✅ Target confirmed at: {target}")
-                return target
+            print(f"[DIRECTORY] ✅ Successfully navigated to: {target} (via '{cand}', contents: {len(sub_items)} items)")
             return target
-        except Exception:
+        except Exception as e:
+            print(f"[DIRECTORY] Tried candidate '{cand}': {e}")
             try:
                 ftp.cwd(start_dir)
             except Exception:
                 pass
 
+    print(f"[DIRECTORY] Remaining in initial directory: {start_dir}")
     return start_dir
+
 
 def ensure_remote_dir(ftp, remote_path: str):
     parts = [p for p in remote_path.replace('\\', '/').split('/') if p]
