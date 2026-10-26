@@ -26,87 +26,22 @@ jobs:
           echo "Checking PHP syntax for all project files..."
           find . -maxdepth 3 -name "*.php" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/frontend/*" -not -path "*/backend/*" -exec php -l {} \;
 
-      - name: ⚙️ Prepare Hostinger Deployment Configuration
-        run: |
-          SRV="${{ secrets.HOSTINGER_FTP_SERVER }}"
-          [ -z "$SRV" ] && SRV="${{ secrets.FTP_SERVER }}"
-          echo "FTP_HOST=$SRV" >> $GITHUB_ENV
-
-          USR="${{ secrets.HOSTINGER_FTP_USERNAME }}"
-          [ -z "$USR" ] && USR="${{ secrets.FTP_USERNAME }}"
-          echo "FTP_USER=$USR" >> $GITHUB_ENV
-
-          PWD="${{ secrets.HOSTINGER_FTP_PASSWORD }}"
-          [ -z "$PWD" ] && PWD="${{ secrets.FTP_PASSWORD }}"
-          echo "FTP_PASS=$PWD" >> $GITHUB_ENV
-
-          DIR="${{ secrets.HOSTINGER_REMOTE_DIR }}"
-          [ -z "$DIR" ] && DIR="${{ secrets.FTP_DIR }}"
-          [ -z "$DIR" ] && DIR="${{ secrets.REMOTE_DIR }}"
-          [ -z "$DIR" ] && DIR="public_html/"
-          [[ "$DIR" != */ ]] && DIR="${DIR}/"
-          echo "FTP_PATH=$DIR" >> $GITHUB_ENV
-
-          echo "Deployment target directory configured as: $DIR"
-
-      - name: 🚀 Deploy to Hostinger via FTPS (Secure Port 21)
-        id: deploy_ftps
-        continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 🐍 Set up Python for Deployment Engine
+        uses: actions/setup-python@v5
         with:
-          server: ${{ env.FTP_HOST }}
-          username: ${{ env.FTP_USER }}
-          password: ${{ env.FTP_PASS }}
-          protocol: ftps
-          port: 21
-          local-dir: ./
-          server-dir: ${{ env.FTP_PATH }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            node_modules/**
-            backend/**
-            frontend/**
-            infrastructure/**
-            k8s/**
-            *.log
-            *.ps1
-            *.sh
-            .env.example
-            rename.py
-            generate_docs.py
+          python-version: '3.11'
 
-      - name: 🚀 Fallback Deploy via Standard FTP (if FTPS certificate warning)
-        if: steps.deploy_ftps.outcome == 'failure'
-        id: deploy_ftp
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ env.FTP_HOST }}
-          username: ${{ env.FTP_USER }}
-          password: ${{ env.FTP_PASS }}
-          protocol: ftp
-          port: 21
-          local-dir: ./
-          server-dir: ${{ env.FTP_PATH }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            node_modules/**
-            backend/**
-            frontend/**
-            infrastructure/**
-            k8s/**
-            *.log
-            *.ps1
-            *.sh
-            .env.example
-            rename.py
-            generate_docs.py
-
-      - name: 🌐 Verify Production Ping
-        continue-on-error: true
+      - name: 🚀 Deploy PARTO Marketplace to Hostinger
+        env:
+          FTP_HOST: ${{ secrets.HOSTINGER_FTP_SERVER != '' && secrets.HOSTINGER_FTP_SERVER || secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.HOSTINGER_FTP_USERNAME != '' && secrets.HOSTINGER_FTP_USERNAME || secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.HOSTINGER_FTP_PASSWORD != '' && secrets.HOSTINGER_FTP_PASSWORD || secrets.FTP_PASSWORD }}
+          FTP_PATH: ${{ secrets.HOSTINGER_REMOTE_DIR != '' && secrets.HOSTINGER_REMOTE_DIR || (secrets.FTP_DIR != '' && secrets.FTP_DIR || 'public_html/') }}
         run: |
-          echo "Pinging production domain: https://parto.dynapulsar.com"
-          curl -I -s --max-time 15 https://parto.dynapulsar.com || echo "Site ping completed (check DNS propagation if unreachable)."
+          python deploy_to_hostinger.py
+
+      - name: 🌐 Production Verification Ping
+        if: always()
+        run: |
+          echo "Verifying live URL: https://parto.dynapulsar.com"
+          curl -I -s --max-time 15 https://parto.dynapulsar.com || echo "Site ping completed."
