@@ -26,31 +26,41 @@ jobs:
           echo "Checking PHP syntax for all project files..."
           find . -maxdepth 3 -name "*.php" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/frontend/*" -not -path "*/backend/*" -exec php -l {} \;
 
-      - name: 🔐 Check Hostinger Secrets Configuration
-        id: check_secrets
+      - name: ⚙️ Prepare Hostinger Deployment Configuration
         run: |
-          FTP_SRV="${{ secrets.HOSTINGER_FTP_SERVER || secrets.FTP_SERVER }}"
-          FTP_USR="${{ secrets.HOSTINGER_FTP_USERNAME || secrets.FTP_USERNAME }}"
-          FTP_PWD="${{ secrets.HOSTINGER_FTP_PASSWORD || secrets.FTP_PASSWORD }}"
-          if [ -n "$FTP_SRV" ] && [ -n "$FTP_USR" ] && [ -n "$FTP_PWD" ]; then
-            echo "has_secrets=true" >> $GITHUB_OUTPUT
-            echo "Hostinger FTP secrets detected. Proceeding with deployment."
-          else
-            echo "has_secrets=false" >> $GITHUB_OUTPUT
-            echo "::notice title=Hostinger Secrets Required::To deploy to parto.dynapulsar.com, configure HOSTINGER_FTP_SERVER, HOSTINGER_FTP_USERNAME, and HOSTINGER_FTP_PASSWORD in repository Secrets (Settings > Secrets and variables > Actions)."
-          fi
+          SRV="${{ secrets.HOSTINGER_FTP_SERVER }}"
+          [ -z "$SRV" ] && SRV="${{ secrets.FTP_SERVER }}"
+          echo "FTP_HOST=$SRV" >> $GITHUB_ENV
 
-      - name: 🚀 Deploy to Hostinger via FTPS / FTP
-        if: steps.check_secrets.outputs.has_secrets == 'true'
+          USR="${{ secrets.HOSTINGER_FTP_USERNAME }}"
+          [ -z "$USR" ] && USR="${{ secrets.FTP_USERNAME }}"
+          echo "FTP_USER=$USR" >> $GITHUB_ENV
+
+          PWD="${{ secrets.HOSTINGER_FTP_PASSWORD }}"
+          [ -z "$PWD" ] && PWD="${{ secrets.FTP_PASSWORD }}"
+          echo "FTP_PASS=$PWD" >> $GITHUB_ENV
+
+          DIR="${{ secrets.HOSTINGER_REMOTE_DIR }}"
+          [ -z "$DIR" ] && DIR="${{ secrets.FTP_DIR }}"
+          [ -z "$DIR" ] && DIR="${{ secrets.REMOTE_DIR }}"
+          [ -z "$DIR" ] && DIR="public_html/"
+          [[ "$DIR" != */ ]] && DIR="${DIR}/"
+          echo "FTP_PATH=$DIR" >> $GITHUB_ENV
+
+          echo "Deployment target directory configured as: $DIR"
+
+      - name: 🚀 Deploy to Hostinger via FTPS (Secure Port 21)
+        id: deploy_ftps
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.HOSTINGER_FTP_SERVER || secrets.FTP_SERVER }}
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME || secrets.FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD || secrets.FTP_PASSWORD }}
+          server: ${{ env.FTP_HOST }}
+          username: ${{ env.FTP_USER }}
+          password: ${{ env.FTP_PASS }}
           protocol: ftps
           port: 21
           local-dir: ./
-          server-dir: ${{ secrets.HOSTINGER_REMOTE_DIR || secrets.FTP_DIR || secrets.REMOTE_DIR || 'public_html/' }}
+          server-dir: ${{ env.FTP_PATH }}
           exclude: |
             **/.git*
             **/.git*/**
@@ -67,22 +77,36 @@ jobs:
             rename.py
             generate_docs.py
 
-      - name: ℹ️ Deployment Setup Instructions (When Secrets Missing)
-        if: steps.check_secrets.outputs.has_secrets != 'true'
-        run: |
-          echo "=========================================================================="
-          echo "  ACTION REQUIRED: Set your Hostinger credentials in GitHub Secrets"
-          echo "  Repository URL: https://github.com/khalilksa33/parto/settings/secrets/actions"
-          echo "  Secrets to add:"
-          echo "    1. HOSTINGER_FTP_SERVER   (or FTP_SERVER)"
-          echo "    2. HOSTINGER_FTP_USERNAME (or FTP_USERNAME)"
-          echo "    3. HOSTINGER_FTP_PASSWORD (or FTP_PASSWORD)"
-          echo "    4. HOSTINGER_REMOTE_DIR   (optional: public_html/ or public_html/parto/)"
-          echo "=========================================================================="
+      - name: 🚀 Fallback Deploy via Standard FTP (if FTPS certificate warning)
+        if: steps.deploy_ftps.outcome == 'failure'
+        id: deploy_ftp
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ env.FTP_HOST }}
+          username: ${{ env.FTP_USER }}
+          password: ${{ env.FTP_PASS }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: ${{ env.FTP_PATH }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            node_modules/**
+            backend/**
+            frontend/**
+            infrastructure/**
+            k8s/**
+            *.log
+            *.ps1
+            *.sh
+            .env.example
+            rename.py
+            generate_docs.py
 
       - name: 🌐 Verify Production Ping
-        if: steps.check_secrets.outputs.has_secrets == 'true'
         continue-on-error: true
         run: |
           echo "Pinging production domain: https://parto.dynapulsar.com"
-          curl -I -s --max-time 10 https://parto.dynapulsar.com || echo "Site will be active once DNS resolves."
+          curl -I -s --max-time 15 https://parto.dynapulsar.com || echo "Site ping completed (check DNS propagation if unreachable)."
