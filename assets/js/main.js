@@ -320,6 +320,36 @@ const Parto = (function() {
     });
   });
 
+  // Mobile Navigation Drawer
+  function openMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggle = document.getElementById('mobileMenuToggle');
+    if (drawer) drawer.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+    if (toggle) toggle.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggle = document.getElementById('mobileMenuToggle');
+    if (drawer) drawer.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    if (toggle) toggle.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function toggleMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    if (drawer && drawer.classList.contains('open')) {
+      closeMobileNav();
+    } else {
+      openMobileNav();
+    }
+  }
+
   return {
     addToCart,
     updateQuantity,
@@ -327,6 +357,9 @@ const Parto = (function() {
     clearCart,
     openCartDrawer,
     closeCartDrawer,
+    openMobileNav,
+    closeMobileNav,
+    toggleMobileNav,
     handleVinSearch,
     filterByBrand,
     filterCatalog,
@@ -335,3 +368,4 @@ const Parto = (function() {
     getSubtotal: getCartSubtotal
   };
 })();
+

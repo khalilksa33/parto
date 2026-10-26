@@ -67,6 +67,33 @@ global $isRtl;
     </div>
   </footer>
 
+  <!-- Native App Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation Bar">
+    <a href="index.php" class="bottom-nav-item <?= $activeNav === 'home' ? 'active' : '' ?>">
+      <span class="bottom-nav-icon">🏠</span>
+      <span class="bottom-nav-label"><?= $isRtl ? 'السوق' : 'Market' ?></span>
+    </a>
+    <a href="tashleeh.php" class="bottom-nav-item <?= $activeNav === 'tashleeh' ? 'active' : '' ?>">
+      <span class="bottom-nav-icon">🚗</span>
+      <span class="bottom-nav-label"><?= $isRtl ? 'تشليح' : 'Tashleeh' ?></span>
+    </a>
+    <a href="towing.php" class="bottom-nav-item <?= $activeNav === 'towing' ? 'active' : '' ?>">
+      <span class="bottom-nav-icon">🛻</span>
+      <span class="bottom-nav-label"><?= $isRtl ? 'سطحة' : 'Towing' ?></span>
+    </a>
+    <button type="button" class="bottom-nav-item" onclick="Parto.openCartDrawer()">
+      <span class="bottom-nav-icon">
+        🛒
+        <span class="badge-count cart-badge-count" style="display: none;">0</span>
+      </span>
+      <span class="bottom-nav-label"><?= $isRtl ? 'السلة' : 'Cart' ?></span>
+    </button>
+    <button type="button" class="bottom-nav-item" onclick="Parto.toggleMobileNav()">
+      <span class="bottom-nav-icon">☰</span>
+      <span class="bottom-nav-label"><?= $isRtl ? 'القائمة' : 'Menu' ?></span>
+    </button>
+  </nav>
+
   <!-- Reusable Sliding Cart Drawer -->
   <?php require_once __DIR__ . '/cart-drawer.php'; ?>
 

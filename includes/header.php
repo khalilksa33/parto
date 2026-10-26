@@ -9,7 +9,7 @@ $activeNav = $activeNav ?? 'home';
 <html lang="<?= e($currentLang) ?>" dir="<?= $isRtl ? 'rtl' : 'ltr' ?>" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title><?= e($pageTitle) ?></title>
   <meta name="description" content="<?= $isRtl ? 'منصة بارتو السعودية لقطع غيار السيارات الأصلية والتشليح والخدمات الميكانيكية وسطحات السحب الفورية.' : 'PARTO - Saudi Arabia Premier Automotive Marketplace for genuine OEM auto parts, Tashleeh scrap yards, and emergency towing services.' ?>">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
@@ -21,15 +21,22 @@ $activeNav = $activeNav ?? 'home';
   <header class="navbar">
     <div class="nav-container">
       
+      <!-- Mobile Menu Hamburger Button -->
+      <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation menu" onclick="Parto.toggleMobileNav()">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
       <!-- Brand Logo -->
       <a href="index.php" class="brand-logo">
         <img src="assets/images/logo.png" alt="PARTO Logo" onerror="this.src='assets/images/logo.jpg'">
-        <span><?= APP_NAME ?></span>
+        <span class="brand-name-text"><?= APP_NAME ?></span>
         <span class="brand-badge"><?= $isRtl ? 'السعودية' : 'KSA' ?></span>
       </a>
 
       <!-- Desktop Navigation Links -->
-      <nav>
+      <nav class="desktop-nav">
         <ul class="nav-links">
           <li class="nav-item <?= $activeNav === 'home' ? 'active' : '' ?>">
             <a href="index.php">
@@ -86,12 +93,93 @@ $activeNav = $activeNav ?? 'home';
         </button>
 
         <!-- Vendor Dashboard CTA -->
-        <a href="portal.php" class="btn-vendor-portal">
+        <a href="portal.php" class="btn-vendor-portal" title="<?= $isRtl ? 'لوحة تحكم البائع والتاجر' : 'Vendor Management Portal' ?>">
           <span>🏪</span>
-          <span><?= $isRtl ? 'لوحة البائع' : 'Vendor Hub' ?></span>
+          <span class="vendor-btn-text"><?= $isRtl ? 'لوحة البائع' : 'Vendor Hub' ?></span>
         </a>
 
       </div>
 
     </div>
   </header>
+
+  <!-- Mobile Navigation Drawer Overlay & Panel -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="Parto.closeMobileNav()"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation Drawer">
+    <div class="mobile-drawer-header">
+      <div class="brand-logo">
+        <img src="assets/images/logo.png" alt="PARTO Logo" onerror="this.src='assets/images/logo.jpg'">
+        <span><?= APP_NAME ?></span>
+        <span class="brand-badge"><?= $isRtl ? 'السعودية' : 'KSA' ?></span>
+      </div>
+      <button class="btn-icon btn-drawer-close" onclick="Parto.closeMobileNav()" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="mobile-drawer-body">
+      <div class="drawer-user-card">
+        <div class="drawer-user-info">
+          <span class="drawer-flag">🇸🇦</span>
+          <div>
+            <strong><?= $isRtl ? 'منصة بارتو الموحدة' : 'PARTO Unified Platform' ?></strong>
+            <small><?= $isRtl ? 'الرياض • جدة • الدمام • مكة' : 'Riyadh • Jeddah • Dammam' ?></small>
+          </div>
+        </div>
+        <div class="lang-switch">
+          <a href="?lang=ar" class="lang-btn <?= $isRtl ? 'active' : '' ?>">عربي</a>
+          <a href="?lang=en" class="lang-btn <?= !$isRtl ? 'active' : '' ?>">EN</a>
+        </div>
+      </div>
+
+      <nav class="mobile-nav-menu">
+        <div class="drawer-section-title"><?= $isRtl ? 'أقسام المنصة الرئيسية' : 'Marketplace Sections' ?></div>
+        <a href="index.php" class="mobile-nav-link <?= $activeNav === 'home' ? 'active' : '' ?>">
+          <span class="drawer-icon">🏠</span>
+          <span class="drawer-title"><?= $isRtl ? 'السوق الرئيسي وقطع الغيار' : 'Spare Parts Marketplace' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+        <a href="tashleeh.php" class="mobile-nav-link <?= $activeNav === 'tashleeh' ? 'active' : '' ?>">
+          <span class="drawer-icon">🚗</span>
+          <span class="drawer-title"><?= $isRtl ? 'مركز التشليح والسكراب (RFQ)' : 'Tashleeh & Used Parts (RFQ)' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+        <a href="towing.php" class="mobile-nav-link <?= $activeNav === 'towing' ? 'active' : '' ?>">
+          <span class="drawer-icon">🛻</span>
+          <span class="drawer-title"><?= $isRtl ? 'سطحات وسحب فوري 24/7' : 'Emergency Towing & Satha' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+        <a href="workshop.php" class="mobile-nav-link <?= $activeNav === 'workshop' ? 'active' : '' ?>">
+          <span class="drawer-icon">🔧</span>
+          <span class="drawer-title"><?= $isRtl ? 'ورش الصيانة والميكانيكي المتنقل' : 'Workshops & Mobile Mechanic' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+        <a href="oem.php" class="mobile-nav-link <?= $activeNav === 'oem' ? 'active' : '' ?>">
+          <span class="drawer-icon">📐</span>
+          <span class="drawer-title"><?= $isRtl ? 'كتالوج الوكالة ومطابقة OEM' : 'OEM Fitment Catalog' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+
+        <div class="drawer-section-title"><?= $isRtl ? 'التجار والشركاء' : 'Vendors & Operations' ?></div>
+        <a href="portal.php" class="mobile-nav-link <?= $activeNav === 'portal' ? 'active' : '' ?>">
+          <span class="drawer-icon">🏪</span>
+          <span class="drawer-title"><?= $isRtl ? 'لوحة تحكم التاجر والبائع' : 'Vendor Control Hub' ?></span>
+          <span class="drawer-badge"><?= $isRtl ? 'دخول' : 'Access' ?></span>
+        </a>
+        <a href="admin.php" class="mobile-nav-link <?= $activeNav === 'admin' ? 'active' : '' ?>">
+          <span class="drawer-icon">🛡️</span>
+          <span class="drawer-title"><?= $isRtl ? 'لوحة المشرف العام' : 'Super Admin Center' ?></span>
+          <span class="drawer-arrow">›</span>
+        </a>
+        <a href="register.php" class="mobile-nav-link">
+          <span class="drawer-icon">📝</span>
+          <span class="drawer-title"><?= $isRtl ? 'سجل تشليحك أو ورشتك معنا' : 'Register New Vendor' ?></span>
+          <span class="drawer-badge" style="background: rgba(16,185,129,0.2); color: #34d399;"><?= $isRtl ? 'مجاني' : 'Free' ?></span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="mobile-drawer-footer">
+      <button type="button" class="btn-primary" style="width: 100%; justify-content: center;" onclick="Parto.closeMobileNav(); Parto.openCartDrawer();">
+        <span>🛒 <?= $isRtl ? 'عرض سلة المشتريات' : 'View Shopping Cart' ?></span>
+      </button>
+    </div>
+  </aside>
