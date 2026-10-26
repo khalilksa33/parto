@@ -2,8 +2,33 @@
 require_once dirname(__DIR__) . '/config/config.php';
 global $currentLang, $isRtl;
 
-$pageTitle = $pageTitle ?? (APP_NAME . ' - ' . ($isRtl ? APP_TAGLINE_AR : APP_TAGLINE));
+$navTitles = [
+    'home'          => ['ar' => 'بارتو السعودية | سوق قطع غيار السيارات والخدمات المتكاملة', 'en' => 'PARTO Saudi Arabia | Auto Spare Parts & Automotive Hub'],
+    'product'       => ['ar' => 'تفاصيل قطعة الغيار الأصلية | بارتو السعودية', 'en' => 'Genuine Auto Part Details | PARTO Saudi Arabia'],
+    'checkout'      => ['ar' => 'إتمام الطلب والدفع الآمن | بارتو السعودية', 'en' => 'Secure Checkout & Delivery | PARTO Saudi Arabia'],
+    'order-success' => ['ar' => 'تم استلام وتأكيد طلبك بنجاح | بارتو السعودية', 'en' => 'Order Confirmed Successfully | PARTO Saudi Arabia'],
+    'portal'        => ['ar' => 'لوحة تحكم البائع والتاجر | بارتو السعودية', 'en' => 'Vendor Management Portal | PARTO Saudi Arabia'],
+    'admin'         => ['ar' => 'لوحة تحكم المشرف العام | بارتو السعودية', 'en' => 'Super Admin Center | PARTO Saudi Arabia'],
+    'register'      => ['ar' => 'تسجيل الشركاء والبائعين والموزعين | بارتو السعودية', 'en' => 'Vendor & Distributor Registration | PARTO Saudi Arabia'],
+    'workshop'      => ['ar' => 'ورش صيانة السيارات والورش المتنقلة | بارتو السعودية', 'en' => 'Auto Repair Workshops & Mobile Mechanics | PARTO Saudi Arabia'],
+    'towing'        => ['ar' => 'سطحات وسحب مركبات فوري 24/7 | بارتو السعودية', 'en' => 'Emergency Towing & Satha Dispatch 24/7 | PARTO Saudi Arabia'],
+    'oem'           => ['ar' => 'كتالوج قطع غيار الوكالة والأرقام الأصلية | بارتو السعودية', 'en' => 'OEM Fitment Catalog & Genuine Part Numbers | PARTO Saudi Arabia'],
+    'tashleeh'      => ['ar' => 'تشليح سيارات وسكراب | بارتو السعودية', 'en' => 'Tashleeh Salvage & Used Parts | PARTO Saudi Arabia'],
+];
+
 $activeNav = $activeNav ?? 'home';
+
+// Resolve page title dynamically based on active language
+if (isset($pageTitleAr) && isset($pageTitleEn)) {
+    $pageTitle = $isRtl ? $pageTitleAr : $pageTitleEn;
+} elseif (isset($pageTitle) && is_array($pageTitle)) {
+    $pageTitle = $isRtl ? ($pageTitle['ar'] ?? '') : ($pageTitle['en'] ?? '');
+} elseif (!$isRtl && isset($pageTitle) && preg_match('/[\x{0600}-\x{06FF}]/u', $pageTitle)) {
+    // If English mode is active but page set an Arabic title string, resolve English equivalent
+    $pageTitle = $navTitles[$activeNav]['en'] ?? (APP_NAME . ' Saudi Arabia - ' . APP_TAGLINE);
+} elseif (empty($pageTitle)) {
+    $pageTitle = $navTitles[$activeNav][$isRtl ? 'ar' : 'en'] ?? (APP_NAME . ' - ' . ($isRtl ? APP_TAGLINE_AR : APP_TAGLINE));
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?= e($currentLang) ?>" dir="<?= $isRtl ? 'rtl' : 'ltr' ?>" data-theme="dark">
@@ -11,7 +36,7 @@ $activeNav = $activeNav ?? 'home';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title><?= e($pageTitle) ?></title>
-  <meta name="description" content="<?= $isRtl ? 'منصة بارتو السعودية لقطع غيار السيارات الأصلية والتشليح والخدمات الميكانيكية وسطحات السحب الفورية.' : 'PARTO - Saudi Arabia Premier Automotive Marketplace for genuine OEM auto parts, Tashleeh scrap yards, and emergency towing services.' ?>">
+  <meta name="description" content="<?= $isRtl ? 'منصة بارتو السعودية لقطع غيار السيارات الأصلية والورش المعتمدة وسطحات السحب الفورية.' : 'PARTO - Saudi Arabia Premier Automotive Marketplace for genuine OEM auto parts, certified workshops, and emergency towing dispatch.' ?>">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>

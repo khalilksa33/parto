@@ -151,10 +151,11 @@ require_once __DIR__ . '/includes/header.php';
     <?php foreach ($products as $p): ?>
       <?php 
         $compatList = !empty($p['compatibility']) ? json_decode($p['compatibility'], true) : [];
+        $productUrl = 'product.php?id=' . urlencode($p['id']);
       ?>
       <div class="product-card" data-brand="<?= e($p['brand_name']) ?>" data-category="<?= e($p['category']) ?>">
         
-        <div class="product-image-container">
+        <a href="<?= $productUrl ?>" class="product-image-container" title="<?= e($p['name']) ?>">
           <img src="<?= e($p['image']) ?>" alt="<?= e($p['name']) ?>" class="product-image" onerror="this.src='assets/images/parts/engine.svg'">
           
           <div class="product-badge-group">
@@ -163,7 +164,7 @@ require_once __DIR__ . '/includes/header.php';
             <?php endif; ?>
             <span class="badge badge-category"><?= e($p['category']) ?></span>
           </div>
-        </div>
+        </a>
 
         <div class="product-body">
           <div class="product-vendor-info">
@@ -173,7 +174,9 @@ require_once __DIR__ . '/includes/header.php';
           </div>
 
           <h3 class="product-title" title="<?= e($p['name']) ?>">
-            <?= e($p['name']) ?>
+            <a href="<?= $productUrl ?>" style="color: inherit; text-decoration: none;">
+              <?= e($p['name']) ?>
+            </a>
           </h3>
 
           <?php if (!empty($compatList) && is_array($compatList)): ?>
@@ -190,17 +193,23 @@ require_once __DIR__ . '/includes/header.php';
               <span class="price-currency"><?= $isRtl ? 'ريال سعودي (SAR)' : 'SAR' ?></span>
             </div>
 
-            <button class="btn-add-cart" onclick='Parto.addToCart(<?= json_encode([
-              "id" => $p["id"],
-              "name" => $p["name"],
-              "price" => (float)$p["price"],
-              "image" => $p["image"],
-              "brand_name" => $p["brand_name"],
-              "tenant_id" => $p["tenant_id"]
-            ], JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-              <span>🛒</span>
-              <span><?= $isRtl ? 'إضافة للسلة' : 'Add' ?></span>
-            </button>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <a href="<?= $productUrl ?>" class="btn-primary" style="padding: 0.55rem 0.75rem; font-size: 0.82rem; background: rgba(255,255,255,0.08); border: 1px solid var(--border-dark); box-shadow: none;" title="<?= $isRtl ? 'عرض تفاصيل القطعة' : 'View Details' ?>">
+                <span>🔍</span>
+              </a>
+
+              <button class="btn-add-cart" onclick='Parto.addToCart(<?= json_encode([
+                "id" => $p["id"],
+                "name" => $p["name"],
+                "price" => (float)$p["price"],
+                "image" => $p["image"],
+                "brand_name" => $p["brand_name"],
+                "tenant_id" => $p["tenant_id"]
+              ], JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
+                <span>🛒</span>
+                <span><?= $isRtl ? 'إضافة' : 'Add' ?></span>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -222,43 +231,74 @@ require_once __DIR__ . '/includes/header.php';
           <?= $isRtl ? 'موزعون ووكالات ومراكز صيانة موثقة رسمياً' : 'Verified Distributors & Certified Service Centers' ?>
         </h2>
       </div>
-      <a href="register.php" class="btn-primary" style="font-size: 0.9rem; padding: 0.65rem 1.25rem;">
-        <span><?= $isRtl ? 'انضم كبائع معتمد' : 'Join as Verified Vendor' ?></span>
+      <a href="portal.php" class="btn-primary" style="font-size: 0.9rem; padding: 0.65rem 1.25rem;">
+        <span><?= $isRtl ? 'تسجيل دخول لوحة التاجر' : 'Vendor Portal Login' ?></span>
+        <span>🔐</span>
       </a>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;">
-      <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark);">
-        <img src="assets/images/vendors/Wadi Uhud for Nissan OEM Parts.webp" alt="Wadi Uhud Nissan" style="width: 100%; height: 160px; object-fit: cover;" onerror="this.style.display='none'">
-        <div style="padding: 1rem;">
-          <h4 style="color: #fff; font-size: 0.95rem; font-weight: 800;">شركة وادي أحد لقطع نيسان الأصلية</h4>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">موزع معتمد لقطع نيسان وإنفينيتي - الرياض</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+      
+      <!-- 1. Wadi Uhud Nissan -->
+      <a href="portal.php?tenantId=t-wadi-uhud" style="display: block; text-decoration: none; background: rgba(0,0,0,0.35); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border-dark)'; this.style.transform='none'">
+        <div style="position: relative; height: 160px; overflow: hidden;">
+          <img src="assets/images/vendors/Wadi Uhud for Nissan OEM Parts.webp" alt="Wadi Uhud Nissan" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+          <div style="position: absolute; bottom: 8px; <?= $isRtl ? 'right: 8px;' : 'left: 8px;' ?> background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.72rem; color: #60a5fa; font-weight: 700; border: 1px solid rgba(96,165,250,0.3); display: flex; align-items: center; gap: 0.35rem;">
+            <span>🔐</span>
+            <span><?= $isRtl ? 'دخول لوحة التاجر ↗' : 'Vendor Portal Login ↗' ?></span>
+          </div>
         </div>
-      </div>
+        <div style="padding: 1.1rem;">
+          <h4 style="color: #fff; font-size: 0.98rem; font-weight: 800; margin-bottom: 0.25rem;">شركة وادي أحد لقطع نيسان الأصلية</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">موزع معتمد لقطع نيسان وإنفينيتي - الرياض</p>
+        </div>
+      </a>
 
-      <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark);">
-        <img src="assets/images/vendors/babkeer-mazda -parts.webp" alt="Babkeer Mazda" style="width: 100%; height: 160px; object-fit: cover;" onerror="this.style.display='none'">
-        <div style="padding: 1rem;">
-          <h4 style="color: #fff; font-size: 0.95rem; font-weight: 800;">مجموعة بابكير لقطع مازدا</h4>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">وكيل موزع ومعتمد لقطع مازدا وسوبارو</p>
+      <!-- 2. Babkeer Mazda -->
+      <a href="portal.php?tenantId=t-babkeer-mazda" style="display: block; text-decoration: none; background: rgba(0,0,0,0.35); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border-dark)'; this.style.transform='none'">
+        <div style="position: relative; height: 160px; overflow: hidden;">
+          <img src="assets/images/vendors/babkeer-mazda -parts.webp" alt="Babkeer Mazda" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+          <div style="position: absolute; bottom: 8px; <?= $isRtl ? 'right: 8px;' : 'left: 8px;' ?> background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.72rem; color: #60a5fa; font-weight: 700; border: 1px solid rgba(96,165,250,0.3); display: flex; align-items: center; gap: 0.35rem;">
+            <span>🔐</span>
+            <span><?= $isRtl ? 'دخول لوحة التاجر ↗' : 'Vendor Portal Login ↗' ?></span>
+          </div>
         </div>
-      </div>
+        <div style="padding: 1.1rem;">
+          <h4 style="color: #fff; font-size: 0.98rem; font-weight: 800; margin-bottom: 0.25rem;">مجموعة بابكير لقطع مازدا</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">وكيل موزع ومعتمد لقطع مازدا وسوبارو</p>
+        </div>
+      </a>
 
-      <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark);">
-        <img src="assets/images/vendors/el-shafie.png" alt="El Shafie" style="width: 100%; height: 160px; object-fit: cover;" onerror="this.style.display='none'">
-        <div style="padding: 1rem;">
-          <h4 style="color: #fff; font-size: 0.95rem; font-weight: 800;">شركة الشافعي لقطع الغيار</h4>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">مستورد مباشر لكهرباء وميكانيكا تويوتا ولكزس</p>
+      <!-- 3. El-Shafie Auto Electrical & AC -->
+      <a href="portal.php?tenantId=t-el-shafie" style="display: block; text-decoration: none; background: rgba(0,0,0,0.35); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border-dark)'; this.style.transform='none'">
+        <div style="position: relative; height: 160px; overflow: hidden;">
+          <img src="assets/images/vendors/el-shafie.png" alt="El Shafie" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+          <div style="position: absolute; bottom: 8px; <?= $isRtl ? 'right: 8px;' : 'left: 8px;' ?> background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.72rem; color: #60a5fa; font-weight: 700; border: 1px solid rgba(96,165,250,0.3); display: flex; align-items: center; gap: 0.35rem;">
+            <span>🔐</span>
+            <span><?= $isRtl ? 'دخول لوحة التاجر ↗' : 'Vendor Portal Login ↗' ?></span>
+          </div>
         </div>
-      </div>
+        <div style="padding: 1.1rem;">
+          <h4 style="color: #fff; font-size: 0.98rem; font-weight: 800; margin-bottom: 0.25rem;">شركة الشافعي لقطع الغيار</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">مستورد مباشر لكهرباء وميكانيكا تويوتا ولكزس</p>
+        </div>
+      </a>
 
-      <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark);">
-        <img src="assets/images/vendors/hamzah-sadiq-for-auto-parts.webp" alt="Hamzah Sadiq" style="width: 100%; height: 160px; object-fit: cover;" onerror="this.style.display='none'">
-        <div style="padding: 1rem;">
-          <h4 style="color: #fff; font-size: 0.95rem; font-weight: 800;">حمزة صادق لقطع السيارات</h4>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">متخصص في المساعدات وأنظمة التعليق اليابانية</p>
+      <!-- 4. Hamzah Sadiq Japanese Suspension -->
+      <a href="portal.php?tenantId=t-hamzah-sadiq" style="display: block; text-decoration: none; background: rgba(0,0,0,0.35); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-dark); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border-dark)'; this.style.transform='none'">
+        <div style="position: relative; height: 160px; overflow: hidden;">
+          <img src="assets/images/vendors/hamzah-sadiq-for-auto-parts.webp" alt="Hamzah Sadiq" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+          <div style="position: absolute; bottom: 8px; <?= $isRtl ? 'right: 8px;' : 'left: 8px;' ?> background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.72rem; color: #60a5fa; font-weight: 700; border: 1px solid rgba(96,165,250,0.3); display: flex; align-items: center; gap: 0.35rem;">
+            <span>🔐</span>
+            <span><?= $isRtl ? 'دخول لوحة التاجر ↗' : 'Vendor Portal Login ↗' ?></span>
+          </div>
         </div>
-      </div>
+        <div style="padding: 1.1rem;">
+          <h4 style="color: #fff; font-size: 0.98rem; font-weight: 800; margin-bottom: 0.25rem;">حمزة صادق لقطع السيارات</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">متخصص في المساعدات وأنظمة التعليق اليابانية</p>
+        </div>
+      </a>
+
     </div>
   </div>
 </section>
