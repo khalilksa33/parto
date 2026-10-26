@@ -29,9 +29,8 @@ $activeNav = $activeNav ?? 'home';
       </button>
 
       <!-- Brand Logo -->
-      <a href="index.php" class="brand-logo">
+      <a href="index.php" class="brand-logo" title="<?= APP_NAME ?>">
         <img src="assets/images/logo.png" alt="PARTO Logo" onerror="this.src='assets/images/logo.jpg'">
-        <span class="brand-name-text"><?= APP_NAME ?></span>
         <span class="brand-badge"><?= $isRtl ? 'السعودية' : 'KSA' ?></span>
       </a>
 
@@ -44,12 +43,14 @@ $activeNav = $activeNav ?? 'home';
               <span><?= $isRtl ? 'السوق الرئيسي' : 'Marketplace' ?></span>
             </a>
           </li>
+          <!-- Tashleeh (Used Parts) - Temporarily disabled for launch
           <li class="nav-item <?= $activeNav === 'tashleeh' ? 'active' : '' ?>">
             <a href="tashleeh.php">
               <span>🚗</span>
               <span><?= $isRtl ? 'التشليح (مستعمل)' : 'Tashleeh (Used)' ?></span>
             </a>
           </li>
+          -->
           <li class="nav-item <?= $activeNav === 'workshop' ? 'active' : '' ?>">
             <a href="workshop.php">
               <span>🔧</span>
@@ -107,9 +108,8 @@ $activeNav = $activeNav ?? 'home';
   <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="Parto.closeMobileNav()"></div>
   <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation Drawer">
     <div class="mobile-drawer-header">
-      <div class="brand-logo">
+      <div class="brand-logo" title="<?= APP_NAME ?>">
         <img src="assets/images/logo.png" alt="PARTO Logo" onerror="this.src='assets/images/logo.jpg'">
-        <span><?= APP_NAME ?></span>
         <span class="brand-badge"><?= $isRtl ? 'السعودية' : 'KSA' ?></span>
       </div>
       <button class="btn-icon btn-drawer-close" onclick="Parto.closeMobileNav()" aria-label="Close menu">✕</button>
@@ -137,11 +137,13 @@ $activeNav = $activeNav ?? 'home';
           <span class="drawer-title"><?= $isRtl ? 'السوق الرئيسي وقطع الغيار' : 'Spare Parts Marketplace' ?></span>
           <span class="drawer-arrow">›</span>
         </a>
+        <!-- Tashleeh (Used Parts) - Temporarily disabled for launch
         <a href="tashleeh.php" class="mobile-nav-link <?= $activeNav === 'tashleeh' ? 'active' : '' ?>">
           <span class="drawer-icon">🚗</span>
           <span class="drawer-title"><?= $isRtl ? 'مركز التشليح والسكراب (RFQ)' : 'Tashleeh & Used Parts (RFQ)' ?></span>
           <span class="drawer-arrow">›</span>
         </a>
+        -->
         <a href="towing.php" class="mobile-nav-link <?= $activeNav === 'towing' ? 'active' : '' ?>">
           <span class="drawer-icon">🛻</span>
           <span class="drawer-title"><?= $isRtl ? 'سطحات وسحب فوري 24/7' : 'Emergency Towing & Satha' ?></span>
@@ -171,7 +173,7 @@ $activeNav = $activeNav ?? 'home';
         </a>
         <a href="register.php" class="mobile-nav-link">
           <span class="drawer-icon">📝</span>
-          <span class="drawer-title"><?= $isRtl ? 'سجل تشليحك أو ورشتك معنا' : 'Register New Vendor' ?></span>
+          <span class="drawer-title"><?= $isRtl ? 'سجل متجرك أو ورشتك كبائع معتمد' : 'Register Store / Workshop' ?></span>
           <span class="drawer-badge" style="background: rgba(16,185,129,0.2); color: #34d399;"><?= $isRtl ? 'مجاني' : 'Free' ?></span>
         </a>
       </nav>

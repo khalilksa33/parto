@@ -55,7 +55,14 @@ class Database {
         self::$instance = $pdo;
         self::$driver = 'sqlite';
 
-        if ($isNewDb || filesize($sqlitePath) < 1000) {
+        $prodCount = 0;
+        try {
+            $prodCount = (int)$pdo->query("SELECT count(*) FROM products WHERE status = 'active'")->fetchColumn();
+        } catch (Exception $e) {
+            $prodCount = 0;
+        }
+
+        if ($isNewDb || filesize($sqlitePath) < 1000 || $prodCount < 20) {
             self::initializeTables($pdo);
         }
 
@@ -104,6 +111,10 @@ class Database {
                         $pdo->exec($stmt);
                     }
                 }
+
+                // Ensure Tashleeh tenant and used parts are deactivated for launch
+                $pdo->exec("UPDATE tenants SET status = 'inactive' WHERE id = 't-tashleeh-star'");
+                $pdo->exec("UPDATE products SET status = 'inactive' WHERE id IN ('p-tashleeh-v6-engine', 'p-tashleeh-gearbox')");
             } catch (Exception $e) {
                 error_log("Schema auto-init notice: " . $e->getMessage());
             }

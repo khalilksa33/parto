@@ -76,8 +76,9 @@ try {
                 $qty = max(1, (int)($item['quantity'] ?? 1));
                 $price = (float)($item['price'] ?? 0);
                 $subtotal += ($price * $qty);
-                if (!$primaryTenantId && !empty($item['tenant_id'])) {
-                    $primaryTenantId = $item['tenant_id'];
+                $tenant = $item['tenant_id'] ?? $item['tenantId'] ?? null;
+                if (!$primaryTenantId && !empty($tenant)) {
+                    $primaryTenantId = $tenant;
                 }
             }
 

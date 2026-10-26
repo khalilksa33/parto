@@ -53,13 +53,13 @@ require_once __DIR__ . '/includes/header.php';
 
     <h1 class="hero-title">
       <?= $isRtl ? 'كل ما تحتاجه سيارتك' : 'Everything Your Vehicle Needs' ?><br>
-      <span class="gradient-text"><?= $isRtl ? 'قطع غيار أصلية، تشليح، وسطحات فورية' : 'OEM Parts, Tashleeh & Towing' ?></span>
+      <span class="gradient-text"><?= $isRtl ? 'قطع غيار أصلية، ورش معتمدة، وسطحات فورية' : 'Genuine OEM Parts, Certified Workshops & Towing' ?></span>
     </h1>
 
     <p class="hero-subtitle">
       <?= $isRtl 
-        ? 'ابحث برقم الهيكل (VIN) أو اسم القطعة، وقارن أسعار البائعين وساحات التشليح المعتمدة في الرياض وجدة وكافة أنحاء المملكة.' 
-        : 'Search by VIN or part name. Compare prices across certified distributors and salvage yards in seconds.' ?>
+        ? 'ابحث برقم الهيكل (VIN) أو اسم القطعة، وقارن أسعار الموزعين والوكالات المعتمدة في الرياض وجدة وكافة أنحاء المملكة.' 
+        : 'Search by VIN or part name. Compare prices across certified distributors and authorized suppliers in seconds.' ?>
     </p>
 
     <!-- Search Box with Tabs -->
@@ -219,7 +219,7 @@ require_once __DIR__ . '/includes/header.php';
           <?= $isRtl ? 'شبكة بارتو الميدانية' : 'Verified Field Network' ?>
         </span>
         <h2 style="font-size: 1.85rem; font-weight: 900; color: #fff; margin-top: 0.25rem;">
-          <?= $isRtl ? 'موزعون ووكالات ومحلات تشليح موثقة رسمياً' : 'Verified Distributors & Scrap Yards' ?>
+          <?= $isRtl ? 'موزعون ووكالات ومراكز صيانة موثقة رسمياً' : 'Verified Distributors & Certified Service Centers' ?>
         </h2>
       </div>
       <a href="register.php" class="btn-primary" style="font-size: 0.9rem; padding: 0.65rem 1.25rem;">
