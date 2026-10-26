@@ -29,7 +29,10 @@ jobs:
       - name: 🔐 Check Hostinger Secrets Configuration
         id: check_secrets
         run: |
-          if [ -n "${{ secrets.HOSTINGER_FTP_SERVER }}" ] && [ -n "${{ secrets.HOSTINGER_FTP_USERNAME }}" ] && [ -n "${{ secrets.HOSTINGER_FTP_PASSWORD }}" ]; then
+          FTP_SRV="${{ secrets.HOSTINGER_FTP_SERVER || secrets.FTP_SERVER }}"
+          FTP_USR="${{ secrets.HOSTINGER_FTP_USERNAME || secrets.FTP_USERNAME }}"
+          FTP_PWD="${{ secrets.HOSTINGER_FTP_PASSWORD || secrets.FTP_PASSWORD }}"
+          if [ -n "$FTP_SRV" ] && [ -n "$FTP_USR" ] && [ -n "$FTP_PWD" ]; then
             echo "has_secrets=true" >> $GITHUB_OUTPUT
             echo "Hostinger FTP secrets detected. Proceeding with deployment."
           else
@@ -41,11 +44,13 @@ jobs:
         if: steps.check_secrets.outputs.has_secrets == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          server: ${{ secrets.HOSTINGER_FTP_SERVER || secrets.FTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME || secrets.FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD || secrets.FTP_PASSWORD }}
           protocol: ftps
-          server-dir: ${{ secrets.HOSTINGER_REMOTE_DIR || 'public_html/' }}
+          port: 21
+          local-dir: ./
+          server-dir: ${{ secrets.HOSTINGER_REMOTE_DIR || secrets.FTP_DIR || secrets.REMOTE_DIR || 'public_html/' }}
           exclude: |
             **/.git*
             **/.git*/**
@@ -62,16 +67,16 @@ jobs:
             rename.py
             generate_docs.py
 
-      - name: ℹ️ Deployment Setup Instructions (When Secrets Not Yet Configured)
+      - name: ℹ️ Deployment Setup Instructions (When Secrets Missing)
         if: steps.check_secrets.outputs.has_secrets != 'true'
         run: |
           echo "=========================================================================="
           echo "  ACTION REQUIRED: Set your Hostinger credentials in GitHub Secrets"
           echo "  Repository URL: https://github.com/khalilksa33/parto/settings/secrets/actions"
           echo "  Secrets to add:"
-          echo "    1. HOSTINGER_FTP_SERVER   (e.g., ftp.dynapulsar.com or Hostinger server IP)"
-          echo "    2. HOSTINGER_FTP_USERNAME (your Hostinger FTP username)"
-          echo "    3. HOSTINGER_FTP_PASSWORD (your Hostinger FTP password)"
+          echo "    1. HOSTINGER_FTP_SERVER   (or FTP_SERVER)"
+          echo "    2. HOSTINGER_FTP_USERNAME (or FTP_USERNAME)"
+          echo "    3. HOSTINGER_FTP_PASSWORD (or FTP_PASSWORD)"
           echo "    4. HOSTINGER_REMOTE_DIR   (optional: public_html/ or public_html/parto/)"
           echo "=========================================================================="
 
