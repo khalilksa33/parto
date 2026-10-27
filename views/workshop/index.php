@@ -153,7 +153,7 @@ async function handleWorkshopBooking(e) {
     const d = await res.json();
     if (d.success) {
       alert('<?= $isRtl ? "تم استلام حجزك بنجاح! سيقوم الفني أو مسؤول الورشة بالاتصال بك خلال 15 دقيقة للتأكيد." : "Booking received! A technician will call you within 15 minutes." ?>');
-      window.location.href = '<?= Url::to(['/site/index']) ?>';
+      window.location.href = '<?= Url::to(['/']) ?>';
     }
   } catch (err) {
     alert('<?= $isRtl ? "حدث خطأ أثناء إرسال الحجز" : "Error sending booking" ?>');

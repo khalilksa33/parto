@@ -30,6 +30,11 @@ AddDefaultCharset UTF-8
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^api/([a-zA-Z0-9_-]+)$ api/$1.php [NC,L]
+
+    # Forward all other non-existing files and directories to Yii 2 index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . index.php [L]
 </IfModule>
 
 # Enable Gzip Compression

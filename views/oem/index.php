@@ -95,6 +95,6 @@ function searchOem() {
     Parto.showToast('<?= $isRtl ? "أدخل رقم القطعة للبحث" : "Enter OEM part number" ?>');
     return;
   }
-  window.location.href = `<?= Url::to(['/site/index']) ?>?q=${encodeURIComponent(q)}`;
+  window.location.href = `<?= Url::to(['/']) ?>?q=${encodeURIComponent(q)}`;
 }
 </script>

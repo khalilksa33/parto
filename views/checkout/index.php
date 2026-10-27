@@ -215,7 +215,7 @@ function renderCheckoutItems() {
   if (!list) return;
 
   if (cart.length === 0) {
-    list.innerHTML = `<div style="text-align:center; padding: 2rem 0; color: var(--text-muted);"><?= $isRtl ? 'سلتك فارغة.' : 'Your cart is empty.' ?> <a href="<?= Url::to(['/site/index']) ?>" style="color: var(--primary);"><?= $isRtl ? 'تصفح المتجر' : 'Browse Store' ?></a></div>`;
+    list.innerHTML = `<div style="text-align:center; padding: 2rem 0; color: var(--text-muted);"><?= $isRtl ? 'سلتك فارغة.' : 'Your cart is empty.' ?> <a href="<?= Url::to(['/']) ?>" style="color: var(--primary);"><?= $isRtl ? 'تصفح المتجر' : 'Browse Store' ?></a></div>`;
     document.getElementById('placeOrderBtn').disabled = true;
     return;
   }

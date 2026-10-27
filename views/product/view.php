@@ -32,7 +32,7 @@ if ($product) {
         <?= $isRtl ? 'ربما تم بيع هذه القطعة أو تم نقلها. تفضل بالبحث برقم الهيكل أو تصفح المتجر الرئيسي.' : 'This part may be sold out or unavailable. Try searching by VIN or browse our main catalog.' ?>
       </p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <a href="<?= Url::to(['/site/index']) ?>" class="btn-primary" style="padding: 0.85rem 1.75rem;">
+        <a href="<?= Url::to(['/']) ?>" class="btn-primary" style="padding: 0.85rem 1.75rem;">
           <span><?= $isRtl ? 'العودة للمتجر الرئيسي' : 'Return to Catalog' ?></span>
         </a>
       </div>
@@ -41,9 +41,9 @@ if ($product) {
 
     <!-- Breadcrumb Navigation -->
     <nav style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; flex-wrap: wrap;">
-      <a href="<?= Url::to(['/site/index']) ?>" style="color: var(--text-secondary); text-decoration: none;"><?= $isRtl ? 'الرئيسية' : 'Home' ?></a>
+      <a href="<?= Url::to(['/']) ?>" style="color: var(--text-secondary); text-decoration: none;"><?= $isRtl ? 'الرئيسية' : 'Home' ?></a>
       <span>›</span>
-      <a href="<?= Url::to(['/site/index']) ?>" style="color: var(--text-secondary); text-decoration: none;"><?= Html::encode($product->category) ?></a>
+      <a href="<?= Url::to(['/']) ?>" style="color: var(--text-secondary); text-decoration: none;"><?= Html::encode($product->category) ?></a>
       <span>›</span>
       <span style="color: #60a5fa; font-weight: 600;"><?= Html::encode($product->brand_name) ?></span>
       <span>›</span>
@@ -303,7 +303,7 @@ if ($product) {
             <span>📦</span>
             <span><?= $isRtl ? 'قطع غيار ذات صلة قد تحتاجها' : 'Related Compatible Spare Parts' ?></span>
           </h3>
-          <a href="<?= Url::to(['/site/index']) ?>" style="color: #60a5fa; font-size: 0.88rem; font-weight: 700; text-decoration: none;">
+          <a href="<?= Url::to(['/']) ?>" style="color: #60a5fa; font-size: 0.88rem; font-weight: 700; text-decoration: none;">
             <?= $isRtl ? 'تصفح كل القطع ←' : 'Browse All Parts →' ?>
           </a>
         </div>

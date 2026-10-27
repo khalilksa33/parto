@@ -14,6 +14,7 @@ $currentRoute = Yii::$app->requestedRoute ?: (Yii::$app->controller ? Yii::$app-
 $queryParams = Yii::$app->request->getQueryParams();
 $arUrl = Url::to(array_merge(['/' . ltrim($currentRoute, '/')], $queryParams, ['lang' => 'ar']));
 $enUrl = Url::to(array_merge(['/' . ltrim($currentRoute, '/')], $queryParams, ['lang' => 'en']));
+$homeUrl = Url::to(array_merge(['/'], $isRtl ? [] : ['lang' => 'en']));
 
 
 
@@ -59,7 +60,7 @@ $this->beginPage();
       </button>
 
       <!-- Brand Logo -->
-      <a href="<?= Url::to(['/site/index']) ?>" class="brand-logo" title="PARTO">
+      <a href="<?= $homeUrl ?>" class="brand-logo" title="PARTO">
         <img src="<?= Url::to('@web/assets/images/logo.png') ?>" alt="PARTO Logo" onerror="this.src='<?= Url::to('@web/assets/images/logo.jpg') ?>'">
         <span class="brand-badge"><?= $isRtl ? 'السعودية' : 'KSA' ?></span>
       </a>
@@ -68,7 +69,7 @@ $this->beginPage();
       <nav class="desktop-nav">
         <ul class="nav-links">
           <li class="nav-item <?= $activeController === 'site' && $activeAction === 'index' ? 'active' : '' ?>">
-            <a href="<?= Url::to(['/site/index']) ?>">
+            <a href="<?= $homeUrl ?>">
               <span>🏠</span>
               <span><?= $isRtl ? 'السوق الرئيسي' : 'Marketplace' ?></span>
             </a>
@@ -162,7 +163,7 @@ $this->beginPage();
 
       <nav class="mobile-nav-menu">
         <div class="drawer-section-title"><?= $isRtl ? 'أقسام المنصة الرئيسية' : 'Marketplace Sections' ?></div>
-        <a href="<?= Url::to(['/site/index']) ?>" class="mobile-nav-link <?= $activeController === 'site' && $activeAction === 'index' ? 'active' : '' ?>">
+        <a href="<?= $homeUrl ?>" class="mobile-nav-link <?= $activeController === 'site' && $activeAction === 'index' ? 'active' : '' ?>">
           <span class="drawer-icon">🏠</span>
           <span class="drawer-title"><?= $isRtl ? 'السوق الرئيسي وقطع الغيار' : 'Spare Parts Marketplace' ?></span>
           <span class="drawer-arrow">›</span>
@@ -219,7 +220,7 @@ $this->beginPage();
     <div class="footer-container">
       
       <div class="footer-brand">
-        <a href="<?= Url::to(['/site/index']) ?>" class="brand-logo" title="PARTO">
+        <a href="<?= $homeUrl ?>" class="brand-logo" title="PARTO">
           <img src="<?= Url::to('@web/assets/images/logo.png') ?>" alt="PARTO Logo" onerror="this.src='<?= Url::to('@web/assets/images/logo.jpg') ?>'">
         </a>
         <p>
@@ -236,7 +237,7 @@ $this->beginPage();
       <div class="footer-col">
         <h4><?= $isRtl ? 'الخدمات والأقسام' : 'Marketplace Services' ?></h4>
         <ul>
-          <li><a href="<?= Url::to(['/site/index']) ?>"><?= $isRtl ? 'قطع غيار جديدة وموزعين' : 'New Auto Spare Parts' ?></a></li>
+          <li><a href="<?= $homeUrl ?>"><?= $isRtl ? 'قطع غيار جديدة وموزعين' : 'New Auto Spare Parts' ?></a></li>
           <li><a href="<?= Url::to(['/workshop/index']) ?>"><?= $isRtl ? 'ورش الصيانة وميكانيكا' : 'Auto Workshops' ?></a></li>
           <li><a href="<?= Url::to(['/towing/index']) ?>"><?= $isRtl ? 'سطحات وسحب مركبات' : 'Towing & Flatbed (Satha)' ?></a></li>
           <li><a href="<?= Url::to(['/oem/index']) ?>"><?= $isRtl ? 'كتالوج وكالات وتوافقية' : 'OEM Fitment Catalog' ?></a></li>
@@ -270,8 +271,8 @@ $this->beginPage();
         &copy; <?= date('Y') ?> PARTO Inc. <?= $isRtl ? 'جميع الحقوق محفوظة' : 'All rights reserved' ?>.
       </div>
       <div style="display: flex; gap: 1.5rem;">
-        <a href="<?= Url::to(['/site/index']) ?>"><?= $isRtl ? 'الشروط والأحكام' : 'Terms' ?></a>
-        <a href="<?= Url::to(['/site/index']) ?>"><?= $isRtl ? 'سياسة الخصوصية' : 'Privacy' ?></a>
+        <a href="<?= $homeUrl ?>"><?= $isRtl ? 'الشروط والأحكام' : 'Terms' ?></a>
+        <a href="<?= $homeUrl ?>"><?= $isRtl ? 'سياسة الخصوصية' : 'Privacy' ?></a>
         <a href="https://parto.dynapulsar.com"><?= $isRtl ? 'سيرفر هوستنجر' : 'Hostinger Server' ?></a>
       </div>
     </div>
@@ -279,7 +280,7 @@ $this->beginPage();
 
   <!-- Native App Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-bar" aria-label="Mobile Navigation Bar">
-    <a href="<?= Url::to(['/site/index']) ?>" class="bottom-nav-item <?= $activeController === 'site' && $activeAction === 'index' ? 'active' : '' ?>">
+    <a href="<?= $homeUrl ?>" class="bottom-nav-item <?= $activeController === 'site' && $activeAction === 'index' ? 'active' : '' ?>">
       <span class="bottom-nav-icon">🏠</span>
       <span class="bottom-nav-label"><?= $isRtl ? 'السوق' : 'Market' ?></span>
     </a>

@@ -41,6 +41,12 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+        // Canonical redirect if accessed via explicit /site/index
+        if (Yii::$app->request->getPathInfo() === 'site/index') {
+            $params = Yii::$app->request->getQueryParams();
+            return $this->redirect(array_merge(['/'], $params), 301);
+        }
+
         $products = Product::findActive()
             ->with('tenant')
             ->orderBy(['featured' => SORT_DESC, 'created_at' => SORT_DESC])

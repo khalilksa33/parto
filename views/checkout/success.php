@@ -71,7 +71,7 @@ $totalAmount = $order ? (float)$order->total_amount : 410.00;
     </div>
 
     <div style="display: flex; gap: 1rem; justify-content: center;">
-      <a href="<?= Url::to(['/site/index']) ?>" class="btn-primary" style="padding: 0.85rem 1.75rem;">
+      <a href="<?= Url::to(['/']) ?>" class="btn-primary" style="padding: 0.85rem 1.75rem;">
         <span><?= $isRtl ? 'العودة للتسوق' : 'Continue Shopping' ?></span>
       </a>
       <button class="btn-primary" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-dark);" onclick="window.print()">

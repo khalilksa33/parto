@@ -33,7 +33,7 @@ $this->title = $isRtl
       </p>
     </div>
     <div>
-      <a href="<?= Url::to(['/site/index']) ?>" class="btn-primary" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-dark); text-decoration: none;">
+      <a href="<?= Url::to(['/']) ?>" class="btn-primary" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-dark); text-decoration: none;">
         <?= $isRtl ? 'زيارة واجهة المتجر' : 'View Public Store' ?>
       </a>
     </div>

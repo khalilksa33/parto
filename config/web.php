@@ -54,8 +54,8 @@ $config = [
             'enableStrictParsing' => false,
             'rules' => [
                 'product/<id>' => 'product/view',
-
                 'product.php' => 'product/view',
+                'site/index' => 'site/index',
                 'checkout' => 'checkout/index',
                 'checkout.php' => 'checkout/index',
                 'order-success' => 'checkout/success',

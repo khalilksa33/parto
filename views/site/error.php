@@ -21,7 +21,7 @@ $this->title = $isRtl ? 'حدث خطأ | بارتو السعودية' : 'Error |
     <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
       <?= nl2br(Html::encode($message)) ?>
     </p>
-    <a href="<?= Url::to(['/site/index']) ?>" class="btn-primary" style="display: inline-flex; padding: 0.85rem 1.75rem; text-decoration: none;">
+    <a href="<?= Url::to(['/']) ?>" class="btn-primary" style="display: inline-flex; padding: 0.85rem 1.75rem; text-decoration: none;">
       <span><?= $isRtl ? 'العودة إلى الصفحة الرئيسية' : 'Return to Home Page' ?></span>
     </a>
   </div>
