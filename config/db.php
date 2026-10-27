@@ -1,11 +1,13 @@
 <?php
 /**
- * Database Connection Manager (PDO)
- * Supports Hostinger MySQL / MariaDB and automatic zero-config SQLite fallback.
+ * PARTO Database Configuration & Connection Manager
+ * Supports Yii 2 ActiveRecord / Connection Component and legacy PDO fallback.
+ * Works seamlessly with Hostinger MySQL / MariaDB and embedded SQLite.
  */
 
 require_once __DIR__ . '/config.php';
 
+// Helper class for legacy / direct PDO queries
 class Database {
     private static ?PDO $instance = null;
     private static string $driver = 'mysql';
@@ -15,7 +17,6 @@ class Database {
             return self::$instance;
         }
 
-        // Check environment or .env file
         self::loadEnv();
 
         $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
@@ -24,7 +25,7 @@ class Database {
         $dbPass = getenv('DB_PASS') ?: '';
         $dbPort = getenv('DB_PORT') ?: '3306';
 
-        // Try MySQL first if credentials or Hostinger config detected
+        // Try MySQL first if credentials detected
         if (getenv('DB_NAME') && getenv('DB_USER')) {
             try {
                 $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
@@ -36,6 +37,17 @@ class Database {
                 ]);
                 self::$instance = $pdo;
                 self::$driver = 'mysql';
+
+                $prodCount = 0;
+                try {
+                    $prodCount = (int)$pdo->query("SELECT count(*) FROM products WHERE status = 'active'")->fetchColumn();
+                } catch (Exception $e) {
+                    $prodCount = 0;
+                }
+                if ($prodCount < 20) {
+                    self::initializeTables($pdo);
+                }
+
                 return self::$instance;
             } catch (PDOException $e) {
                 error_log("MySQL connection failed: " . $e->getMessage() . ". Falling back to embedded SQLite.");
@@ -89,12 +101,10 @@ class Database {
     }
 
     public static function initializeTables(PDO $pdo): void {
-        // Auto-initialize schema and default seed data
         $schemaFile = __DIR__ . '/schema.sql';
         if (file_exists($schemaFile)) {
             $sql = file_get_contents($schemaFile);
             
-            // If SQLite, adjust MySQL-specific syntax
             if (self::$driver === 'sqlite') {
                 $sql = str_replace(['AUTO_INCREMENT', 'INT PRIMARY KEY AUTO_INCREMENT', 'DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'], 
                                    ['AUTOINCREMENT', 'INTEGER PRIMARY KEY AUTOINCREMENT', 'DATETIME DEFAULT CURRENT_TIMESTAMP'], $sql);
@@ -104,7 +114,6 @@ class Database {
             }
 
             try {
-                // Execute individual statements
                 $statements = array_filter(array_map('trim', explode(';', $sql)));
                 foreach ($statements as $stmt) {
                     if (!empty($stmt)) {
@@ -122,7 +131,40 @@ class Database {
     }
 }
 
-// Function shorthand
 function getDB(): PDO {
     return Database::getConnection();
 }
+
+// -------------------------------------------------------------
+// Return Yii 2 DB Component Configuration
+// -------------------------------------------------------------
+$dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+$dbName = getenv('DB_NAME');
+$dbUser = getenv('DB_USER');
+$dbPass = getenv('DB_PASS') ?: '';
+$dbPort = getenv('DB_PORT') ?: '3306';
+
+$sqlitePath = PARTO_ROOT . '/config/parto.sqlite';
+
+if (!empty($dbName) && !empty($dbUser)) {
+    return [
+        'class' => 'yii\db\Connection',
+        'dsn' => "mysql:host={$dbHost};port={$dbPort};dbname={$dbName}",
+        'username' => $dbUser,
+        'password' => $dbPass,
+        'charset' => 'utf8mb4',
+        'enableSchemaCache' => (defined('YII_ENV_PROD') && YII_ENV_PROD),
+        'schemaCacheDuration' => 3600,
+        'schemaCache' => 'cache',
+    ];
+}
+
+// Default to SQLite (zero-config, high-speed plug-and-play)
+return [
+    'class' => 'yii\db\Connection',
+    'dsn' => 'sqlite:' . $sqlitePath,
+    'charset' => 'utf8',
+    'enableSchemaCache' => (defined('YII_ENV_PROD') && YII_ENV_PROD),
+    'schemaCacheDuration' => 3600,
+    'schemaCache' => 'cache',
+];

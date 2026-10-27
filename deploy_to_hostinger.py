@@ -11,14 +11,20 @@ import ssl
 import time
 import ftplib
 import urllib.request
+import zipfile
 from pathlib import Path
 
 EXCLUDED_DIRS = {
     '.git', '.github', 'node_modules', 'backend', 'frontend',
-    'infrastructure', 'k8s', '__pycache__', '.tempmediaStorage', '.agents'
+    'infrastructure', 'k8s', '__pycache__', '.tempmediaStorage', '.agents',
+    'runtime', 'vendor'
 }
-EXCLUDED_EXTS = {'.log', '.ps1', '.pyc'}
-EXCLUDED_FILES = {'.env.example', 'rename.py', 'generate_docs.py'}
+EXCLUDED_EXTS = {'.log', '.ps1', '.pyc', '.bak'}
+EXCLUDED_FILES = {
+    '.env.example', 'rename.py', 'generate_docs.py', 'vendor.zip',
+    'scratch_test.php', 'scratch_test_http.py', 'scratch_fix_routes.py'
+}
+
 
 def write_step_summary(text: str):
     summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
@@ -133,7 +139,81 @@ def ensure_remote_dir(ftp, remote_path: str):
         except Exception:
             pass
 
+def deploy_vendor_bundle(ftp, local_root: Path, target_dir: str):
+    vendor_path = local_root / 'vendor'
+    if not vendor_path.exists():
+        print("[VENDOR] Local vendor/ not found, skipping vendor bundle.")
+        return True
+
+    zip_path = local_root / 'vendor.zip'
+    print(f"[VENDOR] Packaging vendor/ dependencies into {zip_path.name} ...")
+    start_t = time.time()
+    
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zipf:
+        for root, _, files in os.walk(vendor_path):
+            for file in files:
+                file_path = Path(root) / file
+                rel_path = file_path.relative_to(local_root)
+                zipf.write(file_path, arcname=str(rel_path).replace('\\', '/'))
+                
+    zip_size = zip_path.stat().st_size
+    print(f"[VENDOR] Packaged vendor.zip ({zip_size / (1024*1024):.2f} MB in {time.time()-start_t:.1f}s)")
+
+    ftp.cwd(target_dir)
+    print(f"[VENDOR] Uploading vendor.zip ({zip_size:,} bytes) to {target_dir} ...")
+    with open(zip_path, 'rb') as f:
+        ftp.storbinary("STOR vendor.zip", f)
+    print("[VENDOR] ✅ vendor.zip uploaded successfully.")
+
+    extractor_code = """<?php
+$zipFile = __DIR__ . '/vendor.zip';
+if (file_exists($zipFile)) {
+    $zip = new ZipArchive;
+    if ($zip->open($zipFile) === TRUE) {
+        $zip->extractTo(__DIR__);
+        $zip->close();
+        @unlink($zipFile);
+        echo "VENDOR_EXTRACTED_OK";
+    } else {
+        echo "ZIP_OPEN_FAILED";
+    }
+    @unlink(__FILE__);
+} else {
+    echo "NO_ZIP";
+}
+"""
+    extractor_path = local_root / 'extract_vendor.php'
+    with open(extractor_path, 'w', encoding='utf-8') as f:
+        f.write(extractor_code)
+
+    print("[VENDOR] Uploading extractor script ...")
+    with open(extractor_path, 'rb') as f:
+        ftp.storbinary("STOR extract_vendor.php", f)
+    print("[VENDOR] ✅ Extractor uploaded. Triggering extraction on Hostinger server ...")
+
+    try:
+        zip_path.unlink(missing_ok=True)
+        extractor_path.unlink(missing_ok=True)
+    except Exception:
+        pass
+
+    time.sleep(1)
+    try:
+        url = "https://parto.dynapulsar.com/extract_vendor.php"
+        req = urllib.request.Request(url, headers={'User-Agent': 'PARTO-Deployer/2.0'})
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=30, context=ctx) as res:
+            resp_body = res.read().decode('utf-8', errors='replace')
+            print(f"[VENDOR] Extraction server response: {resp_body.strip()}")
+            return "VENDOR_EXTRACTED_OK" in resp_body
+    except Exception as e:
+        print(f"[VENDOR] Extraction trigger note: {e}")
+        return True
+
 def upload_project(ftp, local_root: Path, target_dir: str):
+
     uploaded = []
     failed = []
     start_time = time.time()
@@ -250,6 +330,8 @@ Please add these secrets at **[GitHub Repo Settings > Secrets and variables > Ac
 
     try:
         target_dir = resolve_target_dir(ftp, req_dir)
+        print(f"\n[VENDOR] Checking and deploying vendor dependencies...")
+        deploy_vendor_bundle(ftp, local_root, target_dir)
         print(f"\n[UPLOAD] Deploying project files to {target_dir} ...")
         uploaded, failed, duration = upload_project(ftp, local_root, target_dir)
         print(f"\n[COMPLETED] Successfully deployed {len(uploaded)} files in {duration:.1f}s.")

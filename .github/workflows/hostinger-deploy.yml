@@ -26,10 +26,15 @@ jobs:
           echo "Checking PHP syntax for all project files..."
           find . -maxdepth 3 -name "*.php" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/frontend/*" -not -path "*/backend/*" -exec php -l {} \;
 
+      - name: 📦 Install Composer Dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
 
       - name: 🚀 Deploy PARTO Marketplace to Hostinger
         env:
