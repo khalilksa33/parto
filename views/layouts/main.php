@@ -51,13 +51,6 @@ $this->beginPage();
   <!-- Navigation Bar -->
   <header class="navbar">
     <div class="nav-container">
-      
-      <!-- Mobile Menu Hamburger Button -->
-      <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation menu" onclick="Parto.toggleMobileNav()">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
 
       <!-- Brand Logo -->
       <a href="<?= $homeUrl ?>" class="brand-logo" title="PARTO">

@@ -1480,7 +1480,7 @@ html, body {
 
 @media (max-width: 992px) {
   .mobile-menu-btn {
-    display: flex;
+    display: none !important;
   }
   .desktop-nav {
     display: none;
