@@ -53,7 +53,9 @@ interface Tenant {
   logo: string;
   category: string;
   rating: number;
-  bannerGradient: string;
+  bannerGradient?: string;
+  subdomain?: string;
+  status?: string;
 }
 
 interface Order {
@@ -164,11 +166,11 @@ export default function MarketplacePage() {
   ];
 
   const DEFAULT_FALLBACK_TENANTS: Tenant[] = [
-    { id: 't-riyadh-oem', name: 'Riyadh OEM Parts Co.', subdomain: 'riyadh-oem', logo: '⚙️', category: 'Toyota, Lexus, BMW', rating: 4.95 },
-    { id: 't-wadi-uhud', name: 'Wadi Uhud Nissan Genuine Parts', subdomain: 'wadi-uhud', logo: '🏎️', category: 'Nissan & Infiniti', rating: 4.92 },
-    { id: 't-babkeer-mazda', name: 'Babkeer Auto Mazda Agency', subdomain: 'babkeer-mazda', logo: '🔧', category: 'Mazda Agency', rating: 4.85 },
-    { id: 't-el-shafie', name: 'El-Shafie Auto Electrical & AC Components', subdomain: 'el-shafie', logo: '⚡', category: 'Electrical & AC', rating: 4.91 },
-    { id: 't-hamzah-sadiq', name: 'Hamzah Sadiq Japanese Suspension & Shocks', subdomain: 'hamzah-sadiq', logo: '🚗', category: 'Suspension & Shocks', rating: 4.89 },
+    { id: 't-riyadh-oem', name: 'Riyadh OEM Parts Co.', subdomain: 'riyadh-oem', logo: '⚙️', category: 'Toyota, Lexus, BMW', rating: 4.95, bannerGradient: 'from-blue-600 to-indigo-900' },
+    { id: 't-wadi-uhud', name: 'Wadi Uhud Nissan Genuine Parts', subdomain: 'wadi-uhud', logo: '🏎️', category: 'Nissan & Infiniti', rating: 4.92, bannerGradient: 'from-rose-600 to-red-950' },
+    { id: 't-babkeer-mazda', name: 'Babkeer Auto Mazda Agency', subdomain: 'babkeer-mazda', logo: '🔧', category: 'Mazda Agency', rating: 4.85, bannerGradient: 'from-purple-600 to-pink-900' },
+    { id: 't-el-shafie', name: 'El-Shafie Auto Electrical & AC Components', subdomain: 'el-shafie', logo: '⚡', category: 'Electrical & AC', rating: 4.91, bannerGradient: 'from-amber-600 to-yellow-900' },
+    { id: 't-hamzah-sadiq', name: 'Hamzah Sadiq Japanese Suspension & Shocks', subdomain: 'hamzah-sadiq', logo: '🚗', category: 'Suspension & Shocks', rating: 4.89, bannerGradient: 'from-indigo-600 to-violet-900' },
   ];
 
   const filteredProducts = products;
@@ -474,7 +476,7 @@ export default function MarketplacePage() {
       </header>
 
       {/* Dynamic Tenant Banner / Hero Slider Section (FULL WIDTH) */}
-      <section className={`relative w-full overflow-hidden transition-all duration-500 flex flex-col justify-center min-h-[50vh] md:min-h-[60vh] ${activeTenantInfo ? 'bg-gradient-to-r ' + activeTenantInfo.bannerGradient : 'bg-slate-950'}`}>
+      <section className={`relative w-full overflow-hidden transition-all duration-500 flex flex-col justify-center min-h-[50vh] md:min-h-[60vh] ${activeTenantInfo ? 'bg-gradient-to-r ' + (activeTenantInfo.bannerGradient || 'from-blue-600 to-indigo-900') : 'bg-slate-950'}`}>
         {!activeTenantInfo && (
           <>
             {heroSlides.map((slide, index) => (
