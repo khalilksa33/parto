@@ -289,7 +289,7 @@ export default function SingleProductPage() {
     <div className="flex-1 flex flex-col min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
       {/* Top Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-slate-200 shadow-sm">
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -362,7 +362,7 @@ export default function SingleProductPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-10">
+      <main className="flex-1 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 flex flex-col gap-10">
         {loading ? (
           <div className="bg-white rounded-3xl border border-slate-200 p-12 flex flex-col items-center justify-center gap-4 min-h-[420px]">
             <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>

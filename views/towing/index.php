@@ -11,7 +11,7 @@ $this->title = $isRtl
     : 'Emergency Towing & Satha Dispatch 24/7 | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 800px; margin: 2rem auto 4rem; padding: 0 1.5rem;">
+<div style="max-width: min(1500px, 94vw); width: 100%; margin: 2rem auto 4rem; padding: 0 1.5rem;">
 
   <div style="text-align: center; margin-bottom: 2.5rem;">
     <div class="hero-pill" style="margin-bottom: 1rem;">

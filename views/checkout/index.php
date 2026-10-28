@@ -11,7 +11,7 @@ $this->title = $isRtl
     : 'Secure Checkout & Delivery | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 1050px; margin: 2rem auto 4rem; padding: 0 1.5rem;">
+<div style="max-width: min(1600px, 94vw); width: 100%; margin: 2rem auto 4rem; padding: 0 1.5rem;">
 
   <div style="text-align: center; margin-bottom: 2.5rem;">
     <h1 style="font-size: 2.3rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem;">

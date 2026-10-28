@@ -15,7 +15,7 @@ $this->title = $isRtl
     : 'Vendor Management Portal | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 1360px; margin: 2rem auto 5rem; padding: 0 1.5rem;">
+<div style="max-width: min(1760px, 96vw); width: 100%; margin: 2rem auto 5rem; padding: 0 1.5rem;">
 
   <?php if (!$tenant): ?>
     <!-- Login / Select Tenant Screen -->

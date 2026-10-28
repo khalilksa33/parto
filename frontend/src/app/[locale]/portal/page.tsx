@@ -682,7 +682,7 @@ function PortalContentInner() {
 
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between gap-4">
           <div className="text-xl font-black text-indigo-900 flex items-center gap-3">
             <span className="bg-indigo-100 text-indigo-700 w-9 h-9 rounded-xl flex items-center justify-center">
               🏪
@@ -730,7 +730,7 @@ function PortalContentInner() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-[1760px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-1.5">

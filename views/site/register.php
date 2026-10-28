@@ -11,7 +11,7 @@ $this->title = $isRtl
     : 'Vendor & Distributor Registration | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 820px; margin: 2.5rem auto 5rem; padding: 0 1.5rem;">
+<div style="max-width: min(1200px, 94vw); width: 100%; margin: 2.5rem auto 5rem; padding: 0 1.5rem;">
 
   <!-- Hero Title -->
   <div style="text-align: center; margin-bottom: 2.5rem;">

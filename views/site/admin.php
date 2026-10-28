@@ -17,7 +17,7 @@ $this->title = $isRtl
     : 'Super Admin Center | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 1360px; margin: 2.5rem auto 5rem; padding: 0 1.5rem;">
+<div style="max-width: min(1760px, 96vw); width: 100%; margin: 2.5rem auto 5rem; padding: 0 1.5rem;">
 
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem;">
     <div>

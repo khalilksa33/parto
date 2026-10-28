@@ -19,7 +19,7 @@ if ($product) {
 }
 ?>
 
-<div style="max-width: 1360px; margin: 1.5rem auto 4rem; padding: 0 1.5rem;">
+<div style="max-width: min(1760px, 96vw); width: 100%; margin: 1.5rem auto 4rem; padding: 0 1.5rem;">
 
   <?php if (!$product): ?>
     <!-- Product Not Found Notice -->

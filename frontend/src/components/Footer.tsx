@@ -3,7 +3,7 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer className="bg-slate-50 border-t border-slate-200 mt-auto pb-20 sm:pb-0">
-      <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center sm:items-start gap-3">
           <div className="flex items-center gap-3">
             <img src="/logo.png?v=3" alt="Parto Auto Spare Parts" className="h-8 w-auto grayscale opacity-80" />

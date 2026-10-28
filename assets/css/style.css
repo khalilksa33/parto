@@ -109,7 +109,8 @@ button, input, select, textarea {
 }
 
 .nav-container {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -266,7 +267,8 @@ button, input, select, textarea {
 }
 
 .hero-container {
-  max-width: 1100px;
+  max-width: min(1500px, 94vw);
+  width: 100%;
   margin: 0 auto;
   text-align: center;
 }
@@ -314,7 +316,8 @@ button, input, select, textarea {
   border-radius: var(--radius-xl);
   padding: 1.75rem;
   box-shadow: var(--shadow-md), var(--shadow-glow);
-  max-width: 920px;
+  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -424,7 +427,8 @@ button, input, select, textarea {
    POPULAR BRANDS CAROUSEL / GRID
    ======================================================== */
 .brands-section {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto 3.5rem;
   padding: 0 1.5rem;
 }
@@ -493,7 +497,8 @@ button, input, select, textarea {
    CATEGORY PILLS
    ======================================================== */
 .categories-bar {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto 2rem;
   padding: 0 1.5rem;
   display: flex;
@@ -530,14 +535,15 @@ button, input, select, textarea {
    PRODUCTS GRID & CARDS
    ======================================================== */
 .products-section {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto 4rem;
   padding: 0 1.5rem;
 }
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -1111,7 +1117,8 @@ button, input, select, textarea {
 }
 
 .footer-container {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -1150,7 +1157,8 @@ button, input, select, textarea {
 }
 
 .footer-bottom {
-  max-width: 1360px;
+  max-width: min(1760px, 96vw);
+  width: 100%;
   margin: 0 auto;
   padding-top: 2rem;
   border-top: 1px solid var(--border-dark);

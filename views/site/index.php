@@ -195,7 +195,7 @@ $this->title = $isRtl
 </section>
 
 <!-- Verified Suppliers & Market Tour Showcase -->
-<section style="max-width: 1360px; margin: 0 auto 5rem; padding: 0 1.5rem;">
+<section style="max-width: min(1760px, 96vw); width: 100%; margin: 0 auto 5rem; padding: 0 1.5rem;">
   <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1px solid var(--border-dark); border-radius: var(--radius-xl); padding: 2.5rem; backdrop-filter: blur(12px);">
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
       <div>

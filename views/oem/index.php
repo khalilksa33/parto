@@ -12,7 +12,7 @@ $this->title = $isRtl
     : 'OEM Fitment Catalog & Genuine Part Numbers | PARTO Saudi Arabia';
 ?>
 
-<div style="max-width: 1200px; margin: 2rem auto 4rem; padding: 0 1.5rem;">
+<div style="max-width: min(1760px, 96vw); width: 100%; margin: 2rem auto 4rem; padding: 0 1.5rem;">
 
   <div style="text-align: center; margin-bottom: 2.5rem;">
     <div class="hero-pill" style="margin-bottom: 1rem;">

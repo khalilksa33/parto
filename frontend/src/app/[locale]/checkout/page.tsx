@@ -282,7 +282,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-[1760px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <div 
             className="text-2xl font-black tracking-tight text-indigo-900 cursor-pointer flex items-center gap-2"
             onClick={() => router.push(`/${locale}`)}
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col lg:flex-row gap-10">
+      <main className="max-w-[1760px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 md:py-12 flex flex-col lg:flex-row gap-10">
         
         <div className="flex-1 flex flex-col gap-8">
           <form id="checkout-form" onSubmit={handleCheckout} className="flex flex-col gap-8">

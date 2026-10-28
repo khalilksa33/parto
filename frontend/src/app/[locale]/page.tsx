@@ -152,7 +152,24 @@ export default function MarketplacePage() {
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
 
-  const categories = ['all', 'Engine Parts', 'Brakes & Suspension', 'Exhaust Systems', 'Exterior & Body', 'Interior Accessories'];
+  const categories = [
+    'all',
+    'Engine Parts',
+    'Brakes & Suspension',
+    'Electrical & Sensors',
+    'Exterior & Body',
+    'Transmission',
+    'Exhaust Systems',
+    'Interior Accessories'
+  ];
+
+  const DEFAULT_FALLBACK_TENANTS: Tenant[] = [
+    { id: 't-riyadh-oem', name: 'Riyadh OEM Parts Co.', subdomain: 'riyadh-oem', logo: '⚙️', category: 'Toyota, Lexus, BMW', rating: 4.95 },
+    { id: 't-wadi-uhud', name: 'Wadi Uhud Nissan Genuine Parts', subdomain: 'wadi-uhud', logo: '🏎️', category: 'Nissan & Infiniti', rating: 4.92 },
+    { id: 't-babkeer-mazda', name: 'Babkeer Auto Mazda Agency', subdomain: 'babkeer-mazda', logo: '🔧', category: 'Mazda Agency', rating: 4.85 },
+    { id: 't-el-shafie', name: 'El-Shafie Auto Electrical & AC Components', subdomain: 'el-shafie', logo: '⚡', category: 'Electrical & AC', rating: 4.91 },
+    { id: 't-hamzah-sadiq', name: 'Hamzah Sadiq Japanese Suspension & Shocks', subdomain: 'hamzah-sadiq', logo: '🚗', category: 'Suspension & Shocks', rating: 4.89 },
+  ];
 
   const filteredProducts = products;
 
@@ -164,6 +181,12 @@ export default function MarketplacePage() {
   const translateTenantName = (name: string, loc: any) => {
     if (loc !== 'ar') return name;
     const map: Record<string, string> = {
+      'Riyadh OEM Parts Co.': 'شركة قطع غيار الرياض OEM',
+      'Wadi Uhud Nissan Genuine Parts': 'وادي أحد لقطع نيسان الأصلية',
+      'Babkeer Auto Mazda Agency': 'وكالة بابكير لسيارات مازدا',
+      'El-Shafie Auto Electrical & AC Components': 'الشافعي لكهرباء وتكييف السيارات',
+      'Hamzah Sadiq Japanese Suspension & Shocks': 'حمزة صادق لمساعدات ومقصات السيارات اليابانية',
+      'Najm Express Towing & Satha': 'سطحات نجم السريعة',
       'Luxury Parts Co': 'شركة قطع الغيار الفاخرة',
       'Performance Motors': 'أداء المحركات',
       'Riyadh OEM Parts': 'قطع غيار الرياض الأصلية'
@@ -178,10 +201,16 @@ export default function MarketplacePage() {
         const tenantsRes = await fetch(`${API_URL}/api/tenants`);
         if (tenantsRes.ok) {
           const tenantsData = await tenantsRes.json();
-          setTenants(Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || []));
+          const list = Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || []);
+          if (list.length > 0) {
+            setTenants(list);
+            return;
+          }
         }
+        setTenants(DEFAULT_FALLBACK_TENANTS);
       } catch (err) {
         console.error('Failed to load tenants', err);
+        setTenants(DEFAULT_FALLBACK_TENANTS);
       }
     };
     fetchTenants();
@@ -201,9 +230,11 @@ export default function MarketplacePage() {
           ? `${API_URL}/api/products?tenantId=${selectedTenantId}`
           : `${API_URL}/api/products`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to load products from API');
-        const data = await res.json();
-        const rawProducts = Array.isArray(data) ? data : (data.products || []);
+        let rawProducts: any[] = [];
+        if (res.ok) {
+          const data = await res.json();
+          rawProducts = Array.isArray(data) ? data : (data.products || []);
+        }
         
         let allMapped: Product[] = rawProducts.map((p: any) => ({
           id: String(p.id),
@@ -223,14 +254,14 @@ export default function MarketplacePage() {
           height: Number(p.height || 10)
         }));
 
-        // Ensure all 12 popular vehicle brands have parts available for filtering even if DB wasn't re-seeded yet
-        const defaultSellerId = allMapped[0]?.tenantId || tenants[0]?.id || 'default-seller';
+        // Ensure all 29 sample products are present even before API cache refresh
+        const defaultSellerId = allMapped[0]?.tenantId || (tenants[0]?.id) || 't-riyadh-oem';
         const existingNames = new Set(allMapped.map(p => p.name.toLowerCase()));
         for (const fb of FALLBACK_BRAND_PARTS) {
           if (!existingNames.has(fb.name.toLowerCase())) {
             allMapped.push({
               ...fb,
-              tenantId: defaultSellerId
+              tenantId: fb.tenantId || defaultSellerId
             });
           }
         }
@@ -343,7 +374,7 @@ export default function MarketplacePage() {
     <div className="flex-1 flex flex-col min-h-screen bg-white text-slate-900 font-sans antialiased overflow-x-hidden">
       {/* Header / Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200 transition-all duration-300 shadow-sm">
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 h-16 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img src="/logo.png?v=3" alt="Parto Auto Spare Parts" className="h-10 w-auto rounded" />
           </div>
@@ -461,7 +492,7 @@ export default function MarketplacePage() {
         
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-60 z-10 pointer-events-none"></div>
         
-        <div className="relative z-20 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col gap-4">
+        <div className="relative z-20 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-12 flex flex-col gap-4">
           {activeTenantInfo ? (
             <>
               <div className="flex items-center gap-4">
@@ -607,7 +638,7 @@ export default function MarketplacePage() {
       </section>
 
       {/* Main Container */}
-      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-12 flex flex-col gap-10">
+      <main className="flex-1 w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-10 flex flex-col gap-10">
 
         {/* Filter By Vehicle Brand Selector */}
         <section className="flex flex-col gap-4">
@@ -688,7 +719,7 @@ export default function MarketplacePage() {
           <h2 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <span>🏪</span> Shop By Tenant
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             <button
               onClick={() => setSelectedTenantId('all')}
               className={`p-4 rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
@@ -758,7 +789,7 @@ export default function MarketplacePage() {
 
         {/* Product Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
             {filteredProducts.map((product) => {
               const tenant = tenants.find(t => t.id === product.tenantId);
               const imgSrc = resolvePartImage(product.image, product.category, product.name);
