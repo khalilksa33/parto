@@ -619,6 +619,57 @@ button, input, select, textarea {
   border: 1px solid rgba(37, 99, 235, 0.3);
 }
 
+/* Vehicle Garage & Fitment Indicator */
+.garage-banner {
+  max-width: min(1760px, 96vw);
+  width: 100%;
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+}
+
+.garage-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.fitment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.65rem;
+  width: fit-content;
+}
+
+.fitment-match {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.fitment-mismatch {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fitment-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid var(--border-dark);
+}
+
 .product-body {
   padding: 1.25rem;
   display: flex;

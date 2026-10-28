@@ -108,6 +108,50 @@ $this->title = $isRtl
   <?php endforeach; ?>
 </div>
 
+<!-- My Garage / كراج سياراتي Bar -->
+<div class="garage-banner" id="garageBanner">
+  <div class="garage-card">
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <div style="font-size: 2rem; background: rgba(59, 130, 246, 0.15); width: 50px; height: 50px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59,130,246,0.3);">
+        🚗
+      </div>
+      <div>
+        <div style="font-size: 0.78rem; color: #60a5fa; font-weight: 800; text-transform: uppercase;">
+          <?= $isRtl ? 'كراجي للتحقق من الملاءمة والتوافق' : 'My Personal Garage & Fitment' ?>
+        </div>
+        <div id="garageCurrentVehicle" style="font-size: 1.15rem; font-weight: 900; color: #fff;">
+          <?= $isRtl ? 'لم يتم تحديد سيارة بعد' : 'No vehicle selected yet' ?>
+        </div>
+        <div id="garageSubtext" style="font-size: 0.8rem; color: var(--text-muted);">
+          <?= $isRtl ? 'حدد سيارتك أو فك رقم الهيكل (VIN) لعرض حالة الملاءمة المؤكدة (Guaranteed Fit) على كل قطعة.' : 'Select your vehicle or decode VIN to check verified part fitment.' ?>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+      <select id="quickGarageSelect" class="form-control" style="width: auto; padding: 0.6rem 1rem; font-size: 0.85rem;" onchange="Parto.handleQuickGarageSelect(this.value)">
+        <option value=""><?= $isRtl ? '⚡ اختر سيارتك سريعاً...' : '⚡ Quick Select Vehicle...' ?></option>
+        <option value="Toyota|Camry|2022">تويوتا كامري (2022 Toyota Camry)</option>
+        <option value="Nissan|Patrol|2021">نيسان باترول (2021 Nissan Patrol Y62)</option>
+        <option value="Hyundai|Sonata|2023">هيونداي سوناتا (2023 Hyundai Sonata)</option>
+        <option value="Lexus|ES350|2021">لكزس ES350 (2021 Lexus ES)</option>
+        <option value="Mazda|CX-9|2022">مازدا CX-9 (2022 Mazda CX-9)</option>
+        <option value="BMW|5 Series|2022">بي إم دبليو الفئة الخامسة (BMW 5 Series)</option>
+        <option value="Ford|Taurus|2022">فورد توروس (2022 Ford Taurus)</option>
+      </select>
+
+      <button id="garageClearBtn" class="btn-primary" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 0.6rem 1rem; font-size: 0.82rem;" onclick="Parto.clearGarageVehicle()">
+        <?= $isRtl ? 'إزالة' : 'Clear' ?>
+      </button>
+
+      <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 700; color: #34d399; cursor: pointer; background: rgba(16, 185, 129, 0.1); padding: 0.6rem 0.9rem; border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.25);">
+        <input type="checkbox" id="onlyFitFilter" onchange="Parto.toggleOnlyFit(this.checked)">
+        <span><?= $isRtl ? 'المتوافقة فقط' : 'Guaranteed Fit Only' ?></span>
+      </label>
+    </div>
+  </div>
+</div>
+
 <!-- Products Catalog Grid -->
 <section class="products-section">
   <div class="section-header">
@@ -128,7 +172,7 @@ $this->title = $isRtl
         $tenantName = $p->tenant ? $p->tenant->name : 'Riyadh OEM Parts';
         $tenantLogo = $p->tenant && $p->tenant->logo ? $p->tenant->logo : '🏪';
       ?>
-      <div class="product-card" data-brand="<?= Html::encode($p->brand_name) ?>" data-category="<?= Html::encode($p->category) ?>">
+      <div class="product-card" data-brand="<?= Html::encode($p->brand_name) ?>" data-category="<?= Html::encode($p->category) ?>" data-compat="<?= Html::encode(json_encode($compatList)) ?>">
         
         <a href="<?= $productUrl ?>" class="product-image-container" title="<?= Html::encode($p->name) ?>">
           <img src="<?= Html::encode($p->image) ?>" alt="<?= Html::encode($p->name) ?>" class="product-image" onerror="this.src='<?= Url::to('@web/assets/images/parts/engine.svg') ?>'">

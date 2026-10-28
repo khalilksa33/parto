@@ -9,6 +9,10 @@ const Parto = (function() {
   // Cart State (Persisted in localStorage)
   let cart = JSON.parse(localStorage.getItem('parto_cart') || '[]');
 
+  // Garage State (Persisted in localStorage)
+  let savedGarage = JSON.parse(localStorage.getItem('parto_garage_vehicle') || 'null');
+  let onlyFitEnabled = false;
+
   function saveCart() {
     localStorage.setItem('parto_cart', JSON.stringify(cart));
     updateCartUI();
@@ -192,8 +196,9 @@ const Parto = (function() {
       const matchBrand = (brand === 'all') || (cardBrand === brand.toLowerCase());
       const matchCat = (category === 'all') || (cardCat === category.toLowerCase());
       const matchQuery = !query || cardName.includes(query) || cardBrand.includes(query);
+      const matchFit = !onlyFitEnabled || !savedGarage || (card.dataset.fitment === 'match');
 
-      if (matchBrand && matchCat && matchQuery) {
+      if (matchBrand && matchCat && matchQuery && matchFit) {
         card.style.display = 'flex';
       } else {
         card.style.display = 'none';
@@ -241,9 +246,14 @@ const Parto = (function() {
               ${d.engineDetails ? `${d.engineDetails.engineModel || ''} • ${d.engineDetails.displacement ? d.engineDetails.displacement + 'L' : ''} • ${d.engineDetails.cylinders ? d.engineDetails.cylinders + ' Cylinders' : ''}` : ''}
             </div>
           </div>
-          <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="Parto.filterByBrand('${d.make}')">
-            ${isRtl ? 'عرض القطع المتوافقة' : 'Show Matching Parts'}
-          </button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="Parto.setGarageVehicle({make: '${d.make}', model: '${d.model}', year: '${d.year}', name: '${d.make} ${d.model} (${d.year})'})">
+              💾 ${isRtl ? 'حفظ في كراجي وتفعيل التحقق' : 'Save to My Garage'}
+            </button>
+            <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="Parto.filterByBrand('${d.make}')">
+              ${isRtl ? 'عرض القطع المتوافقة' : 'Show Matching Parts'}
+            </button>
+          </div>
         `;
       }
 
@@ -312,6 +322,189 @@ const Parto = (function() {
         if (tab === 'vin') {
           if (vinBox) vinBox.style.display = 'block';
           if (partBox) partBox.style.display = 'none';
+  // Garage Management Engine
+  function setGarageVehicle(vehicle) {
+    savedGarage = vehicle;
+    localStorage.setItem('parto_garage_vehicle', JSON.stringify(vehicle));
+    updateGarageUI();
+    updateFitmentBadges();
+    showToast(document.documentElement.dir === 'rtl' ? `تم حفظ ${vehicle.name} في كراجك` : `${vehicle.name} saved to My Garage`);
+  }
+
+  function clearGarageVehicle() {
+    savedGarage = null;
+    localStorage.removeItem('parto_garage_vehicle');
+    const selectElem = document.getElementById('quickGarageSelect');
+    if (selectElem) selectElem.value = '';
+    const onlyFitCheckbox = document.getElementById('onlyFitFilter');
+    if (onlyFitCheckbox) onlyFitCheckbox.checked = false;
+    onlyFitEnabled = false;
+    updateGarageUI();
+    updateFitmentBadges();
+    showToast(document.documentElement.dir === 'rtl' ? 'تمت إزالة السيارة من الكراج' : 'Vehicle removed from My Garage');
+  }
+
+  function handleQuickGarageSelect(val) {
+    if (!val) return;
+    const parts = val.split('|');
+    if (parts.length >= 3) {
+      setGarageVehicle({
+        make: parts[0],
+        model: parts[1],
+        year: parts[2],
+        name: `${parts[0]} ${parts[1]} (${parts[2]})`
+      });
+    }
+  }
+
+  function toggleOnlyFit(enabled) {
+    onlyFitEnabled = Boolean(enabled);
+    filterCatalog();
+  }
+
+  function updateGarageUI() {
+    const isRtl = document.documentElement.dir === 'rtl';
+    const currentElem = document.getElementById('garageCurrentVehicle');
+    const subElem = document.getElementById('garageSubtext');
+    const clearBtn = document.getElementById('garageClearBtn');
+
+    if (currentElem) {
+      if (savedGarage) {
+        currentElem.innerHTML = `🟢 ${savedGarage.name}`;
+        if (subElem) {
+          subElem.textContent = isRtl
+            ? 'يتم الآن فحص التوافق والمطابقة الميكانيكية لجميع القطع مع سيارتك تلقائياً.'
+            : 'Catalog is actively verified against your vehicle specifications.';
+        }
+        if (clearBtn) clearBtn.style.display = 'inline-flex';
+      } else {
+        currentElem.textContent = isRtl ? 'لم يتم تحديد سيارة بعد' : 'No vehicle selected yet';
+        if (subElem) {
+          subElem.textContent = isRtl
+            ? 'حدد سيارتك أو فك رقم الهيكل (VIN) لعرض حالة الملاءمة المؤكدة (Guaranteed Fit) على كل قطعة.'
+            : 'Select your vehicle or decode VIN to check verified part fitment.';
+        }
+        if (clearBtn) clearBtn.style.display = 'none';
+      }
+    }
+  }
+
+  function checkFitmentForCard(card) {
+    if (!savedGarage) return 'neutral';
+    const brand = (card.dataset.brand || '').toLowerCase();
+    const gMake = (savedGarage.make || '').toLowerCase();
+    const gModel = (savedGarage.model || '').toLowerCase();
+
+    let compatList = [];
+    try {
+      compatList = JSON.parse(card.dataset.compat || '[]');
+    } catch (e) {
+      compatList = [];
+    }
+
+    if (brand === gMake) return 'match';
+
+    const matchesCompat = compatList.some(c => {
+      const cStr = String(c).toLowerCase();
+      return cStr.includes(gMake) || (gModel && cStr.includes(gModel));
+    });
+
+    if (matchesCompat) return 'match';
+
+    const title = (card.querySelector('.product-title')?.textContent || '').toLowerCase();
+    if (title.includes(gMake) || (gModel && title.includes(gModel))) return 'match';
+
+    return 'mismatch';
+  }
+
+  function updateFitmentBadges() {
+    const isRtl = document.documentElement.dir === 'rtl';
+    document.querySelectorAll('.product-card').forEach(card => {
+      let slot = card.querySelector('.fitment-slot');
+      if (!slot) {
+        slot = document.createElement('div');
+        slot.className = 'fitment-slot';
+        const body = card.querySelector('.product-body');
+        const title = card.querySelector('.product-title');
+        if (body && title) {
+          body.insertBefore(slot, title);
+        }
+      }
+
+      if (!savedGarage) {
+        slot.innerHTML = '';
+        card.dataset.fitment = 'neutral';
+        return;
+      }
+
+      const fitStatus = checkFitmentForCard(card);
+      card.dataset.fitment = fitStatus;
+
+      if (fitStatus === 'match') {
+        slot.innerHTML = `
+          <div class="fitment-pill fitment-match">
+            ✓ ${isRtl ? 'متوافق مؤكد مع سيارتك' : 'Guaranteed Fit'} (${savedGarage.make})
+          </div>
+        `;
+      } else {
+        slot.innerHTML = `
+          <div class="fitment-pill fitment-mismatch">
+            ⚠️ ${isRtl ? 'غير متوافق مع' : 'Incompatible with'} ${savedGarage.make}
+          </div>
+        `;
+      }
+    });
+
+    filterCatalog();
+  }
+
+  // Initialize Event Listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    updateCartUI();
+    updateGarageUI();
+    updateFitmentBadges();
+
+    // Brand click events
+    document.querySelectorAll('.brand-card').forEach(card => {
+      card.addEventListener('click', function() {
+        if (this.classList.contains('active')) {
+          this.classList.remove('active');
+        } else {
+          document.querySelectorAll('.brand-card').forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+        }
+        filterCatalog();
+      });
+    });
+
+    // Category pills click events
+    document.querySelectorAll('.category-pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        filterCatalog();
+      });
+    });
+
+    // Search input typing
+    const searchInput = document.getElementById('partSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        filterCatalog();
+      });
+    }
+
+    // Tabs in Search Card
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const tab = this.dataset.tab;
+        const vinBox = document.getElementById('vinSearchBox');
+        const partBox = document.getElementById('partQuickSearchBox');
+        if (tab === 'vin') {
+          if (vinBox) vinBox.style.display = 'block';
+          if (partBox) partBox.style.display = 'none';
         } else {
           if (vinBox) vinBox.style.display = 'none';
           if (partBox) partBox.style.display = 'block';
@@ -365,7 +558,12 @@ const Parto = (function() {
     filterCatalog,
     showToast,
     getCart: () => cart,
-    getSubtotal: getCartSubtotal
+    getSubtotal: getCartSubtotal,
+    getGarageVehicle: () => savedGarage,
+    setGarageVehicle,
+    clearGarageVehicle,
+    handleQuickGarageSelect,
+    toggleOnlyFit
   };
 })();
 

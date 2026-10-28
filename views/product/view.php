@@ -129,9 +129,12 @@ if ($product) {
         </div>
 
         <!-- Product Name -->
-        <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 1rem;">
+        <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 0.75rem;">
           <?= Html::encode($product->name) ?>
         </h1>
+
+        <!-- My Garage Verified Fitment Banner -->
+        <div id="garagePdpFitmentBadge" style="margin-bottom: 1rem;"></div>
 
         <!-- OEM Part Number Bar -->
         <?php if (!empty($product->oem_part_number)): ?>
@@ -406,4 +409,62 @@ function copyPartNumber() {
     });
   }
 }
+
+// Check saved garage fitment on PDP load
+document.addEventListener('DOMContentLoaded', function() {
+  const badgeContainer = document.getElementById('garagePdpFitmentBadge');
+  if (!badgeContainer || typeof Parto === 'undefined') return;
+  const garage = Parto.getGarageVehicle();
+  const isRtl = document.documentElement.dir === 'rtl';
+
+  if (!garage) {
+    badgeContainer.innerHTML = `
+      <div style="background: rgba(255,255,255,0.03); border: 1px dashed var(--border-dark); border-radius: var(--radius-md); padding: 0.6rem 0.9rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <span>🔍 ${isRtl ? 'لم تحدد سيارة بعد للتحقق من الملاءمة المباشرة.' : 'No vehicle saved to verify direct fitment.'}</span>
+        <a href="<?= Url::to(['/']) ?>" style="color: #60a5fa; font-weight: 700; text-decoration: none;">${isRtl ? 'حدد سيارتك في الكراج ↗' : 'Set vehicle in Garage ↗'}</a>
+      </div>
+    `;
+    return;
+  }
+
+  const pBrand = "<?= strtolower(addslashes($product->brand_name)) ?>";
+  const pName = "<?= strtolower(addslashes($product->name)) ?>";
+  const compatArr = <?= json_encode(array_map('strtolower', $compatList ?: [])) ?>;
+  const gMake = (garage.make || '').toLowerCase();
+  const gModel = (garage.model || '').toLowerCase();
+
+  const isMatch = (pBrand === gMake) || 
+                  compatArr.some(c => c.includes(gMake) || (gModel && c.includes(gModel))) ||
+                  pName.includes(gMake) || (gModel && pName.includes(gModel));
+
+  if (isMatch) {
+    badgeContainer.innerHTML = `
+      <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: var(--radius-md); padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.65rem;">
+        <span style="font-size: 1.3rem;">✓</span>
+        <div>
+          <div style="color: #34d399; font-weight: 800; font-size: 0.88rem;">
+            ${isRtl ? 'مطابقة وملاءمة مضمونة 100% مع سيارتك' : '100% Guaranteed Fit for Your Vehicle'} (${garage.name})
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.76rem;">
+            ${isRtl ? 'مغطى بضمان المطابقة والاسترجاع المجاني السريع لمدة 14 يوماً.' : 'Covered by our 100% fitment guarantee and 14-day free returns.'}
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    badgeContainer.innerHTML = `
+      <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.65rem;">
+        <span style="font-size: 1.3rem;">⚠️</span>
+        <div>
+          <div style="color: #f87171; font-weight: 800; font-size: 0.88rem;">
+            ${isRtl ? 'تحذير: هذه القطعة غير مخصصة لسيارتك المحفوظة' : 'Caution: This part is not designated for your saved vehicle'} (${garage.name})
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.76rem;">
+            ${isRtl ? 'يرجى مراجعة رقم القطعة الأصلي (OEM) أو الاستفسار عبر المساعد الذكي.' : 'Please double check your OEM part number or ask our AI assistant.'}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+});
 </script>

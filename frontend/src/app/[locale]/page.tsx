@@ -94,9 +94,34 @@ export default function MarketplacePage() {
 
   const [searchType, setSearchType] = useState<'vin' | 'part'>('vin');
   const [vinQuery, setVinQuery] = useState<string>('');
-  const [isDecodingVin, setIsDecodingVin] = useState<boolean>(false);
   const [decodedVehicle, setDecodedVehicle] = useState<{make: string, model: string, year: string, engineDetails?: any} | null>(null);
   const [vinError, setVinError] = useState<string | null>(null);
+
+  // My Garage Vehicle State (Persisted)
+  const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year: string; name: string } | null>(null);
+  const [onlyFit, setOnlyFit] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('parto_garage_vehicle');
+      if (saved) setGarageVehicle(JSON.parse(saved));
+    } catch (e) {}
+  }, []);
+
+  const saveToGarage = (vehicle: { make: string; model: string; year: string; name: string }) => {
+    setGarageVehicle(vehicle);
+    try {
+      localStorage.setItem('parto_garage_vehicle', JSON.stringify(vehicle));
+    } catch (e) {}
+  };
+
+  const clearGarage = () => {
+    setGarageVehicle(null);
+    setOnlyFit(false);
+    try {
+      localStorage.removeItem('parto_garage_vehicle');
+    } catch (e) {}
+  };
 
   const handleVinSearch = async () => {
     if (!vinQuery || vinQuery.length < 5) {
@@ -173,7 +198,28 @@ export default function MarketplacePage() {
     { id: 't-hamzah-sadiq', name: 'Hamzah Sadiq Japanese Suspension & Shocks', subdomain: 'hamzah-sadiq', logo: '🚗', category: 'Suspension & Shocks', rating: 4.89, bannerGradient: 'from-indigo-600 to-violet-900' },
   ];
 
-  const filteredProducts = products;
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      if (selectedBrand !== 'all' && !matchesVehicleBrand(product, selectedBrand)) {
+        return false;
+      }
+      if (selectedCategory !== 'all' && product.category !== selectedCategory) {
+        return false;
+      }
+      if (onlyFit && garageVehicle && !matchesVehicleBrand(product, garageVehicle.make)) {
+        return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesName = product.name.toLowerCase().includes(q);
+        const matchesBrand = product.brandName?.toLowerCase().includes(q);
+        const matchesCat = product.category.toLowerCase().includes(q);
+        const matchesCompat = product.compatibility?.some(c => String(c).toLowerCase().includes(q));
+        if (!matchesName && !matchesBrand && !matchesCat && !matchesCompat) return false;
+      }
+      return true;
+    });
+  }, [products, selectedBrand, selectedCategory, searchQuery, onlyFit, garageVehicle]);
 
   const activeTenantInfo = useMemo(() => {
     return tenants.find(t => t.id === selectedTenantId);
@@ -602,14 +648,27 @@ export default function MarketplacePage() {
                           )}
                           <p className="text-xs mt-3 text-emerald-700/80 flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Catalog automatically filtered for this vehicle.
+                            {locale === 'ar' ? 'تمت مطابقة وفلترة الكتالوج لهذه السيارة تلقائياً.' : 'Catalog automatically filtered for this vehicle.'}
                           </p>
-                          <button 
-                            onClick={() => router.push(`/${locale}/oem/${vinQuery}`)}
-                            className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors text-sm shadow-md flex items-center justify-center gap-2"
-                          >
-                            <span className="text-lg">🛠️</span> VIEW OEM PARTS DIAGRAM (EPC)
-                          </button>
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              onClick={() => saveToGarage({
+                                make: decodedVehicle.make,
+                                model: decodedVehicle.model,
+                                year: decodedVehicle.year,
+                                name: `${decodedVehicle.make} ${decodedVehicle.model} (${decodedVehicle.year})`
+                              })}
+                              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors text-xs shadow flex items-center justify-center gap-1.5"
+                            >
+                              <span>💾</span> {locale === 'ar' ? 'حفظ في كراجي' : 'Save to My Garage'}
+                            </button>
+                            <button 
+                              onClick={() => router.push(`/${locale}/oem/${vinQuery}`)}
+                              className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-lg transition-colors text-xs shadow flex items-center justify-center gap-1.5"
+                            >
+                              <span>🛠️</span> {locale === 'ar' ? 'مخطط الوكالة' : 'OEM Diagram'}
+                            </button>
+                          </div>
                         </div>
                       )}
                     </>
@@ -750,6 +809,71 @@ export default function MarketplacePage() {
           </div>
         </section>
 
+        {/* My Personal Garage & Fitment Checker */}
+        <section className="bg-slate-900 text-white p-5 rounded-3xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-2xl flex items-center justify-center">
+              🚗
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">
+                {locale === 'ar' ? 'كراج سياراتي وفحص التوافق المباشر' : 'My Personal Garage & Fitment Engine'}
+              </div>
+              <div className="text-base sm:text-lg font-black text-white">
+                {garageVehicle ? `🟢 ${garageVehicle.name}` : (locale === 'ar' ? 'لم يتم تحديد سيارة بعد' : 'No vehicle selected')}
+              </div>
+              <div className="text-xs text-slate-400">
+                {garageVehicle 
+                  ? (locale === 'ar' ? 'يتم فحص التوافق الميكانيكي لكل قطعة في المتجر تلقائياً' : 'All catalog items are verified against your saved vehicle')
+                  : (locale === 'ar' ? 'اختر سيارتك سريعاً لتفعيل إشارة الملاءمة المؤكدة (Guaranteed Fit)' : 'Select your car to activate Guaranteed Fit badges')}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <select
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 cursor-pointer"
+              onChange={(e) => {
+                if (!e.target.value) return;
+                const [make, model, year] = e.target.value.split('|');
+                saveToGarage({ make, model, year, name: `${make} ${model} (${year})` });
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>{locale === 'ar' ? '⚡ اختر سيارتك سريعاً...' : '⚡ Quick Select Vehicle...'}</option>
+              <option value="Toyota|Camry|2022">Toyota Camry (2022)</option>
+              <option value="Nissan|Patrol|2021">Nissan Patrol Y62 (2021)</option>
+              <option value="Hyundai|Sonata|2023">Hyundai Sonata (2023)</option>
+              <option value="Lexus|ES350|2021">Lexus ES350 (2021)</option>
+              <option value="Mazda|CX-9|2022">Mazda CX-9 (2022)</option>
+              <option value="BMW|5 Series|2022">BMW 5 Series (2022)</option>
+              <option value="Ford|Taurus|2022">Ford Taurus (2022)</option>
+            </select>
+
+            {garageVehicle && (
+              <button
+                type="button"
+                onClick={clearGarage}
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
+              >
+                {locale === 'ar' ? 'إزالة' : 'Clear'}
+              </button>
+            )}
+
+            {garageVehicle && (
+              <label className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={onlyFit}
+                  onChange={(e) => setOnlyFit(e.target.checked)}
+                  className="rounded border-emerald-500 text-emerald-600 focus:ring-0"
+                />
+                <span>{locale === 'ar' ? 'المتوافقة فقط' : 'Guaranteed Fit Only'}</span>
+              </label>
+            )}
+          </div>
+        </section>
+
         {/* Filters and Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
           {/* Categories Tab */}
@@ -837,6 +961,22 @@ export default function MarketplacePage() {
                       <h3 className="font-bold text-slate-900 text-base group-hover:text-indigo-600 transition-colors duration-200 line-clamp-2">
                         {product.name}
                       </h3>
+
+                      {garageVehicle && (
+                        <div className={`mt-2 mb-1 px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 w-fit ${
+                          matchesVehicleBrand(product, garageVehicle.make)
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-rose-50 text-rose-600 border border-rose-200'
+                        }`}>
+                          <span>{matchesVehicleBrand(product, garageVehicle.make) ? '✓' : '⚠️'}</span>
+                          <span>
+                            {matchesVehicleBrand(product, garageVehicle.make)
+                              ? (locale === 'ar' ? `متوافق مؤكد مع ${garageVehicle.make}` : `Guaranteed Fit (${garageVehicle.make})`)
+                              : (locale === 'ar' ? `غير متوافق مع ${garageVehicle.make}` : `Incompatible with ${garageVehicle.make}`)}
+                          </span>
+                        </div>
+                      )}
+
                       <span className="inline-block mt-1.5 text-[11px] font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
                         {locale === 'ar' ? 'عرض تفاصيل القطعة ←' : 'View Part Details →'}
                       </span>
